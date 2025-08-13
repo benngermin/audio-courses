@@ -48,10 +48,6 @@ export async function seedTestData() {
     console.log(`Created ${insertedAssignments.length} assignments`);
 
     // Create chapters for each assignment
-    // Using the same test audio file for all chapters for easier testing
-    const testAudioUrl = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3";
-    const testAudioDuration = 369; // Duration in seconds (6 minutes 9 seconds)
-    
     const chapterData = [];
     
     // Assignment 1 chapters
@@ -60,24 +56,24 @@ export async function seedTestData() {
         assignmentId: insertedAssignments[0].id,
         title: "Chapter 1.1: What is Risk?",
         description: "Defining risk in the context of insurance",
-        audioUrl: testAudioUrl,
-        duration: testAudioDuration,
+        audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+        duration: 369,
         orderIndex: 1,
       },
       {
         assignmentId: insertedAssignments[0].id,
         title: "Chapter 1.2: Types of Risk",
         description: "Exploring different categories of risk",
-        audioUrl: testAudioUrl,
-        duration: testAudioDuration,
+        audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+        duration: 429,
         orderIndex: 2,
       },
       {
         assignmentId: insertedAssignments[0].id,
         title: "Chapter 1.3: Risk Management Framework",
         description: "Overview of the risk management process",
-        audioUrl: testAudioUrl,
-        duration: testAudioDuration,
+        audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+        duration: 353,
         orderIndex: 3,
       }
     );
@@ -88,24 +84,24 @@ export async function seedTestData() {
         assignmentId: insertedAssignments[1].id,
         title: "Chapter 2.1: Risk Identification",
         description: "Techniques for identifying potential risks",
-        audioUrl: testAudioUrl,
-        duration: testAudioDuration,
+        audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
+        duration: 468,
         orderIndex: 1,
       },
       {
         assignmentId: insertedAssignments[1].id,
         title: "Chapter 2.2: Risk Analysis",
         description: "Analyzing probability and impact of risks",
-        audioUrl: testAudioUrl,
-        duration: testAudioDuration,
+        audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3",
+        duration: 399,
         orderIndex: 2,
       },
       {
         assignmentId: insertedAssignments[1].id,
         title: "Chapter 2.3: Risk Evaluation",
         description: "Prioritizing risks for treatment",
-        audioUrl: testAudioUrl,
-        duration: testAudioDuration,
+        audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3",
+        duration: 382,
         orderIndex: 3,
       }
     );
@@ -116,24 +112,24 @@ export async function seedTestData() {
         assignmentId: insertedAssignments[2].id,
         title: "Chapter 3.1: Risk Control Strategies",
         description: "Methods for controlling and reducing risks",
-        audioUrl: testAudioUrl,
-        duration: testAudioDuration,
+        audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3",
+        duration: 423,
         orderIndex: 1,
       },
       {
         assignmentId: insertedAssignments[2].id,
         title: "Chapter 3.2: Risk Financing",
         description: "Financial strategies for managing risk",
-        audioUrl: testAudioUrl,
-        duration: testAudioDuration,
+        audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3",
+        duration: 411,
         orderIndex: 2,
       },
       {
         assignmentId: insertedAssignments[2].id,
         title: "Chapter 3.3: Monitoring and Review",
         description: "Continuous improvement in risk management",
-        audioUrl: testAudioUrl,
-        duration: testAudioDuration,
+        audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3",
+        duration: 397,
         orderIndex: 3,
       }
     );
