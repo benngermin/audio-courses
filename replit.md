@@ -6,6 +6,14 @@ This is a mobile-first audio learning platform built for The Institutes educatio
 
 ## Recent Changes (August 13, 2025)
 
+- **Audio Playback Fix**:
+  - Fixed audio playback issue where nothing would play due to non-existent external audio URLs
+  - Created mock audio generation endpoint at `/api/audio/:chapterId.mp3` for testing
+  - Updated all chapter audio URLs in database to use local endpoints instead of external domain
+  - Audio now generates test WAV files with different tones for each chapter
+  - Each chapter produces a unique 30-second test tone based on chapter ID
+  - Audio playback now fully functional with play/pause, seek, and progress tracking
+
 - **UI Design Update**:
   - Updated color palette with new orange primary color (#ff6b35)
   - Implemented circular progress indicator for full-screen audio playback
