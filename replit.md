@@ -6,6 +6,16 @@ This is a mobile-first audio learning platform built for The Institutes educatio
 
 ## Recent Changes (August 13, 2025)
 
+- **UI Design Update**:
+  - Updated color palette with new orange primary color (#ff6b35)
+  - Implemented circular progress indicator for full-screen audio playback
+  - Added linear progress bar for mini player at bottom
+  - Updated typography to use system font stack (-apple-system, BlinkMacSystemFont, etc.)
+  - Applied new colors: Primary Orange, Orange Tint for backgrounds, updated text hierarchy
+  - Replaced album art placeholder with interactive circular progress component
+  - Updated all UI components to use new design tokens (background, foreground, borders)
+  - Improved dark mode support with appropriate color inversions
+
 - **Admin Dashboard Implementation**:
   - Created comprehensive admin panel accessible at `/admin`
   - Admin users can upload course audio from content repository API

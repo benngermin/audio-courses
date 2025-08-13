@@ -226,12 +226,12 @@ export function AudioPlayer({
       </div>
 
       {/* Audio Visualization */}
-      <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 mb-8">
+      <div className="bg-card rounded-2xl p-8 shadow-lg border border-border mb-8">
         <AudioVisualizer isPlaying={isPlaying} className="mb-6" />
 
         {/* Progress Bar */}
         <div className="mb-6">
-          <div className="flex justify-between text-sm text-slate-500 mb-2">
+          <div className="flex justify-between text-sm text-muted-foreground mb-2">
             <span>{formatTime(currentTime)}</span>
             <span>{formatTime(duration)}</span>
           </div>
@@ -251,7 +251,7 @@ export function AudioPlayer({
             variant="ghost"
             size="lg"
             onClick={() => skipBackward(15)}
-            className="p-3 text-slate-600 hover:text-slate-800"
+            className="p-3 text-muted-foreground hover:text-foreground"
           >
             <SkipBack className="h-6 w-6" />
           </Button>
@@ -274,7 +274,7 @@ export function AudioPlayer({
             variant="ghost"
             size="lg"
             onClick={() => skipForward(15)}
-            className="p-3 text-slate-600 hover:text-slate-800"
+            className="p-3 text-muted-foreground hover:text-foreground"
           >
             <SkipForward className="h-6 w-6" />
           </Button>

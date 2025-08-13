@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { Slider } from "@/components/ui/slider";
+import { LinearProgress } from "@/components/ui/circular-progress";
 import { Play, Pause, ChevronUp, X } from "lucide-react";
 import { useAudioContext } from "@/contexts/AudioContext";
 import { useAudio } from "@/hooks/useAudio";
@@ -93,7 +93,7 @@ export function MiniPlayer() {
         animate={{ y: 0 }}
         exit={{ y: 100 }}
         transition={{ type: "spring", damping: 25, stiffness: 300 }}
-        className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50"
+        className="fixed bottom-0 left-0 right-0 bg-card border-t border-border shadow-lg z-50"
         style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
       >
         <div 
@@ -101,24 +101,24 @@ export function MiniPlayer() {
           onClick={() => setIsExpanded(true)}
         >
           {/* Progress bar at the top */}
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gray-100">
-            <div 
-              className="h-full bg-primary transition-all duration-300"
-              style={{ width: `${(currentTime / duration) * 100}%` }}
-            />
-          </div>
+          <LinearProgress 
+            value={currentTime}
+            max={duration || 100}
+            height={2}
+            className="absolute top-0 left-0 right-0"
+          />
 
           <div className="flex items-center justify-between">
             {/* Left side - Track info */}
             <div className="flex items-center gap-3 flex-1 min-w-0">
-              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                <div className="w-6 h-6 bg-primary rounded-full" />
+              <div className="w-12 h-12 bg-accent rounded-lg flex items-center justify-center flex-shrink-0">
+                <div className="w-6 h-6 bg-primary rounded-full animate-pulse" />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium text-gray-900 truncate">
+                <p className="text-sm font-medium text-foreground truncate">
                   {currentChapter.title}
                 </p>
-                <p className="text-xs text-gray-500 truncate">
+                <p className="text-xs text-muted-foreground truncate">
                   {currentAssignment.title}
                 </p>
               </div>
@@ -153,7 +153,7 @@ export function MiniPlayer() {
           </div>
 
           {/* Time display */}
-          <div className="flex justify-between mt-1 text-xs text-gray-500">
+          <div className="flex justify-between mt-1 text-xs text-muted-foreground">
             <span>{formatTime(currentTime)}</span>
             <span>{formatTime(duration)}</span>
           </div>

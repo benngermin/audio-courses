@@ -1,47 +1,67 @@
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --background: hsl(0 0% 95%);
-  --foreground: hsl(210 25% 7.8431%);
-  --card: hsl(0 0% 100%);
-  --card-foreground: hsl(210 25% 7.8431%);
+  /* Updated color palette from design specifications */
+  --primary-orange: hsl(16 100% 60%); /* #ff6b35 */
+  --primary-orange-hover: hsl(14 100% 57%); /* #ff5722 */
+  --orange-tint: hsl(20 100% 97%); /* #fff5f0 */
+  
+  --text-primary: hsl(0 0% 10%); /* #1a1a1a */
+  --text-secondary: hsl(0 0% 40%); /* #666666 */
+  --text-tertiary: hsl(0 0% 60%); /* #999999 */
+  
+  --white: hsl(0 0% 100%); /* #ffffff */
+  --background-page: hsl(0 0% 97%); /* #f8f8f8 */
+  --border-gray: hsl(0 0% 88%); /* #e0e0e0 */
+  
+  /* System color mappings */
+  --background: hsl(0 0% 97%); /* #f8f8f8 */
+  --foreground: hsl(0 0% 10%); /* #1a1a1a */
+  --card: hsl(0 0% 100%); /* #ffffff */
+  --card-foreground: hsl(0 0% 10%); /* #1a1a1a */
   --popover: hsl(0 0% 100%);
-  --popover-foreground: hsl(210 25% 7.8431%);
-  --primary: hsl(214 100% 21.96%);
+  --popover-foreground: hsl(0 0% 10%);
+  --primary: hsl(16 100% 60%); /* #ff6b35 */
   --primary-foreground: hsl(0 0% 100%);
-  --primary-dark: hsl(214 100% 16%);
-  --secondary: hsl(210 25% 7.8431%);
+  --primary-dark: hsl(14 100% 57%); /* #ff5722 */
+  --secondary: hsl(0 0% 40%); /* #666666 */
   --secondary-foreground: hsl(0 0% 100%);
-  --muted: hsl(240 1.9608% 90%);
-  --muted-foreground: hsl(210 25% 7.8431%);
-  --accent: hsl(211.5789 51.3514% 92.7451%);
-  --accent-foreground: hsl(214 100% 21.96%);
-  --destructive: hsl(356.3033 90.5579% 54.3137%);
+  --muted: hsl(0 0% 97%); /* Background color */
+  --muted-foreground: hsl(0 0% 40%); /* Secondary text */
+  --accent: hsl(20 100% 97%); /* Orange tint */
+  --accent-foreground: hsl(16 100% 60%); /* Primary orange */
+  --destructive: hsl(0 85% 60%);
   --destructive-foreground: hsl(0 0% 100%);
-  --border: hsl(201.4286 30.4348% 90.9804%);
-  --input: hsl(200 23.0769% 97.4510%);
-  --ring: hsl(214 100% 21.96%);
-  --chart-1: hsl(214 100% 21.96%);
-  --chart-2: hsl(159.7826 100% 36.0784%);
-  --chart-3: hsl(42.0290 92.8251% 56.2745%);
-  --chart-4: hsl(147.1429 78.5047% 41.9608%);
-  --chart-5: hsl(341.4894 75.2000% 50.9804%);
-  --sidebar: hsl(180 6.6667% 97.0588%);
-  --sidebar-foreground: hsl(210 25% 7.8431%);
-  --sidebar-primary: hsl(214 100% 21.96%);
+  --border: hsl(0 0% 88%); /* #e0e0e0 */
+  --input: hsl(0 0% 97%);
+  --ring: hsl(16 100% 60%); /* Primary orange */
+  
+  /* Chart colors */
+  --chart-1: hsl(16 100% 60%);
+  --chart-2: hsl(159 100% 36%);
+  --chart-3: hsl(42 93% 56%);
+  --chart-4: hsl(147 79% 42%);
+  --chart-5: hsl(341 75% 51%);
+  
+  /* Sidebar */
+  --sidebar: hsl(0 0% 97%);
+  --sidebar-foreground: hsl(0 0% 10%);
+  --sidebar-primary: hsl(16 100% 60%);
   --sidebar-primary-foreground: hsl(0 0% 100%);
-  --sidebar-accent: hsl(211.5789 51.3514% 92.7451%);
-  --sidebar-accent-foreground: hsl(214 100% 21.96%);
-  --sidebar-border: hsl(205.0000 25.0000% 90.5882%);
-  --sidebar-ring: hsl(214 100% 21.96%);
-  --font-sans: "Inter", system-ui, sans-serif;
+  --sidebar-accent: hsl(20 100% 97%);
+  --sidebar-accent-foreground: hsl(16 100% 60%);
+  --sidebar-border: hsl(0 0% 88%);
+  --sidebar-ring: hsl(16 100% 60%);
+  
+  /* Typography - Updated to system font stack from spec */
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
   --font-serif: Georgia, serif;
   --font-mono: Menlo, monospace;
-  --radius: 0.75rem;
+  
+  /* Spacing and radius */
+  --radius: 0.5rem;
   --shadow-2xs: 0px 1px 2px 0px hsl(0 0% 0% / 0.05);
   --shadow-xs: 0px 1px 2px 0px hsl(0 0% 0% / 0.05);
   --shadow-sm: 0px 1px 2px 0px hsl(0 0% 0% / 0.05), 0px 1px 3px 0px hsl(0 0% 0% / 0.1);
@@ -55,43 +75,65 @@
 }
 
 .dark {
-  --background: hsl(0 0% 0%);
-  --foreground: hsl(200 6.6667% 91.1765%);
-  --card: hsl(228 9.8039% 10%);
-  --card-foreground: hsl(0 0% 85.0980%);
-  --popover: hsl(0 0% 0%);
-  --popover-foreground: hsl(200 6.6667% 91.1765%);
-  --primary: hsl(214 100% 21.96%);
+  /* Dark mode variants - using inverted contrast */
+  --primary-orange: hsl(16 100% 60%); /* Keep orange same */
+  --primary-orange-hover: hsl(14 100% 57%);
+  --orange-tint: hsl(20 20% 15%); /* Darker tint */
+  
+  --text-primary: hsl(0 0% 95%); /* Light text */
+  --text-secondary: hsl(0 0% 70%);
+  --text-tertiary: hsl(0 0% 50%);
+  
+  --white: hsl(0 0% 100%);
+  --background-page: hsl(0 0% 7%); /* Dark background */
+  --border-gray: hsl(0 0% 20%); /* Darker borders */
+  
+  /* System color mappings for dark mode */
+  --background: hsl(0 0% 7%);
+  --foreground: hsl(0 0% 95%);
+  --card: hsl(0 0% 10%);
+  --card-foreground: hsl(0 0% 90%);
+  --popover: hsl(0 0% 10%);
+  --popover-foreground: hsl(0 0% 90%);
+  --primary: hsl(16 100% 60%); /* Keep orange same */
   --primary-foreground: hsl(0 0% 100%);
-  --primary-dark: hsl(214 100% 16%);
-  --secondary: hsl(195.0000 15.3846% 94.9020%);
-  --secondary-foreground: hsl(210 25% 7.8431%);
-  --muted: hsl(0 0% 9.4118%);
-  --muted-foreground: hsl(210 3.3898% 46.2745%);
-  --accent: hsl(205.7143 70% 7.8431%);
-  --accent-foreground: hsl(214 100% 21.96%);
-  --destructive: hsl(356.3033 90.5579% 54.3137%);
+  --primary-dark: hsl(14 100% 57%);
+  --secondary: hsl(0 0% 30%);
+  --secondary-foreground: hsl(0 0% 95%);
+  --muted: hsl(0 0% 10%);
+  --muted-foreground: hsl(0 0% 60%);
+  --accent: hsl(20 20% 15%);
+  --accent-foreground: hsl(16 100% 60%);
+  --destructive: hsl(0 85% 60%);
   --destructive-foreground: hsl(0 0% 100%);
-  --border: hsl(210 5.2632% 14.9020%);
-  --input: hsl(207.6923 27.6596% 18.4314%);
-  --ring: hsl(214 100% 21.96%);
-  --chart-1: hsl(214 100% 21.96%);
-  --chart-2: hsl(159.7826 100% 36.0784%);
-  --chart-3: hsl(42.0290 92.8251% 56.2745%);
-  --chart-4: hsl(147.1429 78.5047% 41.9608%);
-  --chart-5: hsl(341.4894 75.2000% 50.9804%);
-  --sidebar: hsl(228 9.8039% 10%);
-  --sidebar-foreground: hsl(0 0% 85.0980%);
-  --sidebar-primary: hsl(214 100% 21.96%);
+  --border: hsl(0 0% 20%);
+  --input: hsl(0 0% 15%);
+  --ring: hsl(16 100% 60%);
+  
+  /* Chart colors */
+  --chart-1: hsl(16 100% 60%);
+  --chart-2: hsl(159 100% 36%);
+  --chart-3: hsl(42 93% 56%);
+  --chart-4: hsl(147 79% 42%);
+  --chart-5: hsl(341 75% 51%);
+  
+  /* Sidebar */
+  --sidebar: hsl(0 0% 10%);
+  --sidebar-foreground: hsl(0 0% 90%);
+  --sidebar-primary: hsl(16 100% 60%);
   --sidebar-primary-foreground: hsl(0 0% 100%);
-  --sidebar-accent: hsl(205.7143 70% 7.8431%);
-  --sidebar-accent-foreground: hsl(214 100% 21.96%);
-  --sidebar-border: hsl(205.7143 15.7895% 26.0784%);
-  --sidebar-ring: hsl(214 100% 21.96%);
-  --font-sans: "Inter", system-ui, sans-serif;
+  --sidebar-accent: hsl(20 20% 15%);
+  --sidebar-accent-foreground: hsl(16 100% 60%);
+  --sidebar-border: hsl(0 0% 20%);
+  --sidebar-ring: hsl(16 100% 60%);
+  
+  /* Typography */
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
   --font-serif: Georgia, serif;
   --font-mono: Menlo, monospace;
-  --radius: 0.75rem;
+  
+  /* Keep same spacing and shadows */
+  --radius: 0.5rem;
   --shadow-2xs: 0px 1px 2px 0px hsl(0 0% 0% / 0.05);
   --shadow-xs: 0px 1px 2px 0px hsl(0 0% 0% / 0.05);
   --shadow-sm: 0px 1px 2px 0px hsl(0 0% 0% / 0.05), 0px 1px 3px 0px hsl(0 0% 0% / 0.1);
@@ -109,11 +151,16 @@
 
   body {
     @apply font-sans antialiased bg-background text-foreground;
-    font-family: "Inter", system-ui, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-semibold tracking-tight;
+    @apply font-medium tracking-tight;
+  }
+  
+  /* Typography styles based on design spec */
+  .text-page-header {
+    @apply text-2xl font-medium leading-tight text-foreground;
   }
 }
 

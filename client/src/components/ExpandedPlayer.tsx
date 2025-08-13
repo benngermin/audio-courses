@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
+import { CircularProgress, LinearProgress } from "@/components/ui/circular-progress";
 import { 
   ChevronDown, 
   Play, 
@@ -200,7 +201,7 @@ export function ExpandedPlayer() {
           animate={{ y: 0 }}
           exit={{ y: "100%" }}
           transition={{ type: "spring", damping: 25, stiffness: 300 }}
-          className="fixed inset-0 bg-gradient-to-b from-slate-50 to-white z-[60] flex flex-col"
+          className="fixed inset-0 bg-background z-[60] flex flex-col"
           style={{ paddingTop: 'env(safe-area-inset-top)' }}
         >
           {/* Header */}
@@ -239,77 +240,75 @@ export function ExpandedPlayer() {
 
           {/* Main content area */}
           <div className="flex-1 flex flex-col justify-center px-8 pb-8">
-            {/* Album art placeholder */}
-            <div className="mx-auto mb-8 w-72 h-72 bg-gradient-to-br from-primary/20 to-primary/10 rounded-2xl shadow-xl flex items-center justify-center">
-              <div className="w-32 h-32 bg-primary rounded-full animate-pulse" />
+            {/* Circular Progress with Play Button */}
+            <div className="mx-auto mb-8 relative">
+              <CircularProgress
+                value={currentTime}
+                max={duration || 100}
+                size={280}
+                strokeWidth={4}
+                isPlaying={isPlaying}
+                className="drop-shadow-xl"
+              >
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={togglePlay}
+                  className="h-24 w-24 rounded-full bg-primary hover:bg-primary-dark text-white shadow-lg hover:scale-105 transition-all"
+                >
+                  {isPlaying ? (
+                    <Pause className="h-12 w-12" />
+                  ) : (
+                    <Play className="h-12 w-12 ml-2" />
+                  )}
+                </Button>
+              </CircularProgress>
             </div>
 
             {/* Track info */}
             <div className="text-center mb-8">
-              <h1 className="text-2xl font-bold text-gray-900 mb-2">
+              <h1 className="text-2xl font-bold text-foreground mb-2">
                 {currentChapter.title}
               </h1>
-              <p className="text-lg text-gray-600">
+              <p className="text-lg text-muted-foreground">
                 {currentAssignment.title}
               </p>
             </div>
 
-            {/* Progress bar */}
-            <div className="mb-6">
-              <Slider
-                value={[currentTime]}
-                max={duration || 100}
-                step={1}
-                onValueChange={handleSeek}
-                className="mb-2"
-              />
-              <div className="flex justify-between text-sm text-gray-500">
-                <span>{formatTime(currentTime)}</span>
-                <span>{formatTime(duration)}</span>
-              </div>
+            {/* Time display */}
+            <div className="flex justify-between text-sm text-muted-foreground mb-6">
+              <span>{formatTime(currentTime)}</span>
+              <span>{formatTime(duration)}</span>
             </div>
 
             {/* Playback controls */}
-            <div className="flex items-center justify-center gap-4 mb-6">
+            <div className="flex items-center justify-center gap-6 mb-6">
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={handlePrevious}
                 disabled={!hasPrevious}
-                className="h-12 w-12"
+                className="h-10 w-10 text-muted-foreground hover:text-foreground"
               >
-                <ChevronLeft className="h-6 w-6" />
+                <ChevronLeft className="h-5 w-5" />
               </Button>
 
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => skipBackward(15)}
-                className="h-12 w-12"
+                className="h-10 w-10 text-muted-foreground hover:text-foreground"
               >
-                <SkipBack className="h-6 w-6" />
-              </Button>
-
-              <Button
-                variant="default"
-                size="icon"
-                onClick={togglePlay}
-                className="h-16 w-16 rounded-full shadow-lg bg-[#ed7738] hover:bg-[#d96429]"
-              >
-                {isPlaying ? (
-                  <Pause className="h-8 w-8" />
-                ) : (
-                  <Play className="h-8 w-8 ml-1" />
-                )}
+                <SkipBack className="h-5 w-5" />
               </Button>
 
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => skipForward(30)}
-                className="h-12 w-12"
+                className="h-10 w-10 text-muted-foreground hover:text-foreground"
               >
-                <SkipForward className="h-6 w-6" />
+                <SkipForward className="h-5 w-5" />
               </Button>
 
               <Button
@@ -317,9 +316,9 @@ export function ExpandedPlayer() {
                 size="icon"
                 onClick={handleNext}
                 disabled={!hasNext}
-                className="h-12 w-12"
+                className="h-10 w-10 text-muted-foreground hover:text-foreground"
               >
-                <ChevronRight className="h-6 w-6" />
+                <ChevronRight className="h-5 w-5" />
               </Button>
             </div>
 
