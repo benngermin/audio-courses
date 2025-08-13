@@ -294,7 +294,7 @@ export function ExpandedPlayer() {
                 variant="default"
                 size="icon"
                 onClick={togglePlay}
-                className="h-16 w-16 rounded-full shadow-lg"
+                className="h-16 w-16 rounded-full shadow-lg bg-[#ed7738] hover:bg-[#d96429]"
               >
                 {isPlaying ? (
                   <Pause className="h-8 w-8" />
