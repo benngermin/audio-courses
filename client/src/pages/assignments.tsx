@@ -203,7 +203,7 @@ function AssignmentHeader({
         </h2>
         <Button
           onClick={handlePlayAll}
-          className="w-14 h-14 rounded-full bg-green-500 hover:bg-green-600 flex items-center justify-center p-0 shadow-lg hover:shadow-xl transition-all duration-200"
+          className="w-14 h-14 rounded-full bg-[#ed7738] hover:bg-[#d96429] flex items-center justify-center p-0 shadow-lg hover:shadow-xl transition-all duration-200"
           disabled={chapters.length === 0}
         >
           <Play className="h-6 w-6 text-white ml-0.5" fill="currentColor" />
@@ -363,12 +363,12 @@ function ChapterCard({ chapter, onPlay }: ChapterCardProps) {
             <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
               progress?.isCompleted 
                 ? "bg-green-100" 
-                : "bg-primary/10"
+                : "bg-[#ed7738]/10"
             }`}>
               {progress?.isCompleted ? (
                 <CheckCircle className="text-green-600" size={20} />
               ) : (
-                <Play className="text-primary" size={20} />
+                <Play className="text-[#ed7738]" size={20} />
               )}
             </div>
             <div className="flex-1">
@@ -380,7 +380,7 @@ function ChapterCard({ chapter, onPlay }: ChapterCardProps) {
                 {isDownloaded && (
                   <>
                     <span>•</span>
-                    <span className="text-blue-600 flex items-center gap-1">
+                    <span className="text-[#003370] flex items-center gap-1">
                       <CheckCircle2 className="h-3 w-3" />
                       Offline
                     </span>
