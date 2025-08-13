@@ -401,7 +401,6 @@ function ChapterCard({ chapter, onPlay }: ChapterCardProps) {
                 <Trash2 className="h-4 w-4" />
               </Button>
             )}
-            <ChevronRight className="text-slate-400 h-4 w-4" />
           </div>
         </div>
       </CardContent>
