@@ -88,28 +88,7 @@ export function AppHeader({ currentCourse, currentAssignment, onAssignmentChange
               </DropdownMenu>
             )}
             
-            {/* User Menu */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className="h-8 w-8 rounded-full bg-primary/10 hover:bg-primary/20 text-primary font-semibold"
-                >
-                  {getInitials(user?.firstName || undefined, user?.lastName || undefined)}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <div className="px-2 py-1.5">
-                  <p className="text-sm font-medium">{user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : "User"}</p>
-                  <p className="text-xs text-muted-foreground">{user?.email || ""}</p>
-                </div>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout} className="text-red-600 cursor-pointer">
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Sign Out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            
           </div>
         </div>
       </div>
