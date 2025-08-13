@@ -21,6 +21,7 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
   useEffect(() => {
     const audio = new Audio(src);
     audio.preload = "metadata";
+    audio.crossOrigin = "anonymous"; // Add CORS support
     audioRef.current = audio;
 
     const handleTimeUpdate = () => {
@@ -53,12 +54,26 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
       setIsLoading(false);
     };
 
+    const handleError = (e: Event) => {
+      console.error("Audio error:", e);
+      const audioError = audio.error;
+      if (audioError) {
+        console.error("Audio error details:", {
+          code: audioError.code,
+          message: audioError.message,
+          src: audio.src
+        });
+      }
+      setIsLoading(false);
+    };
+
     audio.addEventListener("timeupdate", handleTimeUpdate);
     audio.addEventListener("loadedmetadata", handleLoadedMetadata);
     audio.addEventListener("ended", handleEnded);
     audio.addEventListener("canplay", handleCanPlay);
     audio.addEventListener("waiting", handleWaiting);
     audio.addEventListener("canplaythrough", handleCanPlayThrough);
+    audio.addEventListener("error", handleError);
 
     return () => {
       audio.removeEventListener("timeupdate", handleTimeUpdate);
