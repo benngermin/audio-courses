@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useLocation } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import { Play, Pause, Download, ChevronRight, CheckCircle, CheckCircle2, Trash2, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
@@ -196,24 +197,30 @@ function AssignmentHeader({
 
   return (
     <div className="mb-6">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-col gap-4 mb-4">
         <h2 className="text-2xl font-bold text-slate-800">
           {assignment.title}
         </h2>
-        <Button
-          onClick={handlePlayAll}
-          className="w-14 h-14 rounded-full bg-[#ed7738] hover:bg-[#d96429] flex items-center justify-center p-0 shadow-lg hover:shadow-xl transition-all duration-200"
-          disabled={chapters.length === 0}
-        >
-          <Play className="h-6 w-6 text-white ml-0.5" fill="currentColor" />
-        </Button>
+        <div className="flex items-center justify-between gap-4">
+          <Button
+            onClick={handlePlayAll}
+            className="w-20 h-20 rounded-full bg-[#ff6b35] hover:bg-[#ff5722] flex items-center justify-center p-0 shadow-xl hover:shadow-2xl transition-all duration-200 transform hover:scale-105"
+            disabled={chapters.length === 0}
+          >
+            <Play className="h-8 w-8 text-white ml-1" fill="currentColor" />
+          </Button>
+          <div className="flex-1">
+            <p className="text-sm text-slate-600 font-medium">Play All Chapters</p>
+            <p className="text-xs text-slate-500">{chapters.length} chapters total</p>
+          </div>
+        </div>
       </div>
       <div className="flex flex-col sm:flex-row sm:items-center gap-4">
         {!allChaptersDownloaded && (
           <Button
             onClick={() => downloadAllMutation.mutate()}
             disabled={isDownloading}
-            className="flex items-center gap-2 w-full sm:w-auto"
+            className="flex items-center gap-2 w-full sm:w-auto bg-[#ed7738] hover:bg-[#d96429] text-white"
           >
             {isDownloading ? (
               <>
