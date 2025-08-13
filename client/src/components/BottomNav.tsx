@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { List, Download, User, Settings } from "lucide-react";
+import { List, Download, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface BottomNavProps {
@@ -12,7 +12,6 @@ export function BottomNav({ currentPath, onNavigate, isAdmin }: BottomNavProps) 
   const navItems = [
     { path: "/assignments", icon: List, label: "Assignments" },
     { path: "/downloads", icon: Download, label: "Downloads" },
-    { path: "/profile", icon: User, label: "Profile" },
     ...(isAdmin ? [{ path: "/admin", icon: Settings, label: "Admin" }] : []),
   ];
 

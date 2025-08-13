@@ -72,7 +72,7 @@ export default function Player() {
             <p className="text-slate-600">Content not found.</p>
           </div>
         </main>
-        <BottomNav currentPath={location} onNavigate={handleNavigation} isAdmin={user?.isAdmin} />
+        <BottomNav currentPath={location} onNavigate={handleNavigation} isAdmin={user?.isAdmin || false} />
       </div>
     );
   }
@@ -93,7 +93,7 @@ export default function Player() {
         />
       </main>
 
-      <BottomNav currentPath={location} onNavigate={handleNavigation} isAdmin={user?.isAdmin} />
+      <BottomNav currentPath={location} onNavigate={handleNavigation} isAdmin={user?.isAdmin || false} />
     </div>
   );
 }

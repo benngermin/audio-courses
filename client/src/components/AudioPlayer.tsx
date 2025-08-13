@@ -2,6 +2,9 @@ import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Progress } from "@/components/ui/progress";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
   ArrowLeft, 
   Play, 
@@ -14,7 +17,9 @@ import {
   Download,
   Share,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Settings2,
+  FastForward
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -53,6 +58,8 @@ export function AudioPlayer({
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [lastProgressUpdate, setLastProgressUpdate] = useState(0);
+  const [autoAdvance, setAutoAdvance] = useState(true);
+  const [showSettings, setShowSettings] = useState(false);
 
   const progressMutation = useMutation({
     mutationFn: async (data: { chapterId: string; currentTime: number; isCompleted: boolean }) => {
@@ -97,11 +104,11 @@ export function AudioPlayer({
       currentTime: duration,
       isCompleted: true,
     });
-    // Auto-advance to next chapter if available
-    if (hasNext && onNext) {
+    // Auto-advance to next chapter if enabled and available
+    if (autoAdvance && hasNext && onNext) {
       onNext();
     }
-  }, [chapter.id, progressMutation, hasNext, onNext]);
+  }, [chapter.id, progressMutation, autoAdvance, hasNext, onNext]);
 
   const handleLoadedMetadata = useCallback((audioDuration: number) => {
     // Update chapter duration if not set
@@ -135,7 +142,7 @@ export function AudioPlayer({
   });
 
   // Load saved progress on chapter change
-  const { data: progress } = useQuery({
+  const { data: progress } = useQuery<{ currentTime: number; isCompleted: boolean }>({
     queryKey: ["/api/progress", chapter.id],
     enabled: !!chapter.id,
   });
@@ -343,7 +350,7 @@ export function AudioPlayer({
       </div>
 
       {/* Chapter Navigation */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-6">
         <Button
           variant="ghost"
           onClick={onPrevious}
@@ -364,6 +371,67 @@ export function AudioPlayer({
           <ChevronRight className="h-4 w-4" />
         </Button>
       </div>
+
+      {/* Playback Settings */}
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base flex items-center justify-between">
+            <span className="flex items-center gap-2">
+              <Settings2 className="h-4 w-4" />
+              Playback Settings
+            </span>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowSettings(!showSettings)}
+              className="h-6 px-2"
+            >
+              <ChevronDown className={`h-4 w-4 transition-transform ${showSettings ? 'rotate-180' : ''}`} />
+            </Button>
+          </CardTitle>
+        </CardHeader>
+        {showSettings && (
+          <CardContent className="space-y-4 pt-0">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <FastForward className="h-4 w-4 text-slate-600" />
+                <Label htmlFor="playback-speed" className="text-sm">Playback Speed</Label>
+              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm" className="flex items-center gap-2">
+                    <span>{playbackRate}x</span>
+                    <ChevronDown className="h-3 w-3" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  {playbackSpeeds.map((speed) => (
+                    <DropdownMenuItem
+                      key={speed}
+                      onClick={() => changePlaybackRate(speed)}
+                      className={speed === playbackRate ? "bg-primary/10" : ""}
+                    >
+                      {speed}x {speed === 1 && "(Normal)"}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <Label htmlFor="auto-advance" className="text-sm flex items-center gap-2">
+                <SkipForward className="h-4 w-4 text-slate-600" />
+                Auto-advance to next chapter
+              </Label>
+              <Switch
+                id="auto-advance"
+                checked={autoAdvance}
+                onCheckedChange={setAutoAdvance}
+              />
+            </div>
+          </CardContent>
+        )}
+      </Card>
     </div>
   );
 }

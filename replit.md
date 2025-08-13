@@ -4,6 +4,17 @@
 
 This is a mobile-first audio learning platform built for The Institutes educational content consumption. Users access the platform directly from Moodle LMS via SSO authentication, immediately landing on their course assignments page. The application allows users to consume course materials through audio playback, with features like offline downloads, progress tracking, and automatic authentication. The system is designed to support learning on-the-go scenarios such as commuting or exercising.
 
+## Recent Changes (August 13, 2025)
+
+- **Removed Profile Page**: User profile functionality has been removed entirely from the application
+- **Reorganized Settings**: 
+  - Offline storage settings moved to the Downloads page for better context
+  - Playback speed and auto-advance settings moved to the Player screen for immediate access during listening
+- **Updated Navigation**: 
+  - Removed Profile from bottom navigation
+  - Added user menu with sign-out option to the app header
+  - Bottom navigation now only shows Assignments, Downloads, and Admin (for admin users)
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.

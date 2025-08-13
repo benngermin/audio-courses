@@ -1,13 +1,15 @@
 import { useState } from "react";
-import { ChevronDown, Headphones } from "lucide-react";
+import { ChevronDown, Headphones, LogOut, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "@/hooks/useAuth";
 import type { Course, Assignment } from "@shared/schema";
 
 interface AppHeaderProps {
@@ -17,10 +19,20 @@ interface AppHeaderProps {
 }
 
 export function AppHeader({ currentCourse, currentAssignment, onAssignmentChange }: AppHeaderProps) {
+  const { user } = useAuth();
   const { data: assignments = [] } = useQuery<Assignment[]>({
     queryKey: ["/api/courses", currentCourse?.id, "assignments"],
     enabled: !!currentCourse?.id,
   });
+
+  const handleLogout = () => {
+    window.location.href = "/api/logout";
+  };
+
+  const getInitials = (firstName?: string, lastName?: string) => {
+    if (!firstName && !lastName) return "U";
+    return `${firstName?.[0] || ""}${lastName?.[0] || ""}`.toUpperCase();
+  };
 
   return (
     <header className="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-50">
@@ -40,8 +52,8 @@ export function AppHeader({ currentCourse, currentAssignment, onAssignmentChange
             </div>
           </div>
           
-          {/* Assignment Dropdown - Right */}
-          <div className="flex-1 flex justify-end">
+          {/* Assignment Dropdown and User Menu - Right */}
+          <div className="flex-1 flex justify-end items-center gap-2">
             {assignments.length > 0 && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -75,6 +87,29 @@ export function AppHeader({ currentCourse, currentAssignment, onAssignmentChange
                 </DropdownMenuContent>
               </DropdownMenu>
             )}
+            
+            {/* User Menu */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="h-8 w-8 rounded-full bg-primary/10 hover:bg-primary/20 text-primary font-semibold"
+                >
+                  {getInitials(user?.firstName || undefined, user?.lastName || undefined)}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <div className="px-2 py-1.5">
+                  <p className="text-sm font-medium">{user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : "User"}</p>
+                  <p className="text-xs text-muted-foreground">{user?.email || ""}</p>
+                </div>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout} className="text-red-600 cursor-pointer">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Sign Out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>
