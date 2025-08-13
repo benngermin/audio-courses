@@ -23,6 +23,14 @@ This is a mobile-first audio learning platform built for The Institutes educatio
   - Cleaner, more focused user interface
   - Direct chapter access from main assignments page
   - Single-page flow with dropdown-based assignment selection
+- **Enhanced Download UX**:
+  - Removed individual download buttons from each chapter
+  - Added single "Download All Chapters" button at assignment level
+  - Shows download progress with real-time updates
+  - Downloaded chapters display blue "Offline" indicator
+  - Users can delete individual chapter downloads with trash icon
+  - Smart download status: shows "All downloaded" when complete
+  - Mobile-responsive download controls
 
 ## User Preferences
 
