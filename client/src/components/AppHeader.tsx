@@ -40,32 +40,32 @@ export function AppHeader({ currentCourse, currentAssignment, onAssignmentChange
   };
 
   return (
-    <header className="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-50 h-20">
-      <div className="max-w-screen-xl mx-auto px-4 h-full flex items-center">
+    <header className="bg-card shadow-sm border-b border-border sticky top-0 z-50 h-20">
+      <div className="w-full px-4 sm:px-6 h-full flex items-center">
         <div className="flex items-center justify-between w-full">
-          {/* Course Name - Left */}
-          <div className="flex-1">
-            <h1 className="text-[18px] font-semibold text-slate-800 truncate" style={{ fontFamily: '"Open Sans", sans-serif' }}>
+          {/* Course Name - Left (maintains size, truncates on smaller screens) */}
+          <div className="flex-1 min-w-0 pr-4">
+            <h1 className="text-2xl font-medium text-foreground truncate leading-tight" style={{ lineHeight: '1.3' }}>
               {currentCourse ? (currentCourse.code ? `${currentCourse.code}: ${currentCourse.name}` : currentCourse.name) : "Audio Learning Platform"}
             </h1>
           </div>
           
-          {/* Logo - Center */}
+          {/* Logo - Center (Fixed Position) */}
           <div className="flex-shrink-0 px-4">
-            <img src={NewLogo} alt="Company Logo" className="w-10 h-10 object-contain" />
+            <img src={NewLogo} alt="The Institutes" className="w-12 h-12 object-contain" />
           </div>
           
           {/* Right side - Logout, Admin, Assignment Dropdown */}
-          <div className="flex-1 flex justify-end items-center gap-2">
+          <div className="flex-1 flex justify-end items-center gap-2 pl-4">
             {/* Logout Button */}
             <Button
               onClick={handleLogout}
               variant="ghost"
               size="icon"
-              className="h-9 w-9 rounded-lg hover:bg-gray-100"
+              className="h-9 w-9 rounded-lg hover:bg-accent"
               title="Logout"
             >
-              <LogOut className="h-4 w-4 text-slate-600" />
+              <LogOut className="h-4 w-4 text-muted-foreground" />
             </Button>
             
             {/* Admin Button - Only visible to admin users */}
@@ -73,7 +73,7 @@ export function AppHeader({ currentCourse, currentAssignment, onAssignmentChange
               <Button
                 onClick={handleAdminNavigation}
                 variant="outline"
-                className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-700 bg-gray-50 rounded-lg hover:bg-gray-100"
+                className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-foreground bg-accent rounded-lg hover:bg-accent/80"
               >
                 <Settings className="h-4 w-4" />
                 <span className="hidden sm:inline">
@@ -88,12 +88,12 @@ export function AppHeader({ currentCourse, currentAssignment, onAssignmentChange
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="outline"
-                    className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-700 bg-gray-50 rounded-lg hover:bg-gray-100"
+                    className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-foreground bg-accent rounded-lg hover:bg-accent/80 min-w-0"
                   >
-                    <span className="truncate max-w-48">
+                    <span className="truncate max-w-[120px] sm:max-w-[200px]">
                       {currentAssignment?.title || "Select Assignment"}
                     </span>
-                    <ChevronDown className="h-4 w-4" />
+                    <ChevronDown className="h-4 w-4 flex-shrink-0" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-64">
