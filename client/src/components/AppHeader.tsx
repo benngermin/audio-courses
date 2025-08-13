@@ -11,7 +11,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import type { Course, Assignment } from "@shared/schema";
-import TILogo from "@/assets/ti-logo.svg";
+import NewLogo from "@/assets/new-logo.png";
 
 interface AppHeaderProps {
   currentCourse?: Course;
@@ -48,7 +48,7 @@ export function AppHeader({ currentCourse, currentAssignment, onAssignmentChange
           
           {/* Logo - Center */}
           <div className="flex-shrink-0 px-4">
-            <img src={TILogo} alt="TI Logo" className="w-10 h-10 text-primary" />
+            <img src={NewLogo} alt="Company Logo" className="w-10 h-10 object-contain" />
           </div>
           
           {/* Assignment Dropdown and User Menu - Right */}
