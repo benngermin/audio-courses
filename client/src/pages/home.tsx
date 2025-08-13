@@ -30,6 +30,10 @@ export default function Home() {
     chapters: Chapter[];
   } | null>(null);
 
+  // Get course ID from URL parameters or default to first course
+  const urlParams = new URLSearchParams(window.location.search);
+  const courseIdFromUrl = urlParams.get('courseId');
+
   const { data: courses = [], isLoading: coursesLoading, error: coursesError } = useQuery<Course[]>({
     queryKey: ["/api/courses"],
   });
@@ -44,12 +48,17 @@ export default function Home() {
     enabled: !!currentAssignment?.id,
   });
 
-  // Auto-select first course if available
+  // Auto-select course based on URL parameter or first available
   useEffect(() => {
     if (courses.length > 0 && !currentCourse) {
-      setCurrentCourse(courses[0]);
+      const courseToSelect = courseIdFromUrl 
+        ? courses.find(c => c.id === courseIdFromUrl) 
+        : courses[0];
+      if (courseToSelect) {
+        setCurrentCourse(courseToSelect);
+      }
     }
-  }, [courses, currentCourse]);
+  }, [courses, currentCourse, courseIdFromUrl]);
 
   // Auto-select first assignment if available
   useEffect(() => {
@@ -262,7 +271,7 @@ export default function Home() {
       <BottomNav
         currentPath={location}
         onNavigate={handleNavigation}
-        isAdmin={user?.isAdmin}
+        isAdmin={user?.isAdmin || false}
       />
     </div>
   );

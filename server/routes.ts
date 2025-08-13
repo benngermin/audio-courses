@@ -27,6 +27,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Health check endpoint (no auth required for testing)
+  app.get('/api/health', async (req, res) => {
+    const courses = await storage.getCourses();
+    res.json({ 
+      status: 'ok', 
+      coursesAvailable: courses.length,
+      timestamp: new Date().toISOString()
+    });
+  });
+
   // Course routes
   app.get('/api/courses', isAuthenticated, async (req, res) => {
     try {

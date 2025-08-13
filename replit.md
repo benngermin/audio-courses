@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is a mobile-first audio learning platform built for educational content consumption. The application allows users to access course materials through audio playback, with features like offline downloads, progress tracking, and user authentication. The system is designed to support learning on-the-go scenarios such as commuting or exercising.
+This is a mobile-first audio learning platform built for The Institutes educational content consumption. Users access the platform directly from Moodle LMS via SSO authentication, immediately landing on their course assignments page. The application allows users to consume course materials through audio playback, with features like offline downloads, progress tracking, and automatic authentication. The system is designed to support learning on-the-go scenarios such as commuting or exercising.
 
 ## User Preferences
 
@@ -33,9 +33,11 @@ Preferred communication style: Simple, everyday language.
   - Sync logs for content updates from external sources
 
 ### Authentication System
-- **Replit Auth Integration**: OAuth-based authentication using OpenID Connect
+- **Replit Auth Integration**: OAuth-based authentication using OpenID Connect with automatic SSO
+- **Direct Course Access**: Users arrive from Moodle LMS with course context, no landing page needed
 - **Session Management**: Secure session storage with PostgreSQL backend
 - **Role-based Access**: Admin users have additional content management capabilities
+- **Auto-Authentication**: Automatic redirect to SSO login when not authenticated
 
 ### Audio Management
 - **Progressive Web App**: Service worker for offline functionality and audio caching

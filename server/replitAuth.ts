@@ -72,6 +72,8 @@ export async function setupAuth(app: Express) {
   app.use(passport.initialize());
   app.use(passport.session());
 
+
+
   const config = await getOidcConfig();
 
   const verify: VerifyFunction = async (
@@ -102,14 +104,22 @@ export async function setupAuth(app: Express) {
   passport.deserializeUser((user: Express.User, cb) => cb(null, user));
 
   app.get("/api/login", (req, res, next) => {
-    passport.authenticate(`replitauth:${req.hostname}`, {
+    // Find the right strategy based on hostname or use the first available
+    const domains = process.env.REPLIT_DOMAINS!.split(",");
+    const strategyDomain = domains.includes(req.hostname) ? req.hostname : domains[0];
+    
+    passport.authenticate(`replitauth:${strategyDomain}`, {
       prompt: "login consent",
       scope: ["openid", "email", "profile", "offline_access"],
     })(req, res, next);
   });
 
   app.get("/api/callback", (req, res, next) => {
-    passport.authenticate(`replitauth:${req.hostname}`, {
+    // Find the right strategy based on hostname or use the first available
+    const domains = process.env.REPLIT_DOMAINS!.split(",");
+    const strategyDomain = domains.includes(req.hostname) ? req.hostname : domains[0];
+    
+    passport.authenticate(`replitauth:${strategyDomain}`, {
       successReturnToOrRedirect: "/",
       failureRedirect: "/api/login",
     })(req, res, next);
