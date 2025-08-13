@@ -46,14 +46,6 @@ export function ChapterList({ assignment, onBack, onChapterSelect, currentlyPlay
   if (isLoading) {
     return (
       <div className="py-6">
-        <Button
-          variant="ghost"
-          onClick={onBack}
-          className="flex items-center gap-2 text-primary font-medium mb-4 hover:text-primary-dark"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to Assignments
-        </Button>
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-slate-800 mb-2">Loading...</h2>
         </div>
@@ -78,15 +70,6 @@ export function ChapterList({ assignment, onBack, onChapterSelect, currentlyPlay
 
   return (
     <div className="py-6">
-      <Button
-        variant="ghost"
-        onClick={onBack}
-        className="flex items-center gap-2 text-primary font-medium mb-4 hover:text-primary-dark"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Back to Assignments
-      </Button>
-      
       <div className="mb-6">
         <h2 className="text-2xl font-bold text-slate-800 mb-2">
           {assignment.title}

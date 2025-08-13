@@ -80,7 +80,7 @@ export default function Assignments() {
               <h2 className="text-2xl font-bold text-slate-800 mb-2">
                 {currentAssignment.title}
               </h2>
-              <p className="text-slate-600">Use the drop down in the header to select a different Assignment</p>
+              <p className="text-slate-600">Choose a chapter to begin listening</p>
             </div>
             <ChapterListContent
               assignment={currentAssignment}

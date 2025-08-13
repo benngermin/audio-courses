@@ -6,7 +6,6 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import NotFound from "@/pages/not-found";
-import Home from "@/pages/home";
 import Assignments from "@/pages/assignments";
 import Chapters from "@/pages/chapters";
 import Player from "@/pages/player";
@@ -37,7 +36,7 @@ function Router() {
 
   return (
     <Switch>
-      <Route path="/" component={Home} />
+      <Route path="/" component={Assignments} />
       <Route path="/assignments" component={Assignments} />
       <Route path="/chapters" component={Chapters} />
       <Route path="/player" component={Player} />

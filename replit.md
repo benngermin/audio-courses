@@ -11,15 +11,18 @@ This is a mobile-first audio learning platform built for The Institutes educatio
   - Removed bottom navigation bar completely
   - All navigation now handled through the app header
   - Assignment selection moved to header dropdown for better UX
+  - **Removed "Back to Assignments" button** - navigation is only through dropdown
 - **Assignments Page Enhancement**:
   - Restructured to display chapters directly instead of assignment cards
   - Page title dynamically shows selected assignment name
   - Header dropdown allows switching between assignments
   - Chapter titles used directly instead of generic "Chapter 1, Chapter 2..." naming
+  - **Made assignments page the main landing page** (replaced home page)
 - **Streamlined UI**:
   - Removed bottom padding from all pages since no bottom navigation
   - Cleaner, more focused user interface
   - Direct chapter access from main assignments page
+  - Single-page flow with dropdown-based assignment selection
 
 ## User Preferences
 
