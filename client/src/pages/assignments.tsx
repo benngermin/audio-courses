@@ -210,23 +210,23 @@ function AssignmentHeader({
       </div>
       <div className="flex flex-col sm:flex-row sm:items-center gap-4">
         {!allChaptersDownloaded && (
-          <Button
+          <button
             onClick={() => downloadAllMutation.mutate()}
             disabled={isDownloading}
-            className="flex items-center gap-2 w-full sm:w-auto"
+            className="flex items-center gap-3 px-6 py-3 border-2 border-[#ed7738] rounded-lg bg-[#fef6f3] hover:bg-[#fee8e0] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-medium text-slate-800"
           >
             {isDownloading ? (
               <>
-                <Loader2 className="h-4 w-4 animate-spin" />
-                Downloading...
+                <Loader2 className="h-5 w-5 animate-spin text-[#ed7738]" />
+                <span>Downloading...</span>
               </>
             ) : (
               <>
-                <Download className="h-4 w-4" />
-                Download All
+                <Download className="h-5 w-5 text-[#ed7738]" />
+                <span>Download All</span>
               </>
             )}
-          </Button>
+          </button>
         )}
         {allChaptersDownloaded && (
           <div className="flex items-center gap-2 text-green-600">
