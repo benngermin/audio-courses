@@ -300,7 +300,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Mock audio endpoint for testing - serves a simple WAV file
+  // Mock audio endpoint for testing - serves a WAV file
   // This must be before the catch-all route so it's handled properly
   app.get('/api/audio/:chapterId.mp3', async (req, res) => {
     try {
@@ -338,6 +338,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log(`Generated WAV file of ${wavBuffer.length} bytes for chapter ${chapterId}`);
       
       // Set proper headers for audio streaming
+      // Use audio/wav MIME type for WAV files
       res.setHeader('Content-Type', 'audio/wav');
       res.setHeader('Content-Length', wavBuffer.length.toString());
       res.setHeader('Accept-Ranges', 'bytes');
