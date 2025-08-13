@@ -73,7 +73,7 @@ export function AppHeader({ currentCourse, currentAssignment, onAssignmentChange
               <Button
                 onClick={handleAdminNavigation}
                 variant="outline"
-                className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-foreground bg-accent rounded-lg hover:bg-accent/80"
+                className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-foreground bg-white border border-border rounded-lg hover:bg-muted shadow-sm"
               >
                 <Settings className="h-4 w-4" />
                 <span className="hidden sm:inline">
@@ -88,12 +88,12 @@ export function AppHeader({ currentCourse, currentAssignment, onAssignmentChange
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="outline"
-                    className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-foreground bg-accent rounded-lg hover:bg-accent/80 min-w-0"
+                    className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-foreground bg-white border border-border rounded-lg hover:bg-muted min-w-0 shadow-sm"
                   >
                     <span className="truncate max-w-[120px] sm:max-w-[200px]">
                       {currentAssignment?.title || "Select Assignment"}
                     </span>
-                    <ChevronDown className="h-4 w-4 flex-shrink-0" />
+                    <ChevronDown className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-64">
