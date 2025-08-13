@@ -79,7 +79,10 @@ export default function Assignments() {
       <main className="max-w-screen-xl mx-auto px-4">
         {currentAssignment ? (
           <div className="py-6">
-            <AssignmentHeader assignment={currentAssignment} />
+            <AssignmentHeader 
+              assignment={currentAssignment} 
+              onChapterSelect={handleChapterSelect}
+            />
             <ChapterListContent
               assignment={currentAssignment}
               onChapterSelect={handleChapterSelect}
@@ -99,7 +102,13 @@ export default function Assignments() {
 }
 
 // New component for assignment header with download all functionality
-function AssignmentHeader({ assignment }: { assignment: Assignment }) {
+function AssignmentHeader({ 
+  assignment, 
+  onChapterSelect 
+}: { 
+  assignment: Assignment;
+  onChapterSelect: (chapter: Chapter) => void;
+}) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
@@ -180,12 +189,25 @@ function AssignmentHeader({ assignment }: { assignment: Assignment }) {
   
   const isDownloading = downloadAllMutation.isPending || downloadingChapters.length > 0;
   
+  const handlePlayAll = () => {
+    if (chapters.length > 0) {
+      onChapterSelect(chapters[0]); // Start with first chapter
+    }
+  };
+
   return (
     <div className="mb-6">
-      <div className="mb-4">
+      <div className="flex items-center justify-between mb-4">
         <h2 className="text-2xl font-bold text-slate-800">
           {assignment.title}
         </h2>
+        <Button
+          onClick={handlePlayAll}
+          className="w-14 h-14 rounded-full bg-green-500 hover:bg-green-600 flex items-center justify-center p-0 shadow-lg hover:shadow-xl transition-all duration-200"
+          disabled={chapters.length === 0}
+        >
+          <Play className="h-6 w-6 text-white ml-0.5" fill="currentColor" />
+        </Button>
       </div>
       <div className="flex flex-col sm:flex-row sm:items-center gap-4">
         {!allChaptersDownloaded && (
