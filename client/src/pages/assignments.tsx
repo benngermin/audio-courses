@@ -182,53 +182,50 @@ function AssignmentHeader({ assignment }: { assignment: Assignment }) {
   
   return (
     <div className="mb-6">
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-        <div className="flex-1">
-          <h2 className="text-2xl font-bold text-slate-800 mb-2">
-            {assignment.title}
-          </h2>
-          <p className="text-slate-600">Choose a chapter to begin listening</p>
-        </div>
-        <div className="flex flex-col items-start sm:items-end gap-2">
-          {!allChaptersDownloaded && (
-            <Button
-              onClick={() => downloadAllMutation.mutate()}
-              disabled={isDownloading}
-              className="flex items-center gap-2 w-full sm:w-auto"
-            >
-              {isDownloading ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Downloading...
-                </>
-              ) : (
-                <>
-                  <Download className="h-4 w-4" />
-                  Download All
-                </>
-              )}
-            </Button>
-          )}
-          {allChaptersDownloaded && (
-            <div className="flex items-center gap-2 text-green-600">
-              <CheckCircle2 className="h-5 w-5" />
-              <span className="text-sm font-medium">All downloaded</span>
-            </div>
-          )}
-          {someChaptersDownloaded && !allChaptersDownloaded && (
-            <div className="text-sm text-slate-500">
-              {downloadedChapterIds.filter(id => chapters.some(ch => ch.id === id)).length} of {chapters.length} downloaded
-            </div>
-          )}
-          {isDownloading && (
-            <div className="flex flex-col gap-1 w-full sm:w-48">
-              <Progress value={downloadProgress} className="h-2" />
-              <span className="text-xs text-slate-500">
-                {completedDownloads} of {totalToDownload} chapters
-              </span>
-            </div>
-          )}
-        </div>
+      <div className="mb-4">
+        <h2 className="text-2xl font-bold text-slate-800">
+          {assignment.title}
+        </h2>
+      </div>
+      <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+        {!allChaptersDownloaded && (
+          <Button
+            onClick={() => downloadAllMutation.mutate()}
+            disabled={isDownloading}
+            className="flex items-center gap-2 w-full sm:w-auto"
+          >
+            {isDownloading ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Downloading...
+              </>
+            ) : (
+              <>
+                <Download className="h-4 w-4" />
+                Download All
+              </>
+            )}
+          </Button>
+        )}
+        {allChaptersDownloaded && (
+          <div className="flex items-center gap-2 text-green-600">
+            <CheckCircle2 className="h-5 w-5" />
+            <span className="text-sm font-medium">All downloaded</span>
+          </div>
+        )}
+        {someChaptersDownloaded && !allChaptersDownloaded && (
+          <div className="text-sm text-slate-500">
+            {downloadedChapterIds.filter(id => chapters.some(ch => ch.id === id)).length} of {chapters.length} downloaded
+          </div>
+        )}
+        {isDownloading && (
+          <div className="flex flex-col gap-1 flex-1 sm:max-w-xs">
+            <Progress value={downloadProgress} className="h-2" />
+            <span className="text-xs text-slate-500">
+              {completedDownloads} of {totalToDownload} chapters
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );
