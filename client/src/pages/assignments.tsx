@@ -196,17 +196,19 @@ function AssignmentHeader({
   };
 
   return (
-    <div className="mb-6">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl font-bold text-slate-800">
-          {assignment.title}
-        </h2>
+    <div className="mb-8">
+      <div className="flex items-start gap-6 mb-6">
+        <div className="flex-1">
+          <h2 className="text-2xl font-bold text-slate-800 mb-1">
+            {assignment.title}
+          </h2>
+        </div>
         <Button
           onClick={handlePlayAll}
-          className="w-14 h-14 rounded-full bg-[#ed7738] hover:bg-[#d96429] flex items-center justify-center p-0 shadow-lg hover:shadow-xl transition-all duration-200"
+          className="w-20 h-20 rounded-full bg-[#ed7738] hover:bg-[#d96429] flex items-center justify-center p-0 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 flex-shrink-0"
           disabled={chapters.length === 0}
         >
-          <Play className="h-6 w-6 text-white ml-0.5" fill="currentColor" />
+          <Play className="h-8 w-8 text-white ml-1" fill="currentColor" />
         </Button>
       </div>
       <div className="flex flex-col sm:flex-row sm:items-center gap-4">
