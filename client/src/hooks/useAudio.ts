@@ -19,8 +19,9 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
 
   // Initialize audio element
   useEffect(() => {
-    const audio = new Audio(src);
+    const audio = new Audio();
     audio.preload = "metadata";
+    audio.crossOrigin = "anonymous";
     audioRef.current = audio;
 
     const handleTimeUpdate = () => {
@@ -53,12 +54,32 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
       setIsLoading(false);
     };
 
+    const handleError = (e: Event) => {
+      console.error("Audio error:", e);
+      console.error("Audio src:", audio.src);
+      console.error("Audio error code:", audio.error?.code);
+      console.error("Audio error message:", audio.error?.message);
+      setIsLoading(false);
+      setIsPlaying(false);
+    };
+
+    const handleLoadStart = () => {
+      setIsLoading(true);
+    };
+
     audio.addEventListener("timeupdate", handleTimeUpdate);
     audio.addEventListener("loadedmetadata", handleLoadedMetadata);
     audio.addEventListener("ended", handleEnded);
     audio.addEventListener("canplay", handleCanPlay);
     audio.addEventListener("waiting", handleWaiting);
     audio.addEventListener("canplaythrough", handleCanPlayThrough);
+    audio.addEventListener("error", handleError);
+    audio.addEventListener("loadstart", handleLoadStart);
+
+    // Set src after all event listeners are attached
+    if (src) {
+      audio.src = src;
+    }
 
     return () => {
       audio.removeEventListener("timeupdate", handleTimeUpdate);
@@ -67,7 +88,10 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
       audio.removeEventListener("canplay", handleCanPlay);
       audio.removeEventListener("waiting", handleWaiting);
       audio.removeEventListener("canplaythrough", handleCanPlayThrough);
+      audio.removeEventListener("error", handleError);
+      audio.removeEventListener("loadstart", handleLoadStart);
       audio.pause();
+      audio.src = "";
     };
   }, [src, onTimeUpdate, onEnded, onLoadedMetadata]);
 
