@@ -200,6 +200,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Admin routes
+  
+  // Admin setup route - helps identify user for admin setup
+  app.get('/api/admin/setup-info', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      res.json({ 
+        userId,
+        email: user?.email,
+        isAdmin: user?.isAdmin,
+        setupCommand: `tsx server/scripts/setAdmin.ts ${userId}`
+      });
+    } catch (error) {
+      console.error("Error fetching setup info:", error);
+      res.status(500).json({ message: "Failed to fetch setup info" });
+    }
+  });
+  
   app.post('/api/admin/sync', isAuthenticated, async (req: any, res) => {
     try {
       const user = await storage.getUser(req.user.claims.sub);
@@ -207,7 +225,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Admin access required" });
       }
 
-      await storage.createSyncLog('in_progress', 'Starting sync from Bubble API');
+      await storage.createSyncLog('in_progress', 'Starting sync from content repo API');
       
       try {
         await bubbleApiService.syncContent();
@@ -235,6 +253,55 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching sync status:", error);
       res.status(500).json({ message: "Failed to fetch sync status" });
+    }
+  });
+
+  // Upload chapter audio endpoint
+  app.post('/api/admin/chapters/:chapterId/upload-audio', isAuthenticated, async (req: any, res) => {
+    try {
+      const user = await storage.getUser(req.user.claims.sub);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { audioUrl, duration } = req.body;
+      const chapterId = req.params.chapterId;
+
+      const updatedChapter = await storage.updateChapter(chapterId, {
+        audioUrl,
+        duration
+      });
+
+      res.json(updatedChapter);
+    } catch (error) {
+      console.error("Error uploading audio:", error);
+      res.status(500).json({ message: "Failed to upload audio" });
+    }
+  });
+
+  // Batch update chapters
+  app.post('/api/admin/chapters/batch-update', isAuthenticated, async (req: any, res) => {
+    try {
+      const user = await storage.getUser(req.user.claims.sub);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { chapters } = req.body;
+      const results = [];
+
+      for (const chapter of chapters) {
+        const updated = await storage.updateChapter(chapter.id, {
+          audioUrl: chapter.audioUrl,
+          duration: chapter.duration
+        });
+        results.push(updated);
+      }
+
+      res.json(results);
+    } catch (error) {
+      console.error("Error batch updating chapters:", error);
+      res.status(500).json({ message: "Failed to batch update chapters" });
     }
   });
 

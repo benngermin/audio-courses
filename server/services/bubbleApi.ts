@@ -25,13 +25,15 @@ interface BubbleChapter {
 class BubbleApiService {
   private apiKey: string;
   private baseUrl: string;
+  private contentRepoUrl: string;
 
   constructor() {
     this.apiKey = process.env.BUBBLE_API_KEY || process.env.VITE_BUBBLE_API_KEY || "";
     this.baseUrl = process.env.BUBBLE_API_URL || process.env.VITE_BUBBLE_API_URL || "https://api.bubble.io";
+    this.contentRepoUrl = process.env.CONTENT_REPO_URL || "https://api.theinstitutes.org/content";
     
     if (!this.apiKey) {
-      console.warn("Bubble API key not found. Content sync will not work.");
+      console.warn("Content repo API key not found. Content sync will require API key configuration.");
     }
   }
 

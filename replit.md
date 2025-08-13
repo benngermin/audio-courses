@@ -6,6 +6,18 @@ This is a mobile-first audio learning platform built for The Institutes educatio
 
 ## Recent Changes (August 13, 2025)
 
+- **Admin Dashboard Implementation**:
+  - Created comprehensive admin panel accessible at `/admin`
+  - Admin users can upload course audio from content repository API
+  - Course browsing with expandable assignments and chapters view
+  - Real-time audio upload status indicators for each chapter
+  - Content sync functionality from The Institutes content repository
+  - Admin access granted to user 44064638 (kahn@theinstitutes.org)
+- **Enhanced Content Management**:
+  - Added BubbleApiService for content repository integration
+  - Implemented admin API routes for content syncing and audio uploads
+  - Created setAdmin.ts script for granting admin privileges
+  - Added sync status monitoring with timestamp tracking
 - **Simplified Navigation Architecture**: 
   - Removed Downloads page entirely from the application
   - Removed bottom navigation bar completely
@@ -18,11 +30,6 @@ This is a mobile-first audio learning platform built for The Institutes educatio
   - Header dropdown allows switching between assignments
   - Chapter titles used directly instead of generic "Chapter 1, Chapter 2..." naming
   - **Made assignments page the main landing page** (replaced home page)
-- **Streamlined UI**:
-  - Removed bottom padding from all pages since no bottom navigation
-  - Cleaner, more focused user interface
-  - Direct chapter access from main assignments page
-  - Single-page flow with dropdown-based assignment selection
 - **Enhanced Download UX**:
   - Removed individual download buttons from each chapter
   - Added single "Download All Chapters" button at assignment level
