@@ -7,7 +7,6 @@ import { useLocation } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Play, Pause, Download, ChevronRight, CheckCircle, CheckCircle2, Trash2, Loader2 } from "lucide-react";
-import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import type { Course, Assignment, Chapter, UserProgress, DownloadedContent } from "@shared/schema";
@@ -240,14 +239,7 @@ function AssignmentHeader({
             {downloadedChapterIds.filter(id => chapters.some(ch => ch.id === id)).length} of {chapters.length} downloaded
           </div>
         )}
-        {isDownloading && (
-          <div className="flex flex-col gap-1 flex-1 sm:max-w-xs">
-            <Progress value={downloadProgress} className="h-2" />
-            <span className="text-xs text-slate-500">
-              {completedDownloads} of {totalToDownload} chapters
-            </span>
-          </div>
-        )}
+
       </div>
     </div>
   );
