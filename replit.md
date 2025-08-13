@@ -18,6 +18,11 @@ This is a mobile-first audio learning platform built for The Institutes educatio
   - Implemented admin API routes for content syncing and audio uploads
   - Created setAdmin.ts script for granting admin privileges
   - Added sync status monitoring with timestamp tracking
+- **Admin Navigation**:
+  - Added admin-only navigation button in app header
+  - Admin users see "Admin" button to access dashboard
+  - From admin dashboard, button changes to "Back to App"
+  - Seamless navigation between admin panel and main app
 - **Simplified Navigation Architecture**: 
   - Removed Downloads page entirely from the application
   - Removed bottom navigation bar completely

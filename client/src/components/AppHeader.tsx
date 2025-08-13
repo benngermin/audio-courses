@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronDown, LogOut, User } from "lucide-react";
+import { ChevronDown, LogOut, User, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
+import { useLocation } from "wouter";
 import type { Course, Assignment } from "@shared/schema";
 import NewLogo from "@/assets/new-logo.png";
 
@@ -21,6 +22,7 @@ interface AppHeaderProps {
 
 export function AppHeader({ currentCourse, currentAssignment, onAssignmentChange }: AppHeaderProps) {
   const { user } = useAuth();
+  const [location, navigate] = useLocation();
   const { data: assignments = [] } = useQuery<Assignment[]>({
     queryKey: ["/api/courses", currentCourse?.id, "assignments"],
     enabled: !!currentCourse?.id,
@@ -28,6 +30,14 @@ export function AppHeader({ currentCourse, currentAssignment, onAssignmentChange
 
   const handleLogout = () => {
     window.location.href = "/api/logout";
+  };
+
+  const handleAdminNavigation = () => {
+    if (location === "/admin") {
+      navigate("/assignments");
+    } else {
+      navigate("/admin");
+    }
   };
 
   const getInitials = (firstName?: string, lastName?: string) => {
@@ -87,7 +97,52 @@ export function AppHeader({ currentCourse, currentAssignment, onAssignmentChange
               </DropdownMenu>
             )}
             
+            {/* Admin Button - Only visible to admin users */}
+            {user?.isAdmin && (
+              <Button
+                onClick={handleAdminNavigation}
+                variant="outline"
+                className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-700 bg-gray-50 rounded-lg hover:bg-gray-100"
+              >
+                <Settings className="h-4 w-4" />
+                <span className="hidden sm:inline">
+                  {location === "/admin" ? "Back to App" : "Admin"}
+                </span>
+              </Button>
+            )}
             
+            {/* User Menu */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="flex items-center gap-2 px-2 py-1 rounded-lg hover:bg-gray-100"
+                >
+                  {user?.profileImageUrl ? (
+                    <img
+                      src={user.profileImageUrl}
+                      alt="Profile"
+                      className="h-8 w-8 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="h-8 w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-medium">
+                      {getInitials(user?.firstName, user?.lastName)}
+                    </div>
+                  )}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuItem disabled className="font-medium">
+                  <User className="mr-2 h-4 w-4" />
+                  {user?.email}
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-red-600">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Logout
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>
