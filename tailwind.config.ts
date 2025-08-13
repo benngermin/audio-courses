@@ -68,6 +68,31 @@ export default {
         serif: ["var(--font-serif)", "Georgia", "serif"],
         mono: ["var(--font-mono)", "Menlo", "monospace"],
       },
+      spacing: {
+        'xs': 'var(--spacing-xs)',
+        'sm': 'var(--spacing-sm)',
+        'default': 'var(--spacing-default)',
+        'md': 'var(--spacing-md)',
+        'lg': 'var(--spacing-lg)',
+        'xl': 'var(--spacing-xl)',
+      },
+      fontSize: {
+        'xs': 'var(--text-xs)',
+        'sm': 'var(--text-sm)',
+        'base': 'var(--text-base)',
+        'md': 'var(--text-md)',
+        'lg': 'var(--text-lg)',
+        'xl': 'var(--text-xl)',
+        '2xl': 'var(--text-2xl)',
+        '3xl': 'var(--text-3xl)',
+      },
+      transitionDuration: {
+        'colors': 'var(--transition-colors)',
+        'transform': 'var(--transition-transform)',
+      },
+      opacity: {
+        'disabled': 'var(--opacity-disabled)',
+      },
       keyframes: {
         "accordion-down": {
           from: {

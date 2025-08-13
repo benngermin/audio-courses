@@ -254,7 +254,7 @@ export function ExpandedPlayer() {
                   variant="ghost"
                   size="icon"
                   onClick={togglePlay}
-                  className="h-24 w-24 rounded-full bg-primary hover:bg-primary-dark text-white shadow-lg hover:scale-105 transition-all"
+                  className="h-24 w-24 rounded-full bg-primary hover:bg-primary-dark text-white shadow-play-button hover:scale-105 transition-all"
                 >
                   {isPlaying ? (
                     <Pause className="h-12 w-12" />
@@ -281,8 +281,8 @@ export function ExpandedPlayer() {
               <span>{formatTime(duration)}</span>
             </div>
 
-            {/* Playback controls */}
-            <div className="flex items-center justify-center gap-6 mb-6">
+            {/* Playback controls - 16px gap between buttons per style guide */}
+            <div className="flex items-center justify-center gap-4 mb-6">
               <Button
                 variant="ghost"
                 size="icon"

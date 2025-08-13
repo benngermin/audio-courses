@@ -60,8 +60,24 @@
   --font-serif: Georgia, serif;
   --font-mono: Menlo, monospace;
   
-  /* Spacing and radius */
-  --radius: 0.5rem;
+  /* Spacing System from Style Guide */
+  --spacing-xs: 8px;
+  --spacing-sm: 12px;
+  --spacing-default: 16px;
+  --spacing-md: 24px;
+  --spacing-lg: 32px;
+  --spacing-xl: 48px;
+  
+  /* Border Radius from Style Guide */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-full: 50%;
+  --radius: 0.5rem; /* Default for compatibility */
+  
+  /* Shadow Specifications from Style Guide */
+  --shadow-card: 0px 5px 12px rgba(0, 0, 0, 0.1);
+  --shadow-play-button: 0px 0px 12px rgba(0, 0, 0, 0.1);
   --shadow-2xs: 0px 1px 2px 0px hsl(0 0% 0% / 0.05);
   --shadow-xs: 0px 1px 2px 0px hsl(0 0% 0% / 0.05);
   --shadow-sm: 0px 1px 2px 0px hsl(0 0% 0% / 0.05), 0px 1px 3px 0px hsl(0 0% 0% / 0.1);
@@ -70,8 +86,25 @@
   --shadow-lg: 0px 10px 15px -3px hsl(0 0% 0% / 0.1), 0px 4px 6px -2px hsl(0 0% 0% / 0.05);
   --shadow-xl: 0px 20px 25px -5px hsl(0 0% 0% / 0.1), 0px 10px 10px -5px hsl(0 0% 0% / 0.04);
   --shadow-2xl: 0px 25px 50px -12px hsl(0 0% 0% / 0.25);
+  
+  /* Typography Sizes from Style Guide */
+  --text-xs: 10px;
+  --text-sm: 12px;
+  --text-base: 14px;
+  --text-md: 16px;
+  --text-lg: 18px;
+  --text-xl: 20px;
+  --text-2xl: 24px;
+  --text-3xl: 2rem;
+  
+  /* Typography Tracking */
   --tracking-normal: 0em;
   --spacing: 0.25rem;
+  
+  /* Interactive States from Style Guide */
+  --transition-colors: 0.2s;
+  --transition-transform: 0.3s;
+  --opacity-disabled: 0.5;
 }
 
 .dark {
@@ -132,8 +165,24 @@
   --font-serif: Georgia, serif;
   --font-mono: Menlo, monospace;
   
-  /* Keep same spacing and shadows */
+  /* Keep same spacing system from light mode */
+  --spacing-xs: 8px;
+  --spacing-sm: 12px;
+  --spacing-default: 16px;
+  --spacing-md: 24px;
+  --spacing-lg: 32px;
+  --spacing-xl: 48px;
+  
+  /* Border Radius from Style Guide */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-full: 50%;
   --radius: 0.5rem;
+  
+  /* Shadow Specifications (adjusted for dark mode) */
+  --shadow-card: 0px 5px 12px rgba(0, 0, 0, 0.3);
+  --shadow-play-button: 0px 0px 12px rgba(0, 0, 0, 0.3);
   --shadow-2xs: 0px 1px 2px 0px hsl(0 0% 0% / 0.05);
   --shadow-xs: 0px 1px 2px 0px hsl(0 0% 0% / 0.05);
   --shadow-sm: 0px 1px 2px 0px hsl(0 0% 0% / 0.05), 0px 1px 3px 0px hsl(0 0% 0% / 0.1);
@@ -142,6 +191,25 @@
   --shadow-lg: 0px 10px 15px -3px hsl(0 0% 0% / 0.1), 0px 4px 6px -2px hsl(0 0% 0% / 0.05);
   --shadow-xl: 0px 20px 25px -5px hsl(0 0% 0% / 0.1), 0px 10px 10px -5px hsl(0 0% 0% / 0.04);
   --shadow-2xl: 0px 25px 50px -12px hsl(0 0% 0% / 0.25);
+  
+  /* Typography Sizes from Style Guide */
+  --text-xs: 10px;
+  --text-sm: 12px;
+  --text-base: 14px;
+  --text-md: 16px;
+  --text-lg: 18px;
+  --text-xl: 20px;
+  --text-2xl: 24px;
+  --text-3xl: 2rem;
+  
+  /* Typography Tracking */
+  --tracking-normal: 0em;
+  --spacing: 0.25rem;
+  
+  /* Interactive States from Style Guide */
+  --transition-colors: 0.2s;
+  --transition-transform: 0.3s;
+  --opacity-disabled: 0.5;
 }
 
 @layer base {
@@ -160,7 +228,37 @@
   
   /* Typography styles based on design spec */
   .text-page-header {
-    @apply text-2xl font-medium leading-tight text-foreground;
+    font-size: var(--text-2xl); /* 24px */
+    @apply font-medium leading-tight text-foreground;
+  }
+  
+  .text-section-title {
+    font-size: var(--text-xl); /* 20px */
+    @apply font-medium text-foreground;
+  }
+  
+  .text-chapter-title {
+    font-size: var(--text-lg); /* 18px */
+    @apply font-medium text-foreground;
+  }
+  
+  .text-button {
+    font-size: var(--text-md); /* 16px */
+    @apply font-medium;
+  }
+  
+  .text-dropdown {
+    font-size: var(--text-base); /* 14px */
+  }
+  
+  .text-duration {
+    font-size: var(--text-base); /* 14px */
+    @apply text-muted-foreground;
+  }
+  
+  .text-time-display {
+    font-size: var(--text-xs); /* 10px */
+    @apply text-muted-foreground;
   }
 }
 
@@ -203,5 +301,60 @@
 
   .shadow-custom {
     box-shadow: var(--shadow-lg);
+  }
+  
+  /* Shadow utilities from style guide */
+  .shadow-card {
+    box-shadow: var(--shadow-card);
+  }
+  
+  .shadow-play-button {
+    box-shadow: var(--shadow-play-button);
+  }
+  
+  /* Transition utilities from style guide */
+  .transition-colors-custom {
+    transition: color var(--transition-colors), background-color var(--transition-colors), border-color var(--transition-colors);
+  }
+  
+  .transition-transform-custom {
+    transition: transform var(--transition-transform);
+  }
+  
+  /* Spacing utilities */
+  .gap-xs { gap: var(--spacing-xs); }
+  .gap-sm { gap: var(--spacing-sm); }
+  .gap-default { gap: var(--spacing-default); }
+  .gap-md { gap: var(--spacing-md); }
+  .gap-lg { gap: var(--spacing-lg); }
+  .gap-xl { gap: var(--spacing-xl); }
+  
+  .p-xs { padding: var(--spacing-xs); }
+  .p-sm { padding: var(--spacing-sm); }
+  .p-default { padding: var(--spacing-default); }
+  .p-md { padding: var(--spacing-md); }
+  .p-lg { padding: var(--spacing-lg); }
+  .p-xl { padding: var(--spacing-xl); }
+  
+  /* Border radius utilities */
+  .rounded-sm { border-radius: var(--radius-sm); }
+  .rounded-md { border-radius: var(--radius-md); }
+  .rounded-lg { border-radius: var(--radius-lg); }
+  .rounded-full { border-radius: var(--radius-full); }
+  
+  /* Interactive state utilities */
+  .disabled-opacity {
+    opacity: var(--opacity-disabled);
+  }
+  
+  /* Responsive breakpoints from style guide */
+  @media (max-width: 480px) {
+    .mobile-stack {
+      flex-direction: column;
+    }
+    
+    .mobile-padding {
+      padding: var(--spacing-default);
+    }
   }
 }

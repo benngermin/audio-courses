@@ -245,8 +245,8 @@ export function AudioPlayer({
           />
         </div>
 
-        {/* Main Controls */}
-        <div className="flex items-center justify-center gap-8 mb-6">
+        {/* Main Controls - 16px gap between buttons per style guide */}
+        <div className="flex items-center justify-center gap-4 mb-6">
           <Button
             variant="ghost"
             size="lg"
@@ -259,7 +259,7 @@ export function AudioPlayer({
           <Button
             onClick={togglePlay}
             disabled={isLoading}
-            className="w-16 h-16 bg-primary hover:bg-primary-dark text-white rounded-full shadow-lg hover:scale-105 transition-all"
+            className="w-16 h-16 bg-primary hover:bg-primary-dark text-white rounded-full shadow-play-button hover:scale-105 transition-all"
           >
             {isLoading ? (
               <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
