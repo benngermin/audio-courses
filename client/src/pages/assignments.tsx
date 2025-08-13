@@ -213,7 +213,7 @@ function AssignmentHeader({
           <button
             onClick={() => downloadAllMutation.mutate()}
             disabled={isDownloading}
-            className="flex items-center gap-3 px-6 py-3 border-2 border-[#ed7738] rounded-lg bg-[#fef6f3] hover:bg-[#fee8e0] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-medium text-slate-800"
+            className="flex items-center gap-3 px-6 py-3 border-2 border-[#f5a07c] rounded-lg bg-[#fef6f3] hover:bg-[#fee8e0] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-medium text-slate-800"
           >
             {isDownloading ? (
               <>
@@ -229,10 +229,13 @@ function AssignmentHeader({
           </button>
         )}
         {allChaptersDownloaded && (
-          <div className="flex items-center gap-2 text-green-600">
-            <CheckCircle2 className="h-5 w-5" />
-            <span className="text-sm font-medium">All downloaded</span>
-          </div>
+          <button
+            disabled
+            className="flex items-center gap-3 px-6 py-3 border-2 border-green-400 rounded-lg bg-green-50 font-medium text-green-700 cursor-default"
+          >
+            <CheckCircle2 className="h-5 w-5 text-green-600" />
+            <span>All Downloaded</span>
+          </button>
         )}
         {someChaptersDownloaded && !allChaptersDownloaded && (
           <div className="text-sm text-slate-500">
