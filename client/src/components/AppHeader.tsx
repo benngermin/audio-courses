@@ -1,12 +1,11 @@
 import { useState } from "react";
-import { ChevronDown, LogOut, User, Settings } from "lucide-react";
+import { ChevronDown, LogOut, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
@@ -40,11 +39,6 @@ export function AppHeader({ currentCourse, currentAssignment, onAssignmentChange
     }
   };
 
-  const getInitials = (firstName?: string, lastName?: string) => {
-    if (!firstName && !lastName) return "U";
-    return `${firstName?.[0] || ""}${lastName?.[0] || ""}`.toUpperCase();
-  };
-
   return (
     <header className="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-50 h-20">
       <div className="max-w-screen-xl mx-auto px-4 h-full flex items-center">
@@ -61,8 +55,34 @@ export function AppHeader({ currentCourse, currentAssignment, onAssignmentChange
             <img src={NewLogo} alt="Company Logo" className="w-10 h-10 object-contain" />
           </div>
           
-          {/* Assignment Dropdown and User Menu - Right */}
+          {/* Right side - Logout, Admin, Assignment Dropdown */}
           <div className="flex-1 flex justify-end items-center gap-2">
+            {/* Logout Button */}
+            <Button
+              onClick={handleLogout}
+              variant="ghost"
+              size="icon"
+              className="h-9 w-9 rounded-lg hover:bg-gray-100"
+              title="Logout"
+            >
+              <LogOut className="h-4 w-4 text-slate-600" />
+            </Button>
+            
+            {/* Admin Button - Only visible to admin users */}
+            {user?.isAdmin && (
+              <Button
+                onClick={handleAdminNavigation}
+                variant="outline"
+                className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-700 bg-gray-50 rounded-lg hover:bg-gray-100"
+              >
+                <Settings className="h-4 w-4" />
+                <span className="hidden sm:inline">
+                  {location === "/admin" ? "Back to App" : "Admin"}
+                </span>
+              </Button>
+            )}
+            
+            {/* Assignment Dropdown */}
             {assignments.length > 0 && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -96,53 +116,6 @@ export function AppHeader({ currentCourse, currentAssignment, onAssignmentChange
                 </DropdownMenuContent>
               </DropdownMenu>
             )}
-            
-            {/* Admin Button - Only visible to admin users */}
-            {user?.isAdmin && (
-              <Button
-                onClick={handleAdminNavigation}
-                variant="outline"
-                className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-700 bg-gray-50 rounded-lg hover:bg-gray-100"
-              >
-                <Settings className="h-4 w-4" />
-                <span className="hidden sm:inline">
-                  {location === "/admin" ? "Back to App" : "Admin"}
-                </span>
-              </Button>
-            )}
-            
-            {/* User Menu */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className="flex items-center gap-2 px-2 py-1 rounded-lg hover:bg-gray-100"
-                >
-                  {user?.profileImageUrl ? (
-                    <img
-                      src={user.profileImageUrl}
-                      alt="Profile"
-                      className="h-8 w-8 rounded-full object-cover"
-                    />
-                  ) : (
-                    <div className="h-8 w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-medium">
-                      {getInitials(user?.firstName, user?.lastName)}
-                    </div>
-                  )}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuItem disabled className="font-medium">
-                  <User className="mr-2 h-4 w-4" />
-                  {user?.email}
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-red-600">
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Logout
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
           </div>
         </div>
       </div>
