@@ -40,7 +40,7 @@ export default function Chapters() {
             <p className="text-slate-600">Assignment not found.</p>
           </div>
         </main>
-        <BottomNav currentPath={location} onNavigate={handleNavigation} isAdmin={user?.isAdmin} />
+        <BottomNav currentPath={location} onNavigate={handleNavigation} isAdmin={user?.isAdmin || false} />
       </div>
     );
   }
@@ -57,7 +57,7 @@ export default function Chapters() {
         />
       </main>
 
-      <BottomNav currentPath={location} onNavigate={handleNavigation} isAdmin={user?.isAdmin} />
+      <BottomNav currentPath={location} onNavigate={handleNavigation} isAdmin={user?.isAdmin || false} />
     </div>
   );
 }
