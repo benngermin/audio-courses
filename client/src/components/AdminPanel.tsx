@@ -27,7 +27,6 @@ export function AdminPanel() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [expandedCourse, setExpandedCourse] = useState<string | null>(null);
-  const [adminSetupInfo, setAdminSetupInfo] = useState<any>(null);
 
   const { data: courses = [], isLoading: coursesLoading } = useQuery<Course[]>({
     queryKey: ["/api/courses"],
@@ -38,11 +37,9 @@ export function AdminPanel() {
   });
 
   // Fetch admin setup info
-  useEffect(() => {
-    apiRequest("GET", "/api/admin/setup-info")
-      .then(setAdminSetupInfo)
-      .catch(console.error);
-  }, []);
+  const { data: adminSetupInfo } = useQuery({
+    queryKey: ["/api/admin/setup-info"],
+  });
 
   const syncMutation = useMutation({
     mutationFn: async () => {
