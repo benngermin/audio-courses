@@ -22,6 +22,9 @@ export function ChapterList({ assignment, onBack, onChapterSelect, currentlyPlay
   const { data: chapters = [], isLoading } = useQuery<Chapter[]>({
     queryKey: ["/api/assignments", assignment.id, "chapters"],
   });
+  
+  // Debug log to check chapter data structure
+  console.log("Chapters data:", chapters);
 
   const downloadMutation = useMutation({
     mutationFn: async (chapterId: string) => {

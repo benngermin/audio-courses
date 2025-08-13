@@ -117,6 +117,10 @@ export function AudioPlayer({
     }
   }, [chapter.duration]);
 
+  // Debug logging
+  console.log("AudioPlayer - chapter data:", chapter);
+  console.log("AudioPlayer - audioUrl:", chapter?.audioUrl);
+
   const {
     isPlaying,
     currentTime,
@@ -135,7 +139,7 @@ export function AudioPlayer({
     changeVolume,
     toggleMute,
   } = useAudio({
-    src: chapter.audioUrl,
+    src: chapter.audioUrl || "",
     onTimeUpdate: handleTimeUpdate,
     onEnded: handleEnded,
     onLoadedMetadata: handleLoadedMetadata,

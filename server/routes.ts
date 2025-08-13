@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import { bubbleApiService } from "./services/bubbleApi";
 import { audioService } from "./services/audioService";
+import * as wav from "node-wav";
 import { 
   insertCourseSchema, 
   insertAssignmentSchema, 
@@ -105,6 +106,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/assignments/:assignmentId/chapters', isAuthenticated, async (req, res) => {
     try {
       const chapters = await storage.getChaptersByAssignment(req.params.assignmentId);
+      console.log("API - Fetched chapters:", chapters.map(ch => ({ id: ch.id, title: ch.title, audioUrl: ch.audioUrl })));
       res.json(chapters);
     } catch (error) {
       console.error("Error fetching chapters:", error);
@@ -298,63 +300,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Mock audio endpoint for testing - serves a generated audio file
+  // Mock audio endpoint for testing - serves a simple WAV file
   // This must be before the catch-all route so it's handled properly
   app.get('/api/audio/:chapterId.mp3', async (req, res) => {
     try {
       const chapterId = req.params.chapterId;
       
-      // Create a simple WAV file header and data
+      console.log(`Generating audio for chapter: ${chapterId}`);
+      
+      // Create a simple tone
       const sampleRate = 44100;
-      const duration = 30; // 30 seconds for testing
+      const duration = 5; // 5 seconds for testing
       const samples = sampleRate * duration;
       const amplitude = 0.3;
       
-      // Use different frequencies for different chapters to make them distinguishable
+      // Use different frequencies for different chapters
       const hash = chapterId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-      const baseFrequency = 220 + (hash % 440); // Range from 220Hz to 660Hz
+      const baseFrequency = 300 + (hash % 200); // Range from 300Hz to 500Hz
       
-      // Generate PCM audio data
-      const dataSize = samples * 2; // 16-bit audio = 2 bytes per sample
-      const buffer = Buffer.alloc(dataSize);
+      // Generate PCM audio data (mono)
+      const channelData = new Float32Array(samples);
       
       for (let i = 0; i < samples; i++) {
         const t = i / sampleRate;
-        // Create a simple tone with envelope
-        const envelope = Math.min(1, t * 10) * Math.max(0, 1 - (t / duration) * 0.5);
-        const value = Math.sin(2 * Math.PI * baseFrequency * t) * amplitude * envelope;
-        const sample = Math.floor(value * 32767); // Convert to 16-bit integer
-        buffer.writeInt16LE(sample, i * 2);
+        // Simple sine wave with envelope
+        const envelope = Math.min(1, t * 10) * Math.max(0, 1 - ((t - duration + 0.5) / 0.5));
+        channelData[i] = Math.sin(2 * Math.PI * baseFrequency * t) * amplitude * envelope;
       }
       
-      // Create WAV header
-      const wavHeader = Buffer.alloc(44);
-      wavHeader.write('RIFF', 0);
-      wavHeader.writeUInt32LE(36 + dataSize, 4);
-      wavHeader.write('WAVE', 8);
-      wavHeader.write('fmt ', 12);
-      wavHeader.writeUInt32LE(16, 16); // Subchunk1Size
-      wavHeader.writeUInt16LE(1, 20); // AudioFormat (PCM)
-      wavHeader.writeUInt16LE(1, 22); // NumChannels (mono)
-      wavHeader.writeUInt32LE(sampleRate, 24); // SampleRate
-      wavHeader.writeUInt32LE(sampleRate * 2, 28); // ByteRate
-      wavHeader.writeUInt16LE(2, 32); // BlockAlign
-      wavHeader.writeUInt16LE(16, 34); // BitsPerSample
-      wavHeader.write('data', 36);
-      wavHeader.writeUInt32LE(dataSize, 40);
+      // Create WAV buffer using node-wav
+      const wavBuffer = wav.encode([channelData], {
+        sampleRate: sampleRate,
+        float: false,
+        bitDepth: 16
+      });
       
-      // Combine header and data
-      const audioData = Buffer.concat([wavHeader, buffer]);
+      console.log(`Generated WAV file of ${wavBuffer.length} bytes for chapter ${chapterId}`);
       
       // Set proper headers for audio streaming
       res.setHeader('Content-Type', 'audio/wav');
-      res.setHeader('Content-Length', audioData.length.toString());
+      res.setHeader('Content-Length', wavBuffer.length.toString());
       res.setHeader('Accept-Ranges', 'bytes');
       res.setHeader('Cache-Control', 'public, max-age=3600');
       res.setHeader('Access-Control-Allow-Origin', '*');
       
       // Send the WAV file
-      res.send(audioData);
+      res.send(wavBuffer);
     } catch (error) {
       console.error("Error generating audio:", error);
       res.status(500).json({ message: "Failed to generate audio" });

@@ -43,6 +43,10 @@ export function MiniPlayer() {
     // We'll handle completion in the audio hook
   }, [currentChapter]);
 
+  // Debug logging
+  console.log("MiniPlayer - currentChapter:", currentChapter);
+  console.log("MiniPlayer - audioUrl:", currentChapter?.audioUrl);
+  
   const {
     isPlaying,
     currentTime,

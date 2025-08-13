@@ -20,15 +20,26 @@ export default function Player() {
     enabled: !!assignmentId,
   });
 
-  const { data: chapter } = useQuery<Chapter>({
-    queryKey: ["/api/chapters", chapterId],
-    enabled: !!chapterId,
-  });
-
   const { data: chapters = [] } = useQuery<Chapter[]>({
     queryKey: ["/api/assignments", assignmentId, "chapters"],
     enabled: !!assignmentId,
   });
+
+  // Find the current chapter from the chapters array
+  const chapter = chapters.find(ch => ch.id === chapterId);
+
+  // Debug logging
+  console.log("Player - chapterId:", chapterId);
+  console.log("Player - chapters array:", chapters);
+  console.log("Player - found chapter:", chapter);
+  if (chapter) {
+    console.log("Player - chapter details:", {
+      id: chapter.id,
+      title: chapter.title,
+      audioUrl: chapter.audioUrl,
+      hasAudioUrl: !!chapter.audioUrl
+    });
+  }
 
   const handleNavigation = (path: string) => {
     navigate(path);

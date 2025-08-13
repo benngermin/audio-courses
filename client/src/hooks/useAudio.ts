@@ -19,6 +19,13 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
 
   // Initialize audio element
   useEffect(() => {
+    console.log("Initializing audio with src:", src);
+    if (!src) {
+      console.error("No audio source provided!");
+      setIsLoading(false);
+      return;
+    }
+    
     const audio = new Audio(src);
     audio.preload = "metadata";
     audio.crossOrigin = "anonymous"; // Add CORS support
