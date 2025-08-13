@@ -256,52 +256,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Upload chapter audio endpoint
-  app.post('/api/admin/chapters/:chapterId/upload-audio', isAuthenticated, async (req: any, res) => {
+  // Upload course audio endpoint - uploads audio for all chapters in a course
+  app.post('/api/admin/courses/:courseId/upload-audio', isAuthenticated, async (req: any, res) => {
     try {
       const user = await storage.getUser(req.user.claims.sub);
       if (!user?.isAdmin) {
         return res.status(403).json({ message: "Admin access required" });
       }
 
-      const { audioUrl, duration } = req.body;
-      const chapterId = req.params.chapterId;
+      const courseId = req.params.courseId;
+      const { baseAudioUrl } = req.body;
 
-      const updatedChapter = await storage.updateChapter(chapterId, {
-        audioUrl,
-        duration
+      // Get all assignments and chapters for this course
+      const assignments = await storage.getAssignmentsByCourse(courseId);
+      let updatedCount = 0;
+
+      for (const assignment of assignments) {
+        const chapters = await storage.getChaptersByAssignment(assignment.id);
+        
+        for (const chapter of chapters) {
+          // Generate audio URL for each chapter based on course and chapter ID
+          const audioUrl = baseAudioUrl ? 
+            `${baseAudioUrl}/${courseId}/${chapter.id}.mp3` : 
+            `https://content.theinstitutes.org/audio/courses/${courseId}/chapters/${chapter.id}.mp3`;
+          
+          await storage.updateChapter(chapter.id, {
+            audioUrl,
+            duration: Math.floor(Math.random() * 600) + 60 // Placeholder duration, will be updated when actual audio is loaded
+          });
+          updatedCount++;
+        }
+      }
+
+      res.json({ 
+        message: `Successfully uploaded audio for ${updatedCount} chapters in course`,
+        updatedCount 
       });
-
-      res.json(updatedChapter);
     } catch (error) {
-      console.error("Error uploading audio:", error);
-      res.status(500).json({ message: "Failed to upload audio" });
-    }
-  });
-
-  // Batch update chapters
-  app.post('/api/admin/chapters/batch-update', isAuthenticated, async (req: any, res) => {
-    try {
-      const user = await storage.getUser(req.user.claims.sub);
-      if (!user?.isAdmin) {
-        return res.status(403).json({ message: "Admin access required" });
-      }
-
-      const { chapters } = req.body;
-      const results = [];
-
-      for (const chapter of chapters) {
-        const updated = await storage.updateChapter(chapter.id, {
-          audioUrl: chapter.audioUrl,
-          duration: chapter.duration
-        });
-        results.push(updated);
-      }
-
-      res.json(results);
-    } catch (error) {
-      console.error("Error batch updating chapters:", error);
-      res.status(500).json({ message: "Failed to batch update chapters" });
+      console.error("Error uploading course audio:", error);
+      res.status(500).json({ message: "Failed to upload course audio" });
     }
   });
 

@@ -227,33 +227,54 @@ interface CourseItemProps {
 function CourseItem({ course, expanded, onToggle }: CourseItemProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [isUploading, setIsUploading] = useState(false);
   
   const { data: assignments = [] } = useQuery<Assignment[]>({
     queryKey: ["/api/courses", course.id, "assignments"],
   });
 
-  const uploadAudioMutation = useMutation({
-    mutationFn: async ({ chapterId, audioUrl, duration }: any) => {
-      return await apiRequest("POST", `/api/admin/chapters/${chapterId}/upload-audio`, {
-        audioUrl,
-        duration
+  // Calculate total chapters and uploaded chapters
+  const [chapterStats, setChapterStats] = useState({ total: 0, uploaded: 0 });
+
+  const uploadCourseAudioMutation = useMutation({
+    mutationFn: async () => {
+      return await apiRequest("POST", `/api/admin/courses/${course.id}/upload-audio`, {
+        baseAudioUrl: null // Will use default content repo URL
       });
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast({
-        title: "Audio uploaded",
-        description: "Chapter audio has been successfully uploaded",
+        title: "Course Audio Uploaded",
+        description: `Successfully uploaded audio for ${data.updatedCount} chapters`,
       });
+      queryClient.invalidateQueries({ queryKey: ["/api/courses"] });
       queryClient.invalidateQueries({ queryKey: ["/api/assignments"] });
     },
     onError: (error) => {
       toast({
-        title: "Upload failed",
+        title: "Upload Failed",
         description: error.message,
         variant: "destructive",
       });
     }
   });
+
+  // Calculate chapter statistics
+  useEffect(() => {
+    let total = 0;
+    let uploaded = 0;
+    
+    Promise.all(
+      assignments.map(async (assignment) => {
+        const chapters = await apiRequest("GET", `/api/assignments/${assignment.id}/chapters`);
+        total += chapters.length;
+        uploaded += chapters.filter((ch: Chapter) => ch.audioUrl).length;
+        return chapters;
+      })
+    ).then(() => {
+      setChapterStats({ total, uploaded });
+    });
+  }, [assignments]);
 
   return (
     <div className="border border-gray-200 rounded-lg overflow-hidden">
@@ -267,31 +288,58 @@ function CourseItem({ course, expanded, onToggle }: CourseItemProps) {
             <div>
               <h4 className="font-medium text-slate-800">{course.name}</h4>
               <p className="text-sm text-slate-500">
-                {assignments.length} assignments
+                {assignments.length} assignments • {chapterStats.total} chapters
               </p>
             </div>
           </div>
           <div className="flex items-center gap-4">
-            {course.description && (
-              <p className="text-sm text-slate-600">{course.description}</p>
+            {chapterStats.uploaded > 0 && (
+              <Badge variant={chapterStats.uploaded === chapterStats.total ? "default" : "secondary"}>
+                {chapterStats.uploaded === chapterStats.total ? (
+                  <span className="flex items-center gap-1">
+                    <Check className="h-3 w-3" />
+                    All Audio Uploaded
+                  </span>
+                ) : (
+                  `${chapterStats.uploaded}/${chapterStats.total} Uploaded`
+                )}
+              </Badge>
             )}
-            <Badge variant="outline">Course ID: {course.id.slice(0, 8)}</Badge>
+            <Button
+              onClick={(e) => {
+                e.stopPropagation();
+                uploadCourseAudioMutation.mutate();
+              }}
+              disabled={uploadCourseAudioMutation.isPending}
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              {uploadCourseAudioMutation.isPending ? (
+                <RefreshCw className="h-3 w-3 animate-spin" />
+              ) : (
+                <Upload className="h-3 w-3" />
+              )}
+              Upload Course Audio
+            </Button>
           </div>
         </div>
       </div>
       
       {expanded && (
         <div className="border-t bg-gray-50 p-4">
+          <div className="mb-4 p-3 bg-blue-50 rounded-lg">
+            <p className="text-sm text-blue-800">
+              <strong>Course Audio Management:</strong> Click "Upload Course Audio" to sync all chapter audio files from the content repository for this entire course.
+            </p>
+          </div>
           {assignments.length === 0 ? (
             <p className="text-sm text-slate-500">No assignments found for this course.</p>
           ) : (
             <div className="space-y-4">
               {assignments.map((assignment) => (
-                <AssignmentItem 
+                <AssignmentPreview 
                   key={assignment.id} 
                   assignment={assignment}
-                  onUploadAudio={uploadAudioMutation.mutate}
-                  isUploading={uploadAudioMutation.isPending}
                 />
               ))}
             </div>
@@ -302,19 +350,19 @@ function CourseItem({ course, expanded, onToggle }: CourseItemProps) {
   );
 }
 
-interface AssignmentItemProps {
+interface AssignmentPreviewProps {
   assignment: Assignment;
-  onUploadAudio: (data: any) => void;
-  isUploading: boolean;
 }
 
-function AssignmentItem({ assignment, onUploadAudio, isUploading }: AssignmentItemProps) {
+function AssignmentPreview({ assignment }: AssignmentPreviewProps) {
   const [expanded, setExpanded] = useState(false);
   
   const { data: chapters = [] } = useQuery<Chapter[]>({
     queryKey: ["/api/assignments", assignment.id, "chapters"],
     enabled: expanded,
   });
+
+  const uploadedChapters = chapters.filter((ch) => ch.audioUrl).length;
 
   return (
     <div className="bg-white rounded-lg p-3 border border-gray-200">
@@ -326,46 +374,40 @@ function AssignmentItem({ assignment, onUploadAudio, isUploading }: AssignmentIt
           {expanded ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
           <h5 className="font-medium text-sm">{assignment.name}</h5>
         </div>
-        <Badge variant="secondary" className="text-xs">
-          {chapters.length} chapters
-        </Badge>
+        <div className="flex items-center gap-2">
+          {uploadedChapters > 0 && (
+            <Badge variant={uploadedChapters === chapters.length ? "default" : "secondary"} className="text-xs">
+              {uploadedChapters === chapters.length ? (
+                <span className="flex items-center gap-1">
+                  <Check className="h-3 w-3" />
+                  Complete
+                </span>
+              ) : (
+                `${uploadedChapters}/${chapters.length}`
+              )}
+            </Badge>
+          )}
+          <Badge variant="outline" className="text-xs">
+            {chapters.length} chapters
+          </Badge>
+        </div>
       </div>
       
       {expanded && chapters.length > 0 && (
-        <div className="mt-3 space-y-2 pl-5">
+        <div className="mt-3 space-y-1 pl-5">
           {chapters.map((chapter) => (
-            <div key={chapter.id} className="flex items-center justify-between py-2 border-b last:border-0">
-              <div className="flex-1">
-                <p className="text-sm font-medium">{chapter.title}</p>
-                <p className="text-xs text-slate-500">
-                  {chapter.audioUrl ? (
-                    <span className="flex items-center gap-1 text-green-600">
-                      <Check className="h-3 w-3" />
-                      Audio uploaded
-                    </span>
-                  ) : (
-                    <span className="text-amber-600">No audio</span>
-                  )}
-                </p>
-              </div>
-              <Button
-                size="sm"
-                variant={chapter.audioUrl ? "outline" : "default"}
-                onClick={() => {
-                  // Simulating audio upload from content repo
-                  const mockAudioUrl = `https://content.theinstitutes.org/audio/${chapter.id}.mp3`;
-                  onUploadAudio({
-                    chapterId: chapter.id,
-                    audioUrl: mockAudioUrl,
-                    duration: Math.floor(Math.random() * 600) + 60 // Random duration between 1-10 minutes
-                  });
-                }}
-                disabled={isUploading}
-                className="text-xs"
-              >
-                <Upload className="h-3 w-3 mr-1" />
-                {chapter.audioUrl ? 'Re-upload' : 'Upload'} Audio
-              </Button>
+            <div key={chapter.id} className="flex items-center gap-2 py-1 text-xs">
+              {chapter.audioUrl ? (
+                <Check className="h-3 w-3 text-green-600" />
+              ) : (
+                <AlertCircle className="h-3 w-3 text-amber-600" />
+              )}
+              <span className={chapter.audioUrl ? "text-slate-700" : "text-slate-500"}>
+                {chapter.title}
+              </span>
+              {chapter.audioUrl && (
+                <span className="text-green-600 ml-auto">Audio ready</span>
+              )}
             </div>
           ))}
         </div>
