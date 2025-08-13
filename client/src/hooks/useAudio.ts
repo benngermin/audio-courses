@@ -19,12 +19,20 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
 
   // Initialize audio element
   useEffect(() => {
-    console.log("Initializing audio with src:", src);
+    // Only initialize if src changes and is not empty
     if (!src) {
       console.error("No audio source provided!");
       setIsLoading(false);
       return;
     }
+    
+    // If we already have an audio element with the same src, don't recreate it
+    if (audioRef.current && audioRef.current.src.includes(src)) {
+      console.log("Audio already initialized with this src, skipping re-initialization");
+      return;
+    }
+    
+    console.log("Initializing audio with src:", src);
     
     const audio = new Audio(src);
     audio.preload = "metadata";
@@ -130,12 +138,31 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
         src: audioRef.current.src,
         readyState: audioRef.current.readyState,
         paused: audioRef.current.paused,
-        duration: audioRef.current.duration
+        duration: audioRef.current.duration,
+        volume: audioRef.current.volume,
+        muted: audioRef.current.muted
       });
       try {
-        await audioRef.current.play();
+        // Ensure volume is not muted
+        audioRef.current.volume = 1.0;
+        audioRef.current.muted = false;
+        
+        const playPromise = audioRef.current.play();
+        await playPromise;
         console.log("Audio playback started successfully");
+        console.log("Playing state:", !audioRef.current.paused);
         setIsPlaying(true);
+        
+        // Check if audio is actually playing after a short delay
+        setTimeout(() => {
+          if (audioRef.current) {
+            console.log("Audio check after 100ms:", {
+              currentTime: audioRef.current.currentTime,
+              paused: audioRef.current.paused,
+              ended: audioRef.current.ended
+            });
+          }
+        }, 100);
       } catch (error) {
         console.error("Error playing audio:", error);
         setIsPlaying(false);
