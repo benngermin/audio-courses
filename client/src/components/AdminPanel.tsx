@@ -227,14 +227,10 @@ interface CourseItemProps {
 function CourseItem({ course, expanded, onToggle }: CourseItemProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [isUploading, setIsUploading] = useState(false);
   
   const { data: assignments = [] } = useQuery<Assignment[]>({
     queryKey: ["/api/courses", course.id, "assignments"],
   });
-
-  // Calculate total chapters and uploaded chapters
-  const [chapterStats, setChapterStats] = useState({ total: 0, uploaded: 0 });
 
   const uploadCourseAudioMutation = useMutation({
     mutationFn: async () => {
@@ -249,6 +245,7 @@ function CourseItem({ course, expanded, onToggle }: CourseItemProps) {
       });
       queryClient.invalidateQueries({ queryKey: ["/api/courses"] });
       queryClient.invalidateQueries({ queryKey: ["/api/assignments"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/assignments", course.id] });
     },
     onError: (error) => {
       toast({
@@ -258,23 +255,6 @@ function CourseItem({ course, expanded, onToggle }: CourseItemProps) {
       });
     }
   });
-
-  // Calculate chapter statistics
-  useEffect(() => {
-    let total = 0;
-    let uploaded = 0;
-    
-    Promise.all(
-      assignments.map(async (assignment) => {
-        const chapters = await apiRequest("GET", `/api/assignments/${assignment.id}/chapters`);
-        total += chapters.length;
-        uploaded += chapters.filter((ch: Chapter) => ch.audioUrl).length;
-        return chapters;
-      })
-    ).then(() => {
-      setChapterStats({ total, uploaded });
-    });
-  }, [assignments]);
 
   return (
     <div className="border border-gray-200 rounded-lg overflow-hidden">
@@ -288,23 +268,11 @@ function CourseItem({ course, expanded, onToggle }: CourseItemProps) {
             <div>
               <h4 className="font-medium text-slate-800">{course.name}</h4>
               <p className="text-sm text-slate-500">
-                {assignments.length} assignments • {chapterStats.total} chapters
+                {assignments.length} assignments
               </p>
             </div>
           </div>
           <div className="flex items-center gap-4">
-            {chapterStats.uploaded > 0 && (
-              <Badge variant={chapterStats.uploaded === chapterStats.total ? "default" : "secondary"}>
-                {chapterStats.uploaded === chapterStats.total ? (
-                  <span className="flex items-center gap-1">
-                    <Check className="h-3 w-3" />
-                    All Audio Uploaded
-                  </span>
-                ) : (
-                  `${chapterStats.uploaded}/${chapterStats.total} Uploaded`
-                )}
-              </Badge>
-            )}
             <Button
               onClick={(e) => {
                 e.stopPropagation();
