@@ -30,6 +30,18 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
     audio.preload = "metadata";
     audio.crossOrigin = "anonymous"; // Add CORS support
     audioRef.current = audio;
+    
+    // Test if the audio URL is accessible
+    fetch(src, { method: 'HEAD' })
+      .then(response => {
+        console.log("Audio URL test - status:", response.status, "ok:", response.ok);
+        if (!response.ok) {
+          console.error("Audio URL not accessible:", response.status, response.statusText);
+        }
+      })
+      .catch(error => {
+        console.error("Failed to fetch audio URL:", error);
+      });
 
     const handleTimeUpdate = () => {
       const time = audio.currentTime;
@@ -39,6 +51,7 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
 
     const handleLoadedMetadata = () => {
       const dur = audio.duration;
+      console.log("Audio metadata loaded - duration:", dur, "src:", audio.src);
       setDuration(dur);
       setIsLoading(false);
       onLoadedMetadata?.(dur);
@@ -68,8 +81,25 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
         console.error("Audio error details:", {
           code: audioError.code,
           message: audioError.message,
-          src: audio.src
+          src: audio.src,
+          readyState: audio.readyState,
+          networkState: audio.networkState
         });
+        // Log specific error codes
+        switch(audioError.code) {
+          case 1:
+            console.error("MEDIA_ERR_ABORTED: The user aborted the media playback");
+            break;
+          case 2:
+            console.error("MEDIA_ERR_NETWORK: A network error occurred");
+            break;
+          case 3:
+            console.error("MEDIA_ERR_DECODE: Error decoding the media");
+            break;
+          case 4:
+            console.error("MEDIA_ERR_SRC_NOT_SUPPORTED: The media format is not supported");
+            break;
+        }
       }
       setIsLoading(false);
     };
@@ -95,12 +125,23 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
 
   const play = useCallback(async () => {
     if (audioRef.current) {
+      console.log("Play button clicked - attempting to play audio");
+      console.log("Audio state:", {
+        src: audioRef.current.src,
+        readyState: audioRef.current.readyState,
+        paused: audioRef.current.paused,
+        duration: audioRef.current.duration
+      });
       try {
         await audioRef.current.play();
+        console.log("Audio playback started successfully");
         setIsPlaying(true);
       } catch (error) {
         console.error("Error playing audio:", error);
+        setIsPlaying(false);
       }
+    } else {
+      console.error("No audio element available");
     }
   }, []);
 
