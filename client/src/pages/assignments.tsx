@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { AppHeader } from "@/components/AppHeader";
-import { BottomNav } from "@/components/BottomNav";
+
 import { useAuth } from "@/hooks/useAuth";
 import { useLocation } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
@@ -60,13 +60,13 @@ export default function Assignments() {
             <p className="text-slate-600">Loading...</p>
           </div>
         </main>
-        <BottomNav currentPath={location} onNavigate={handleNavigation} isAdmin={user?.isAdmin || false} />
+
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background pb-20 lg:pb-0">
+    <div className="min-h-screen bg-background">
       <AppHeader 
         currentCourse={currentCourse} 
         currentAssignment={currentAssignment}
@@ -95,7 +95,7 @@ export default function Assignments() {
         )}
       </main>
 
-      <BottomNav currentPath={location} onNavigate={handleNavigation} isAdmin={user?.isAdmin || false} />
+
     </div>
   );
 }

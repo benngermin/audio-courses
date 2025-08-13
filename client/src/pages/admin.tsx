@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { AdminPanel } from "@/components/AdminPanel";
 import { AppHeader } from "@/components/AppHeader";
-import { BottomNav } from "@/components/BottomNav";
+
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
@@ -36,7 +36,7 @@ export default function Admin() {
             <p className="text-slate-600">Loading...</p>
           </div>
         </main>
-        <BottomNav currentPath={location} onNavigate={handleNavigation} isAdmin={user?.isAdmin} />
+
       </div>
     );
   }
@@ -46,14 +46,14 @@ export default function Admin() {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-20 lg:pb-0">
+    <div className="min-h-screen bg-background">
       <AppHeader />
       
       <main className="max-w-screen-xl mx-auto px-4">
         <AdminPanel />
       </main>
 
-      <BottomNav currentPath={location} onNavigate={handleNavigation} isAdmin={user?.isAdmin} />
+
     </div>
   );
 }

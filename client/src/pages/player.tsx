@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { AppHeader } from "@/components/AppHeader";
 import { AudioPlayer } from "@/components/AudioPlayer";
-import { BottomNav } from "@/components/BottomNav";
+
 import { useAuth } from "@/hooks/useAuth";
 import { useLocation } from "wouter";
 import type { Assignment, Chapter } from "@shared/schema";
@@ -72,13 +72,13 @@ export default function Player() {
             <p className="text-slate-600">Content not found.</p>
           </div>
         </main>
-        <BottomNav currentPath={location} onNavigate={handleNavigation} isAdmin={user?.isAdmin || false} />
+
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background pb-20 lg:pb-0">
+    <div className="min-h-screen bg-background">
       <AppHeader />
       
       <main className="max-w-screen-xl mx-auto px-4">
@@ -93,7 +93,7 @@ export default function Player() {
         />
       </main>
 
-      <BottomNav currentPath={location} onNavigate={handleNavigation} isAdmin={user?.isAdmin || false} />
+
     </div>
   );
 }

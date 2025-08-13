@@ -6,14 +6,20 @@ This is a mobile-first audio learning platform built for The Institutes educatio
 
 ## Recent Changes (August 13, 2025)
 
-- **Removed Profile Page**: User profile functionality has been removed entirely from the application
-- **Reorganized Settings**: 
-  - Offline storage settings moved to the Downloads page for better context
-  - Playback speed and auto-advance settings moved to the Player screen for immediate access during listening
-- **Updated Navigation**: 
-  - Removed Profile from bottom navigation
-  - Added user menu with sign-out option to the app header
-  - Bottom navigation now only shows Assignments, Downloads, and Admin (for admin users)
+- **Simplified Navigation Architecture**: 
+  - Removed Downloads page entirely from the application
+  - Removed bottom navigation bar completely
+  - All navigation now handled through the app header
+  - Assignment selection moved to header dropdown for better UX
+- **Assignments Page Enhancement**:
+  - Restructured to display chapters directly instead of assignment cards
+  - Page title dynamically shows selected assignment name
+  - Header dropdown allows switching between assignments
+  - Chapter titles used directly instead of generic "Chapter 1, Chapter 2..." naming
+- **Streamlined UI**:
+  - Removed bottom padding from all pages since no bottom navigation
+  - Cleaner, more focused user interface
+  - Direct chapter access from main assignments page
 
 ## User Preferences
 

@@ -5,7 +5,7 @@ import { AssignmentList } from "@/components/AssignmentList";
 import { ChapterList } from "@/components/ChapterList";
 import { AudioPlayer } from "@/components/AudioPlayer";
 import { MiniPlayer } from "@/components/MiniPlayer";
-import { BottomNav } from "@/components/BottomNav";
+
 import { useAudio } from "@/hooks/useAudio";
 import { useAuth } from "@/hooks/useAuth";
 import { isUnauthorizedError } from "@/lib/authUtils";
@@ -267,12 +267,7 @@ export default function Home() {
         />
       )}
 
-      {/* Bottom Navigation */}
-      <BottomNav
-        currentPath={location}
-        onNavigate={handleNavigation}
-        isAdmin={user?.isAdmin || false}
-      />
+
     </div>
   );
 }

@@ -10,7 +10,7 @@ import Home from "@/pages/home";
 import Assignments from "@/pages/assignments";
 import Chapters from "@/pages/chapters";
 import Player from "@/pages/player";
-import Downloads from "@/pages/downloads";
+
 import Admin from "@/pages/admin";
 
 function Router() {
@@ -41,7 +41,7 @@ function Router() {
       <Route path="/assignments" component={Assignments} />
       <Route path="/chapters" component={Chapters} />
       <Route path="/player" component={Player} />
-      <Route path="/downloads" component={Downloads} />
+
       <Route path="/admin" component={Admin} />
       <Route component={NotFound} />
     </Switch>
