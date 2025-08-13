@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { AppHeader } from "@/components/AppHeader";
 import { ChapterList } from "@/components/ChapterList";
-
+import { useAudioContext } from "@/contexts/AudioContext";
 import { useAuth } from "@/hooks/useAuth";
 import { useLocation } from "wouter";
 import type { Assignment, Chapter } from "@shared/schema";
@@ -9,6 +9,7 @@ import type { Assignment, Chapter } from "@shared/schema";
 export default function Chapters() {
   const { user } = useAuth();
   const [location, navigate] = useLocation();
+  const { setCurrentTrack, currentChapter } = useAudioContext();
   
   // Get assignment ID from URL params
   const urlParams = new URLSearchParams(location.split('?')[1] || '');
@@ -28,7 +29,9 @@ export default function Chapters() {
   };
 
   const handleChapterSelect = (chapter: Chapter) => {
-    navigate(`/player?assignment=${assignmentId}&chapter=${chapter.id}`);
+    if (assignment) {
+      setCurrentTrack(chapter, assignment);
+    }
   };
 
   if (!assignment) {
@@ -46,7 +49,7 @@ export default function Chapters() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-24">
       <AppHeader />
       
       <main className="max-w-screen-xl mx-auto px-4">
@@ -54,10 +57,9 @@ export default function Chapters() {
           assignment={assignment}
           onBack={handleBack}
           onChapterSelect={handleChapterSelect}
+          currentlyPlaying={currentChapter?.id}
         />
       </main>
-
-
     </div>
   );
 }

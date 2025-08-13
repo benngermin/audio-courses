@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { AppHeader } from "@/components/AppHeader";
-
+import { useAudioContext } from "@/contexts/AudioContext";
 import { useAuth } from "@/hooks/useAuth";
 import { useLocation } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
@@ -15,6 +15,7 @@ import type { Course, Assignment, Chapter, UserProgress } from "@shared/schema";
 export default function Assignments() {
   const { user } = useAuth();
   const [location, navigate] = useLocation();
+  const { setCurrentTrack, currentChapter } = useAudioContext();
   const [currentAssignment, setCurrentAssignment] = useState<Assignment | undefined>(undefined);
 
   const { data: courses = [], isLoading: coursesLoading } = useQuery<Course[]>({
@@ -42,7 +43,9 @@ export default function Assignments() {
   };
 
   const handleChapterSelect = (chapter: Chapter) => {
-    navigate(`/player?assignment=${currentAssignment?.id}&chapter=${chapter.id}`);
+    if (currentAssignment) {
+      setCurrentTrack(chapter, currentAssignment);
+    }
   };
 
   const isLoading = coursesLoading || assignmentsLoading;
@@ -66,7 +69,7 @@ export default function Assignments() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-24">
       <AppHeader 
         currentCourse={currentCourse} 
         currentAssignment={currentAssignment}

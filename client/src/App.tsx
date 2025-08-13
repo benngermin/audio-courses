@@ -5,11 +5,13 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
+import { AudioProvider } from "@/contexts/AudioContext";
+import { MiniPlayer } from "@/components/MiniPlayer";
+import { ExpandedPlayer } from "@/components/ExpandedPlayer";
 import NotFound from "@/pages/not-found";
 import Assignments from "@/pages/assignments";
 import Chapters from "@/pages/chapters";
 import Player from "@/pages/player";
-
 import Admin from "@/pages/admin";
 
 function Router() {
@@ -40,7 +42,6 @@ function Router() {
       <Route path="/assignments" component={Assignments} />
       <Route path="/chapters" component={Chapters} />
       <Route path="/player" component={Player} />
-
       <Route path="/admin" component={Admin} />
       <Route component={NotFound} />
     </Switch>
@@ -50,10 +51,14 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Router />
-      </TooltipProvider>
+      <AudioProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Router />
+          <MiniPlayer />
+          <ExpandedPlayer />
+        </TooltipProvider>
+      </AudioProvider>
     </QueryClientProvider>
   );
 }
