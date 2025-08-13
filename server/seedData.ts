@@ -14,7 +14,8 @@ export async function seedTestData() {
 
     // Create a test course
     const [testCourse] = await db.insert(courses).values({
-      name: "Risk Management Fundamentals",
+      code: "CPCU 500",
+      name: "Becoming a Leader in Risk Management",
       description: "Learn the fundamentals of risk management in the insurance industry",
       isActive: true,
     }).returning();
@@ -25,19 +26,19 @@ export async function seedTestData() {
     const assignmentData = [
       {
         courseId: testCourse.id,
-        title: "Module 1: Introduction to Risk",
+        title: "Assignment 1: Introduction to Risk",
         description: "Understanding basic risk concepts and terminology",
         orderIndex: 1,
       },
       {
         courseId: testCourse.id,
-        title: "Module 2: Risk Assessment",
+        title: "Assignment 2: Risk Assessment",
         description: "Methods and tools for assessing different types of risks",
         orderIndex: 2,
       },
       {
         courseId: testCourse.id,
-        title: "Module 3: Risk Mitigation",
+        title: "Assignment 3: Risk Mitigation",
         description: "Strategies for reducing and managing identified risks",
         orderIndex: 3,
       },
@@ -49,7 +50,7 @@ export async function seedTestData() {
     // Create chapters for each assignment
     const chapterData = [];
     
-    // Module 1 chapters
+    // Assignment 1 chapters
     chapterData.push(
       {
         assignmentId: insertedAssignments[0].id,
@@ -77,7 +78,7 @@ export async function seedTestData() {
       }
     );
 
-    // Module 2 chapters
+    // Assignment 2 chapters
     chapterData.push(
       {
         assignmentId: insertedAssignments[1].id,
@@ -105,7 +106,7 @@ export async function seedTestData() {
       }
     );
 
-    // Module 3 chapters
+    // Assignment 3 chapters
     chapterData.push(
       {
         assignmentId: insertedAssignments[2].id,

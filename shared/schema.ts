@@ -40,6 +40,7 @@ export const users = pgTable("users", {
 // Course table
 export const courses = pgTable("courses", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  code: varchar("code"),
   name: varchar("name").notNull(),
   description: text("description"),
   bubbleId: varchar("bubble_id").unique(),

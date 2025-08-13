@@ -18,7 +18,7 @@ export function AssignmentList({ courseId, onAssignmentSelect }: AssignmentListP
     return (
       <div className="py-6">
         <div className="mb-6">
-          <h2 className="text-2xl font-bold text-slate-800 mb-2">Course Assignments</h2>
+          <h2 className="text-2xl font-bold text-slate-800 mb-2">Assignments</h2>
           <p className="text-slate-600">Loading assignments...</p>
         </div>
         <div className="space-y-4">
@@ -43,7 +43,7 @@ export function AssignmentList({ courseId, onAssignmentSelect }: AssignmentListP
     return (
       <div className="py-6">
         <div className="mb-6">
-          <h2 className="text-2xl font-bold text-slate-800 mb-2">Course Assignments</h2>
+          <h2 className="text-2xl font-bold text-slate-800 mb-2">Assignments</h2>
           <p className="text-slate-600">No assignments available for this course.</p>
         </div>
       </div>
@@ -53,7 +53,7 @@ export function AssignmentList({ courseId, onAssignmentSelect }: AssignmentListP
   return (
     <div className="py-6">
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-slate-800 mb-2">Course Assignments</h2>
+        <h2 className="text-2xl font-bold text-slate-800 mb-2">Assignments</h2>
         <p className="text-slate-600">Select an assignment to view available chapters</p>
       </div>
       

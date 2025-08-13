@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronDown, Headphones, LogOut, User } from "lucide-react";
+import { ChevronDown, LogOut, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -11,6 +11,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import type { Course, Assignment } from "@shared/schema";
+import TILogo from "@/assets/ti-logo.svg";
 
 interface AppHeaderProps {
   currentCourse?: Course;
@@ -35,21 +36,19 @@ export function AppHeader({ currentCourse, currentAssignment, onAssignmentChange
   };
 
   return (
-    <header className="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-50">
-      <div className="max-w-screen-xl mx-auto px-4 py-3">
-        <div className="flex items-center justify-between">
+    <header className="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-50 h-20">
+      <div className="max-w-screen-xl mx-auto px-4 h-full flex items-center">
+        <div className="flex items-center justify-between w-full">
           {/* Course Name - Left */}
           <div className="flex-1">
-            <h1 className="text-lg font-semibold text-slate-800 truncate">
-              {currentCourse?.name || "Audio Learning Platform"}
+            <h1 className="text-[18px] font-semibold text-slate-800 truncate" style={{ fontFamily: '"Open Sans", sans-serif' }}>
+              {currentCourse ? (currentCourse.code ? `${currentCourse.code}: ${currentCourse.name}` : currentCourse.name) : "Audio Learning Platform"}
             </h1>
           </div>
           
           {/* Logo - Center */}
           <div className="flex-shrink-0 px-4">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <Headphones className="text-white text-sm" size={16} />
-            </div>
+            <img src={TILogo} alt="TI Logo" className="w-10 h-10 text-primary" />
           </div>
           
           {/* Assignment Dropdown and User Menu - Right */}
