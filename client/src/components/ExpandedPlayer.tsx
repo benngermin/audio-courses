@@ -255,13 +255,13 @@ export function ExpandedPlayer() {
                   variant="ghost"
                   size="icon"
                   onClick={() => skipBackward(15)}
-                  className="h-[48px] w-[48px] sm:h-[60px] sm:w-[60px] rounded-full hover:bg-accent/10 transition-all"
+                  className="h-[48px] w-[48px] sm:h-[60px] sm:w-[60px] rounded-full hover:bg-accent/10 transition-all border border-muted-foreground/20"
                 >
-                  <RotateCcw className="h-[36px] w-[36px] sm:h-[42px] sm:w-[42px] text-foreground stroke-[2]" />
+                  <div className="flex flex-col items-center justify-center">
+                    <span className="text-lg sm:text-xl font-bold text-foreground leading-none">-15</span>
+                    <RotateCcw className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground mt-0.5" />
+                  </div>
                 </Button>
-                <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                  <span className="text-2xl sm:text-3xl font-bold text-foreground mt-1">15</span>
-                </span>
               </div>
 
               {/* Play/Pause button - larger and centered */}
@@ -284,13 +284,13 @@ export function ExpandedPlayer() {
                   variant="ghost"
                   size="icon"
                   onClick={() => skipForward(30)}
-                  className="h-[48px] w-[48px] sm:h-[60px] sm:w-[60px] rounded-full hover:bg-accent/10 transition-all"
+                  className="h-[48px] w-[48px] sm:h-[60px] sm:w-[60px] rounded-full hover:bg-accent/10 transition-all border border-muted-foreground/20"
                 >
-                  <RotateCw className="h-[36px] w-[36px] sm:h-[42px] sm:w-[42px] text-foreground stroke-[2]" />
+                  <div className="flex flex-col items-center justify-center">
+                    <span className="text-lg sm:text-xl font-bold text-foreground leading-none">+30</span>
+                    <RotateCw className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground mt-0.5" />
+                  </div>
                 </Button>
-                <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                  <span className="text-2xl sm:text-3xl font-bold text-foreground mt-1">30</span>
-                </span>
               </div>
             </div>
 
