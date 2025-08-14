@@ -14,7 +14,8 @@ import {
   Cast,
   Gauge,
   RotateCcw,
-  RotateCw
+  RotateCw,
+  Volume1
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -30,7 +31,7 @@ import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Chapter } from "@shared/schema";
 
-const playbackSpeeds = [1, 1.25, 1.5, 1.75, 2, 3];
+const playbackSpeeds = [0.5, 0.75, 1, 1.25, 1.5, 2];
 
 export function ExpandedPlayer() {
   const { toast } = useToast();
@@ -249,19 +250,20 @@ export function ExpandedPlayer() {
 
             {/* Main playback controls - matching podcast app layout */}
             <div className="flex items-center justify-center gap-6 sm:gap-8 mb-10 sm:mb-12">
-              {/* Rewind 15 seconds - 3X BIGGER */}
-              <div className="relative">
+              {/* Rewind 15 seconds - Circular design */}
+              <div className="relative group">
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => skipBackward(15)}
-                  className="h-[48px] w-[48px] sm:h-[60px] sm:w-[60px] rounded-full hover:bg-accent/10 transition-all border border-muted-foreground/20"
+                  className="h-14 w-14 rounded-full bg-white border border-[#e0e0e0] hover:border-[#ff6b35] hover:bg-[#fff5f2] transition-all duration-200 hover:scale-105 active:scale-95 group ripple"
                 >
-                  <div className="flex flex-col items-center justify-center">
-                    <span className="text-lg sm:text-xl font-bold text-foreground leading-none">-15</span>
-                    <RotateCcw className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground mt-0.5" />
-                  </div>
+                  <RotateCcw className="h-6 w-6 text-gray-700 group-hover:text-[#ff6b35]" />
                 </Button>
+                {/* Floating label badge */}
+                <span className="absolute -top-2 -right-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-[#ff6b35] text-white text-xs font-semibold rounded-full px-2 py-0.5 pointer-events-none">
+                  15s
+                </span>
               </div>
 
               {/* Play/Pause button - larger and centered */}
@@ -269,54 +271,53 @@ export function ExpandedPlayer() {
                 variant="ghost"
                 size="icon"
                 onClick={togglePlay}
-                className="h-20 w-20 sm:h-24 sm:w-24 bg-primary hover:bg-white text-white hover:text-primary rounded-full shadow-lg hover:scale-105 transition-all hover:shadow-xl"
+                className="h-20 w-20 sm:h-24 sm:w-24 bg-[#ff6b35] hover:bg-[#ff6b35]/90 text-white rounded-full shadow-lg hover:scale-105 transition-all hover:shadow-xl active:scale-95"
               >
                 {isPlaying ? (
-                  <Pause className="h-14 w-14 sm:h-16 sm:w-16 stroke-[3]" />
+                  <Pause className="h-8 w-8 sm:h-10 sm:w-10 fill-white" />
                 ) : (
-                  <Play className="h-14 w-14 sm:h-16 sm:w-16 ml-2 sm:ml-2.5 stroke-[3]" />
+                  <Play className="h-8 w-8 sm:h-10 sm:w-10 ml-1 fill-white" />
                 )}
               </Button>
 
-              {/* Forward 30 seconds - 3X BIGGER */}
-              <div className="relative">
+              {/* Forward 30 seconds - Circular design */}
+              <div className="relative group">
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => skipForward(30)}
-                  className="h-[48px] w-[48px] sm:h-[60px] sm:w-[60px] rounded-full hover:bg-accent/10 transition-all border border-muted-foreground/20"
+                  className="h-14 w-14 rounded-full bg-white border border-[#e0e0e0] hover:border-[#ff6b35] hover:bg-[#fff5f2] transition-all duration-200 hover:scale-105 active:scale-95 group ripple"
                 >
-                  <div className="flex flex-col items-center justify-center">
-                    <span className="text-lg sm:text-xl font-bold text-foreground leading-none">+30</span>
-                    <RotateCw className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground mt-0.5" />
-                  </div>
+                  <RotateCw className="h-6 w-6 text-gray-700 group-hover:text-[#ff6b35]" />
                 </Button>
+                {/* Floating label badge */}
+                <span className="absolute -top-2 -left-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-[#ff6b35] text-white text-xs font-semibold rounded-full px-2 py-0.5 pointer-events-none">
+                  30s
+                </span>
               </div>
             </div>
 
-            {/* Bottom row controls - centered like podcast app */}
-            <div className="flex items-center justify-center gap-8 sm:gap-10">
-              {/* Volume/Mute button */}
+            {/* Bottom row controls - updated design */}
+            <div className="flex items-center justify-center gap-12">
+              {/* Mute/Unmute button */}
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => {
-                  if (isMuted) {
-                    toggleMute();
-                  } else {
-                    setShowVolume(!showVolume);
-                  }
-                }}
-                className="h-14 w-14 sm:h-16 sm:w-16 rounded-full hover:bg-accent/10"
+                onClick={toggleMute}
+                className="h-10 w-10 rounded-full hover:bg-gray-100 transition-colors"
               >
                 {isMuted ? (
-                  <VolumeX className="h-9 w-9 sm:h-10 sm:w-10 text-foreground stroke-[3]" />
+                  <VolumeX className="h-5 w-5 text-gray-600" />
+                ) : volume > 0.5 ? (
+                  <Volume2 className="h-5 w-5 text-gray-600" />
+                ) : volume > 0 ? (
+                  <Volume1 className="h-5 w-5 text-gray-600" />
                 ) : (
-                  <Volume2 className="h-9 w-9 sm:h-10 sm:w-10 text-foreground stroke-[3]" />
+                  <VolumeX className="h-5 w-5 text-gray-600" />
                 )}
               </Button>
 
-              {/* AirPlay/Cast button - works for both iOS and Android */}
+              {/* Cast/AirPlay button */}
               <Button
                 variant="ghost"
                 size="icon"
@@ -326,57 +327,46 @@ export function ExpandedPlayer() {
                     description: "Casting feature coming soon",
                   });
                 }}
-                className="h-14 w-14 sm:h-16 sm:w-16 rounded-full hover:bg-accent/10"
+                className="h-10 w-10 rounded-full hover:bg-gray-100 transition-colors"
               >
-                <Cast className="h-9 w-9 sm:h-10 sm:w-10 text-foreground stroke-[3]" />
+                <Cast className="h-5 w-5 text-gray-600" />
               </Button>
 
-              {/* Playback speed button */}
+              {/* Playback speed button with popup menu */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button 
                     variant="ghost" 
-                    size="icon"
-                    className="h-14 w-14 sm:h-16 sm:w-16 rounded-full hover:bg-accent/10"
+                    size="sm"
+                    className="h-10 px-3 rounded-full hover:bg-gray-100 transition-colors font-semibold text-gray-700"
                   >
-                    <div className="relative">
-                      <Gauge className="h-9 w-9 sm:h-10 sm:w-10 text-foreground stroke-[3]" />
-                      {playbackRate !== 1 && (
-                        <span className="absolute -top-1 -right-1 bg-primary text-white text-[10px] sm:text-xs font-bold rounded-full w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center">
-                          {playbackRate}x
-                        </span>
-                      )}
-                    </div>
+                    {playbackRate}x
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="center" className="min-w-[140px]">
+                <DropdownMenuContent align="center" className="min-w-[120px] bg-white shadow-lg border rounded-lg">
                   {playbackSpeeds.map((speed) => (
                     <DropdownMenuItem
                       key={speed}
                       onClick={() => changePlaybackRate(speed)}
-                      className={speed === playbackRate ? "bg-accent font-semibold" : ""}
+                      className={`cursor-pointer px-4 py-2 hover:bg-gray-50 ${
+                        speed === playbackRate ? "bg-[#ff6b35]/10 text-[#ff6b35] font-semibold" : "text-gray-700"
+                      }`}
                     >
-                      <span className="w-full text-center text-base">{speed}x {speed === 1 && "(Normal)"}</span>
+                      <span className="w-full text-center">
+                        {speed === 0.5 && "0.5x"}
+                        {speed === 0.75 && "0.75x"}
+                        {speed === 1 && "Normal"}
+                        {speed === 1.25 && "1.25x"}
+                        {speed === 1.5 && "1.5x"}
+                        {speed === 2 && "2x"}
+                      </span>
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
 
-            {/* Volume slider - appears when volume button is clicked */}
-            {showVolume && (
-              <div className="flex items-center gap-4 mt-6 px-8">
-                <VolumeX className="h-5 w-5 text-muted-foreground" />
-                <Slider
-                  value={[volume * 100]}
-                  max={100}
-                  step={1}
-                  onValueChange={(value) => changeVolume(value[0] / 100)}
-                  className="flex-1 [&_[role=slider]]:h-5 [&_[role=slider]]:w-5"
-                />
-                <Volume2 className="h-5 w-5 text-muted-foreground" />
-              </div>
-            )}
+
           </div>
         </motion.div>
       )}
