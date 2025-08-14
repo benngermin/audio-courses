@@ -1,0 +1,67 @@
+Looking at your reference image, here are the specific vertical spacing adjustments needed to fix the "smooshed" layout:
+
+## Vertical Spacing Requirements
+
+### 1. **Header Section**
+- **Padding:** 20px top, 40px bottom
+- **NOW PLAYING text:** Keep centered between nav buttons
+
+### 2. **Album Art/Visualizer**
+- **Margin top:** 40px from header
+- **Margin bottom:** 40px to track info
+- **Size:** Keep at 280x280px
+
+### 3. **Track Information**
+- **Margin bottom:** 30px to progress bar
+- **Line spacing:** 8-10px between title and subtitle
+
+### 4. **Progress Bar Section**
+- **Margin bottom:** 40px to control buttons
+- **Time display:** 8px margin-top from progress bar
+
+### 5. **Main Controls (Skip/Play buttons)**
+- **Margin bottom:** 50px to bottom controls
+- **Button spacing:** 24px gap between buttons (increase from current 20px)
+
+### 6. **Bottom Controls**
+- **Padding bottom:** 30px from container bottom
+- **Container padding:** Increase overall container padding to 30px sides, 40px top/bottom
+
+### CSS Updates Needed:
+
+```css
+.player-container {
+    padding: 40px 30px;  /* Increase from current */
+}
+
+.header {
+    margin-bottom: 40px;  /* Add more space below header */
+}
+
+.album-art {
+    margin: 40px auto;  /* Increase vertical margins */
+}
+
+.track-info {
+    margin-bottom: 30px;  /* Space before progress bar */
+}
+
+.progress-container {
+    margin-bottom: 40px;  /* More space before controls */
+}
+
+.controls {
+    gap: 24px;  /* Increase button spacing */
+    margin-bottom: 50px;  /* More space to bottom controls */
+}
+
+.bottom-controls {
+    padding-top: 20px;  /* Add top padding */
+}
+```
+
+### Overall Height Adjustment:
+The container should naturally expand with proper spacing. If setting a fixed height, aim for approximately 650-700px to accommodate all the breathing room.
+
+### Key Principle:
+Add generous whitespace between major sections (header, visualizer, track info, progress, controls). The current layout needs about 30-40% more vertical spacing between elements to match the reference design's clean, uncluttered appearance.

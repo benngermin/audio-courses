@@ -177,8 +177,8 @@ export function ExpandedPlayer() {
           className="fixed inset-0 bg-background z-[60] flex flex-col"
           style={{ paddingTop: 'env(safe-area-inset-top)' }}
         >
-          {/* Header */}
-          <div className="flex items-center justify-between px-3 sm:px-4 py-3 sm:py-4">
+          {/* Header with increased vertical padding */}
+          <div className="flex items-center justify-between px-6 sm:px-8 pt-5 pb-10">
             <Button
               variant="ghost"
               size="icon"
@@ -211,10 +211,10 @@ export function ExpandedPlayer() {
             </DropdownMenu>
           </div>
 
-          {/* Main content area - Responsive scaling */}
-          <div className="flex-1 flex flex-col justify-center px-4 sm:px-8 pb-6 sm:pb-8 overflow-y-auto">
-            {/* Album art placeholder - podcast style */}
-            <div className="mx-auto mb-6 sm:mb-8 relative">
+          {/* Main content area with increased padding */}
+          <div className="flex-1 flex flex-col justify-center px-7 sm:px-10 pb-10 sm:pb-12 overflow-y-auto">
+            {/* Album art with increased vertical margins */}
+            <div className="mx-auto mt-10 mb-10 relative">
               <div className="w-56 h-56 sm:w-72 sm:h-72 bg-gradient-to-br from-primary/20 to-primary/5 rounded-2xl flex items-center justify-center shadow-inner">
                 <div className="text-primary/30">
                   <svg className="w-24 h-24 sm:w-32 sm:h-32" fill="currentColor" viewBox="0 0 24 24">
@@ -224,9 +224,9 @@ export function ExpandedPlayer() {
               </div>
             </div>
 
-            {/* Track info - Responsive text sizes */}
-            <div className="text-center mb-6 sm:mb-8 px-4">
-              <h1 className="text-xl sm:text-2xl font-bold text-foreground mb-2 line-clamp-2">
+            {/* Track info with more spacing */}
+            <div className="text-center mb-8 px-4">
+              <h1 className="text-xl sm:text-2xl font-bold text-foreground mb-3 line-clamp-2">
                 {currentChapter.title}
               </h1>
               <p className="text-base sm:text-lg text-muted-foreground line-clamp-1">
@@ -234,8 +234,8 @@ export function ExpandedPlayer() {
               </p>
             </div>
 
-            {/* Custom draggable progress bar - full width */}
-            <div className="mb-8">
+            {/* Progress bar with increased bottom margin */}
+            <div className="mb-10">
               <div className="relative group">
                 <div 
                   className="relative h-1 bg-[#d3d3d3] cursor-pointer"
@@ -310,7 +310,7 @@ export function ExpandedPlayer() {
                 </div>
               </div>
               
-              {/* Time display below the bar */}
+              {/* Time display with increased top margin */}
               <div className="flex justify-between mt-2">
                 <span className="text-sm text-gray-500 tabular-nums">
                   {formatTime(currentTime)}
@@ -321,8 +321,8 @@ export function ExpandedPlayer() {
               </div>
             </div>
 
-            {/* Main playback controls - matching podcast app layout */}
-            <div className="flex items-center justify-center gap-6 sm:gap-8 mb-10 sm:mb-12">
+            {/* Main controls with increased gap and bottom margin */}
+            <div className="flex items-center justify-center gap-6 sm:gap-8 mb-12 sm:mb-14">
               {/* Rewind 15 seconds - Circular design */}
               <div className="relative group">
                 <Button
@@ -370,8 +370,8 @@ export function ExpandedPlayer() {
               </div>
             </div>
 
-            {/* Bottom row controls - updated design */}
-            <div className="flex items-center justify-center gap-12">
+            {/* Bottom controls with added top padding */}
+            <div className="flex items-center justify-center gap-12 pt-5">
               {/* Mute/Unmute button */}
               <Button
                 variant="ghost"

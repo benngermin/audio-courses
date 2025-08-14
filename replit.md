@@ -6,6 +6,18 @@ This is a mobile-first audio learning platform built for The Institutes educatio
 
 ## Recent Changes (August 14, 2025)
 
+- **Expanded Player Vertical Spacing Improvements**:
+  - **Header Section**: Increased padding to 20px top, 40px bottom for better visual separation
+  - **Album Art**: Added 40px top/bottom margins for more breathing room
+  - **Track Information**: Increased bottom margin to 30px before progress bar with better line spacing
+  - **Progress Bar**: Added 40px margin below to separate from control buttons
+  - **Main Controls**: Increased button spacing gap and 50px bottom margin
+  - **Bottom Controls**: Added 20px top padding for better separation
+  - **Overall Padding**: Increased container padding to 30px sides, 40px top/bottom
+  - **Result**: Fixed "smooshed" layout with ~30-40% more vertical spacing between elements
+
+## Previous Changes (August 14, 2025)
+
 - **Mobile Responsive Optimization**:
   - **Header Redesign**: On mobile, displays only course code (e.g., "CPCU 500") instead of full name to save space
   - **Compact Assignment Dropdown**: Reduced width and text size, shows truncated titles with max-width constraints
