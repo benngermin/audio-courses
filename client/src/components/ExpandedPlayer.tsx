@@ -99,6 +99,11 @@ export function ExpandedPlayer() {
   const volume = audioState.volume;
   const isMuted = audioState.isMuted;
   
+  // Debug log to see audio state
+  useEffect(() => {
+    console.log("ExpandedPlayer audio state:", { currentTime, duration, isPlaying });
+  }, [currentTime, duration, isPlaying]);
+  
   // Use audio controls from context (provided by MiniPlayer)
   const togglePlay = audioControls?.togglePlay || (() => {});
   const seek = audioControls?.seek || (() => {});
@@ -274,16 +279,6 @@ export function ExpandedPlayer() {
 
             {/* Playback controls - 16px gap between buttons per style guide */}
             <div className="flex items-center justify-center gap-4 mb-6">
-              {/* Previous track (15 seconds back) */}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => skipBackward(15)}
-                className="h-10 w-10 text-muted-foreground hover:text-foreground"
-              >
-                <ChevronLeft className="h-5 w-5" />
-              </Button>
-
               {/* Previous chapter */}
               <Button
                 variant="ghost"
@@ -293,6 +288,16 @@ export function ExpandedPlayer() {
                 className="h-10 w-10 text-muted-foreground hover:text-foreground"
               >
                 <SkipBack className="h-5 w-5" />
+              </Button>
+
+              {/* Previous track (15 seconds back) */}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => skipBackward(15)}
+                className="h-10 w-10 text-muted-foreground hover:text-foreground"
+              >
+                <ChevronLeft className="h-5 w-5" />
               </Button>
 
               {/* Play/Pause button in the middle */}
@@ -309,6 +314,16 @@ export function ExpandedPlayer() {
                 )}
               </Button>
 
+              {/* Forward track (30 seconds forward) */}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => skipForward(30)}
+                className="h-10 w-10 text-muted-foreground hover:text-foreground"
+              >
+                <ChevronRight className="h-5 w-5" />
+              </Button>
+
               {/* Next chapter */}
               <Button
                 variant="ghost"
@@ -318,16 +333,6 @@ export function ExpandedPlayer() {
                 className="h-10 w-10 text-muted-foreground hover:text-foreground"
               >
                 <SkipForward className="h-5 w-5" />
-              </Button>
-
-              {/* Forward track (30 seconds forward) */}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => skipForward(30)}
-                className="h-10 w-10 text-muted-foreground hover:text-foreground"
-              >
-                <ChevronRight className="h-5 w-5" />
               </Button>
             </div>
 

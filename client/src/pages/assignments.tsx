@@ -42,8 +42,11 @@ export default function Assignments() {
   };
 
   const handleChapterSelect = (chapter: Chapter) => {
+    console.log("Chapter selected:", chapter);
+    console.log("Current assignment:", currentAssignment);
     if (currentAssignment) {
       setCurrentTrack(chapter, currentAssignment);
+      console.log("Set current track with chapter and assignment");
     }
   };
 

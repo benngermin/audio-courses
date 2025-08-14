@@ -45,9 +45,12 @@ export function MiniPlayer() {
     // We'll handle completion in the audio hook
   }, [currentChapter]);
 
-  // Debug logging
-  console.log("MiniPlayer - currentChapter:", currentChapter);
-  console.log("MiniPlayer - audioUrl:", currentChapter?.audioUrl);
+  // Log when we're about to use the audio
+  console.log("MiniPlayer - Setting up audio with:", {
+    chapterId: currentChapter?.id,
+    audioUrl: currentChapter?.audioUrl,
+    hasChapter: !!currentChapter,
+  });
   
   const {
     isPlaying,
@@ -86,7 +89,7 @@ export function MiniPlayer() {
     });
   }, [play, pause, togglePlay, seek, skipForward, skipBackward, changePlaybackRate, changeVolume, toggleMute, setAudioControls]);
 
-  // Share audio state with context
+  // Share audio state with context - update frequently for smooth progress
   useEffect(() => {
     setAudioState({
       currentTime,
@@ -102,8 +105,10 @@ export function MiniPlayer() {
   useEffect(() => {
     if (currentChapter?.id && currentChapter.id !== prevChapterIdRef.current) {
       prevChapterIdRef.current = currentChapter.id;
+      console.log("Chapter changed, auto-playing:", currentChapter.title);
       // Small delay to ensure audio is loaded
       const timer = setTimeout(() => {
+        console.log("Attempting to auto-play after delay");
         play();
       }, 300);
       return () => clearTimeout(timer);
