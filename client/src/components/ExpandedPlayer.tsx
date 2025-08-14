@@ -269,7 +269,7 @@ export function ExpandedPlayer() {
                 variant="ghost"
                 size="icon"
                 onClick={togglePlay}
-                className="h-20 w-20 sm:h-24 sm:w-24 bg-primary hover:bg-primary/90 text-white rounded-full shadow-lg hover:scale-105 transition-all"
+                className="h-20 w-20 sm:h-24 sm:w-24 bg-primary hover:bg-primary-dark text-white rounded-full shadow-lg hover:scale-105 transition-all hover:shadow-xl"
               >
                 {isPlaying ? (
                   <Pause className="h-10 w-10 sm:h-12 sm:w-12 stroke-[3]" />
