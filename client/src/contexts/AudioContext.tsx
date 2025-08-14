@@ -11,6 +11,28 @@ interface AudioContextType {
   setIsPlaying: (playing: boolean) => void;
   setIsExpanded: (expanded: boolean) => void;
   toggleExpanded: () => void;
+  // Shared audio controls
+  audioControls: {
+    play: () => void;
+    pause: () => void;
+    togglePlay: () => void;
+    seek: (time: number) => void;
+    skipForward: (seconds: number) => void;
+    skipBackward: (seconds: number) => void;
+    changePlaybackRate: (rate: number) => void;
+    changeVolume: (volume: number) => void;
+    toggleMute: () => void;
+  } | null;
+  setAudioControls: (controls: AudioContextType['audioControls']) => void;
+  // Shared audio state
+  audioState: {
+    currentTime: number;
+    duration: number;
+    volume: number;
+    playbackRate: number;
+    isMuted: boolean;
+  };
+  setAudioState: (state: AudioContextType['audioState']) => void;
 }
 
 const AudioContext = createContext<AudioContextType | undefined>(undefined);
@@ -20,6 +42,14 @@ export function AudioProvider({ children }: { children: ReactNode }) {
   const [currentAssignment, setCurrentAssignment] = useState<Assignment | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [audioControls, setAudioControls] = useState<AudioContextType['audioControls']>(null);
+  const [audioState, setAudioState] = useState<AudioContextType['audioState']>({
+    currentTime: 0,
+    duration: 0,
+    volume: 1,
+    playbackRate: 1,
+    isMuted: false,
+  });
 
   const setCurrentTrack = useCallback((chapter: Chapter, assignment: Assignment) => {
     setCurrentChapter(chapter);
@@ -51,6 +81,10 @@ export function AudioProvider({ children }: { children: ReactNode }) {
         setIsPlaying,
         setIsExpanded,
         toggleExpanded,
+        audioControls,
+        setAudioControls,
+        audioState,
+        setAudioState,
       }}
     >
       {children}

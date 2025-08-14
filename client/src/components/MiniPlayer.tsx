@@ -14,7 +14,9 @@ export function MiniPlayer() {
     currentAssignment, 
     isExpanded, 
     setIsExpanded,
-    clearCurrentTrack 
+    clearCurrentTrack,
+    setAudioControls,
+    setAudioState,
   } = useAudioContext();
   
   const [lastProgressUpdate, setLastProgressUpdate] = useState(0);
@@ -51,14 +53,49 @@ export function MiniPlayer() {
     isPlaying,
     currentTime,
     duration,
+    volume,
+    playbackRate,
+    isMuted,
     togglePlay,
     seek,
     play,
+    pause,
+    skipForward,
+    skipBackward,
+    changePlaybackRate,
+    changeVolume,
+    toggleMute,
   } = useAudio({
     src: currentChapter?.audioUrl || "",
     onTimeUpdate: handleTimeUpdate,
     onEnded: handleEnded,
   });
+
+  // Share audio controls with context (for ExpandedPlayer to use)
+  useEffect(() => {
+    setAudioControls({
+      play,
+      pause,
+      togglePlay,
+      seek,
+      skipForward,
+      skipBackward,
+      changePlaybackRate,
+      changeVolume,
+      toggleMute,
+    });
+  }, [play, pause, togglePlay, seek, skipForward, skipBackward, changePlaybackRate, changeVolume, toggleMute, setAudioControls]);
+
+  // Share audio state with context
+  useEffect(() => {
+    setAudioState({
+      currentTime,
+      duration,
+      volume,
+      playbackRate,
+      isMuted,
+    });
+  }, [currentTime, duration, volume, playbackRate, isMuted, setAudioState]);
 
   // Auto-play when a new chapter is selected (only when chapter changes)
   const prevChapterIdRef = useRef<string | null>(null);

@@ -88,34 +88,25 @@ export function ExpandedPlayer() {
     }
   }, [currentChapter, lastProgressUpdate, progressMutation]);
 
-  const {
-    isPlaying,
-    currentTime,
-    duration,
-    playbackRate,
-    volume,
-    isMuted,
-    togglePlay,
-    seek,
-    skipForward,
-    skipBackward,
-    changePlaybackRate,
-    changeVolume,
-    toggleMute,
-  } = useAudio({
-    src: currentChapter?.audioUrl || "",
-    onTimeUpdate: handleTimeUpdate,
-    onEnded: () => {
-      if (!currentChapter) return;
-      progressMutation.mutate({
-        chapterId: currentChapter.id,
-        currentTime: duration,
-        isCompleted: true,
-      });
-      // Auto-advance to next chapter
-      handleNext();
-    },
-  });
+  // Use shared audio controls and state from MiniPlayer via context
+  const { audioControls, audioState, isPlaying: contextIsPlaying } = useAudioContext();
+  
+  // Use audio state from context
+  const isPlaying = contextIsPlaying;
+  const currentTime = audioState.currentTime;
+  const duration = audioState.duration || currentChapter?.duration || 0;
+  const playbackRate = audioState.playbackRate;
+  const volume = audioState.volume;
+  const isMuted = audioState.isMuted;
+  
+  // Use audio controls from context (provided by MiniPlayer)
+  const togglePlay = audioControls?.togglePlay || (() => {});
+  const seek = audioControls?.seek || (() => {});
+  const skipForward = audioControls?.skipForward || (() => {});
+  const skipBackward = audioControls?.skipBackward || (() => {});
+  const changePlaybackRate = audioControls?.changePlaybackRate || (() => {});
+  const changeVolume = audioControls?.changeVolume || (() => {});
+  const toggleMute = audioControls?.toggleMute || (() => {});
 
   // Load saved progress
   const { data: progress } = useQuery<{ currentTime: number; isCompleted: boolean }>({
@@ -300,6 +291,20 @@ export function ExpandedPlayer() {
                 className="h-10 w-10 text-muted-foreground hover:text-foreground"
               >
                 <SkipBack className="h-5 w-5" />
+              </Button>
+
+              {/* Play/Pause button in the middle */}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={togglePlay}
+                className="h-12 w-12 bg-primary hover:bg-primary/90 text-white rounded-full"
+              >
+                {isPlaying ? (
+                  <Pause className="h-6 w-6" />
+                ) : (
+                  <Play className="h-6 w-6 ml-1" />
+                )}
               </Button>
 
               <Button
