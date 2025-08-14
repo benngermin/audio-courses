@@ -177,29 +177,29 @@ export function ExpandedPlayer() {
           className="fixed inset-0 bg-background z-[60] flex flex-col"
           style={{ paddingTop: 'env(safe-area-inset-top)' }}
         >
-          {/* Header with reduced vertical padding */}
-          <div className="flex items-center justify-between px-6 sm:px-8 pt-3 pb-3">
+          {/* Header with minimal padding */}
+          <div className="flex items-center justify-between px-4 sm:px-6 pt-1 pb-1">
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setIsExpanded(false)}
-              className="h-12 w-12 sm:h-14 sm:w-14"
+              className="h-10 w-10 sm:h-12 sm:w-12"
             >
-              <ChevronDown className="h-8 w-8 sm:h-10 sm:w-10" />
+              <ChevronDown className="h-7 w-7 sm:h-8 sm:w-8" />
             </Button>
             
             <div className="text-center flex-1">
-              <p className="text-xs sm:text-sm font-medium text-gray-600">NOW PLAYING</p>
+              <p className="text-xs font-medium text-gray-600">NOW PLAYING</p>
             </div>
 
             {/* Empty div to maintain spacing balance */}
-            <div className="h-12 w-12 sm:h-14 sm:w-14"></div>
+            <div className="h-10 w-10 sm:h-12 sm:w-12"></div>
           </div>
 
           {/* Main content area with increased padding */}
           <div className="flex-1 flex flex-col justify-center px-7 sm:px-10 pb-10 sm:pb-12 overflow-y-auto">
             {/* Audio Visualizer with animated orb */}
-            <div className="mx-auto mt-4 mb-10 relative">
+            <div className="mx-auto mt-2 mb-10 relative">
               <div className="w-56 h-56 sm:w-72 sm:h-72 bg-gradient-to-br from-[#1a1a2e] to-[#0f0f1e] rounded-2xl flex items-center justify-center shadow-[0_10px_30px_rgba(0,0,0,0.3)] overflow-hidden">
                 <div className={`visualizer ${isPlaying ? 'playing' : 'paused'} w-full h-full flex items-center justify-center relative`}>
                   <div className="center-orb relative w-[120px] h-[120px] flex items-center justify-center">
