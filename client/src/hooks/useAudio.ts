@@ -73,13 +73,8 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
     };
 
     const handleEnded = () => {
-      console.log('🎵 Audio ended event fired!');
-      console.log('Current audio element:', audio);
-      console.log('Audio currentTime:', audio.currentTime);
-      console.log('Audio duration:', audio.duration);
-      console.log('Current isPlaying state before change:', isPlaying);
+      console.log('🎵 Audio ended event fired! Button should now show play icon.');
       setIsPlaying(false);
-      console.log('Set isPlaying to false - button should now show play icon');
       onEnded?.();
     };
 
@@ -132,6 +127,8 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
     audio.addEventListener("waiting", handleWaiting);
     audio.addEventListener("canplaythrough", handleCanPlayThrough);
     audio.addEventListener("error", handleError);
+    
+
 
     // Add interval for smooth progress updates
     const progressInterval = setInterval(() => {
@@ -157,14 +154,12 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
   const play = useCallback(async () => {
     if (audioRef.current && !isPlaying) {
       try {
-        console.log('Playing audio...');
         // Mobile Safari requires user interaction before playing
         const playPromise = audioRef.current.play();
         if (playPromise !== undefined) {
           await playPromise;
         }
         setIsPlaying(true);
-        console.log('Audio playing, isPlaying set to true');
       } catch (error) {
         console.error('Error playing audio:', error);
         // Handle autoplay restrictions on mobile
@@ -177,10 +172,8 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
 
   const pause = useCallback(() => {
     if (audioRef.current) {
-      console.log('Pausing audio...');
       audioRef.current.pause();
       setIsPlaying(false);
-      console.log('Audio paused, isPlaying set to false');
     }
   }, []);
 

@@ -104,7 +104,6 @@ export function MiniPlayer() {
   
   // Update isPlaying state in context
   useEffect(() => {
-    console.log('MiniPlayer - syncing isPlaying to context:', isPlaying);
     setIsPlaying(isPlaying);
   }, [isPlaying, setIsPlaying]);
 
