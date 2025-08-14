@@ -203,24 +203,24 @@ export function ExpandedPlayer() {
           style={{ paddingTop: 'env(safe-area-inset-top)' }}
         >
           {/* Header */}
-          <div className="flex items-center justify-between px-4 py-4">
+          <div className="flex items-center justify-between px-3 sm:px-4 py-3 sm:py-4">
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setIsExpanded(false)}
-              className="h-10 w-10"
+              className="h-9 w-9 sm:h-10 sm:w-10"
             >
-              <ChevronDown className="h-6 w-6" />
+              <ChevronDown className="h-5 w-5 sm:h-6 sm:w-6" />
             </Button>
             
             <div className="text-center flex-1">
-              <p className="text-sm font-medium text-gray-600">NOW PLAYING</p>
+              <p className="text-xs sm:text-sm font-medium text-gray-600">NOW PLAYING</p>
             </div>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-10 w-10">
-                  <Settings2 className="h-5 w-5" />
+                <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10">
+                  <Settings2 className="h-4 w-4 sm:h-5 sm:w-5" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
@@ -236,14 +236,14 @@ export function ExpandedPlayer() {
             </DropdownMenu>
           </div>
 
-          {/* Main content area */}
-          <div className="flex-1 flex flex-col justify-center px-8 pb-8">
-            {/* Circular Progress with Play Button */}
-            <div className="mx-auto mb-8 relative">
+          {/* Main content area - Responsive scaling */}
+          <div className="flex-1 flex flex-col justify-center px-4 sm:px-8 pb-6 sm:pb-8 overflow-y-auto">
+            {/* Circular Progress with Play Button - Responsive size */}
+            <div className="mx-auto mb-6 sm:mb-8 relative">
               <CircularProgress
                 value={currentTime}
                 max={duration || 100}
-                size={280}
+                size={window.innerWidth < 640 ? 220 : 280}
                 strokeWidth={4}
                 isPlaying={isPlaying}
                 className="drop-shadow-xl"
@@ -252,23 +252,23 @@ export function ExpandedPlayer() {
                   variant="ghost"
                   size="icon"
                   onClick={togglePlay}
-                  className="h-24 w-24 rounded-full bg-primary hover:bg-primary-dark text-white shadow-play-button hover:scale-105 transition-all"
+                  className="h-20 w-20 sm:h-24 sm:w-24 rounded-full bg-primary hover:bg-primary-dark text-white shadow-play-button hover:scale-105 transition-all"
                 >
                   {isPlaying ? (
-                    <Pause className="h-12 w-12" />
+                    <Pause className="h-10 w-10 sm:h-12 sm:w-12" />
                   ) : (
-                    <Play className="h-12 w-12 ml-2" />
+                    <Play className="h-10 w-10 sm:h-12 sm:w-12 ml-1 sm:ml-2" />
                   )}
                 </Button>
               </CircularProgress>
             </div>
 
-            {/* Track info */}
-            <div className="text-center mb-8">
-              <h1 className="text-2xl font-bold text-foreground mb-2">
+            {/* Track info - Responsive text sizes */}
+            <div className="text-center mb-6 sm:mb-8 px-4">
+              <h1 className="text-xl sm:text-2xl font-bold text-foreground mb-2 line-clamp-2">
                 {currentChapter.title}
               </h1>
-              <p className="text-lg text-muted-foreground">
+              <p className="text-base sm:text-lg text-muted-foreground line-clamp-1">
                 {currentAssignment.title}
               </p>
             </div>

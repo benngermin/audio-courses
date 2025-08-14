@@ -75,9 +75,9 @@ export default function Assignments() {
         onAssignmentChange={handleAssignmentChange}
       />
       
-      <main className="max-w-screen-xl mx-auto px-4">
+      <main className="max-w-screen-xl mx-auto px-3 sm:px-4">
         {currentAssignment ? (
-          <div className="py-6">
+          <div className="py-4 sm:py-6">
             <AssignmentHeader 
               assignment={currentAssignment} 
               onChapterSelect={handleChapterSelect}
@@ -88,9 +88,9 @@ export default function Assignments() {
             />
           </div>
         ) : (
-          <div className="py-6">
-            <h2 className="text-2xl font-bold text-slate-800 mb-2">No Assignment Selected</h2>
-            <p className="text-slate-600">Please select an assignment from the dropdown in the header.</p>
+          <div className="py-4 sm:py-6">
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-2">No Assignment Selected</h2>
+            <p className="text-sm sm:text-base text-slate-600">Please select an assignment from the dropdown in the header.</p>
           </div>
         )}
       </main>
@@ -195,9 +195,9 @@ function AssignmentHeader({
   };
 
   return (
-    <div className="mb-6">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl font-bold text-slate-800">
+    <div className="mb-4 sm:mb-6">
+      <div className="flex items-center justify-between mb-3 sm:mb-4 gap-2">
+        <h2 className="text-lg sm:text-2xl font-bold text-slate-800 line-clamp-2">
           {assignment.title}
         </h2>
         <div className="flex items-center gap-2">

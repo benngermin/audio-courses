@@ -6,6 +6,16 @@ This is a mobile-first audio learning platform built for The Institutes educatio
 
 ## Recent Changes (August 14, 2025)
 
+- **Mobile Responsive Optimization**:
+  - **Header Redesign**: On mobile, displays only course code (e.g., "CPCU 500") instead of full name to save space
+  - **Compact Assignment Dropdown**: Reduced width and text size, shows truncated titles with max-width constraints
+  - **Responsive Sizing**: All buttons, icons, and text scale appropriately for mobile devices
+  - **Improved Touch Targets**: Optimized button sizes for better mobile interaction (minimum 44px touch targets)
+  - **Mini Player**: Reduced padding and icon sizes for mobile while maintaining usability
+  - **Expanded Player**: Adjusted circular progress size (220px mobile vs 280px desktop) for better fit on small screens
+  - **Chapter Cards**: Condensed layout with smaller icons and wrapped text for duration/status indicators
+  - **Consistent Breakpoints**: Uses `sm:` prefix for desktop styles (640px breakpoint)
+
 - **Debugging and Performance Improvements**:
   - Fixed excessive console logging from audio hooks and player components
   - Resolved multiple audio element initialization issue - now reuses existing audio elements

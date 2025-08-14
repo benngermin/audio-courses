@@ -132,10 +132,10 @@ function ChapterCard({ chapter, isCurrentlyPlaying, onPlay, onDownload, isDownlo
 
   return (
     <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={onPlay}>
-      <CardContent className="p-4">
+      <CardContent className="p-3 sm:p-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
+          <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+            <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-lg flex items-center justify-center flex-shrink-0 ${
               isCurrentlyPlaying 
                 ? "bg-amber-100" 
                 : progress?.isCompleted 
@@ -143,38 +143,38 @@ function ChapterCard({ chapter, isCurrentlyPlaying, onPlay, onDownload, isDownlo
                   : "bg-primary/10"
             }`}>
               {isCurrentlyPlaying ? (
-                <Pause className="text-amber-600" size={20} />
+                <Pause className="text-amber-600 h-4 w-4 sm:h-5 sm:w-5" />
               ) : progress?.isCompleted ? (
-                <CheckCircle className="text-green-600" size={20} />
+                <CheckCircle className="text-green-600 h-4 w-4 sm:h-5 sm:w-5" />
               ) : (
-                <Play className="text-primary" size={20} />
+                <Play className="text-primary h-4 w-4 sm:h-5 sm:w-5" />
               )}
             </div>
-            <div className="flex-1">
-              <h3 className="font-semibold text-slate-800">
+            <div className="flex-1 min-w-0">
+              <h3 className="font-semibold text-sm sm:text-base text-slate-800 line-clamp-2">
                 {chapter.title}
               </h3>
-              <div className="flex items-center gap-2 text-sm text-slate-500">
-                <span>{formatDuration(chapter.duration)}</span>
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs sm:text-sm text-slate-500">
+                <span className="whitespace-nowrap">{formatDuration(chapter.duration)}</span>
                 {progress?.currentTime && progress.currentTime > 0 && !progress.isCompleted && (
                   <>
-                    <span>•</span>
-                    <span>{remainingTime} remaining</span>
+                    <span className="hidden sm:inline">•</span>
+                    <span className="whitespace-nowrap">{remainingTime} left</span>
                   </>
                 )}
                 {progress?.isCompleted && (
                   <>
-                    <span>•</span>
+                    <span className="hidden sm:inline">•</span>
                     <span className="text-green-600">Completed</span>
                   </>
                 )}
               </div>
               {progressPercentage > 0 && !progress?.isCompleted && (
-                <Progress value={progressPercentage} className="w-full h-1.5 mt-2" />
+                <Progress value={progressPercentage} className="w-full h-1 sm:h-1.5 mt-2" />
               )}
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
             <Button
               variant="ghost"
               size="sm"
@@ -183,11 +183,11 @@ function ChapterCard({ chapter, isCurrentlyPlaying, onPlay, onDownload, isDownlo
                 onDownload();
               }}
               disabled={isDownloading}
-              className="p-2 text-slate-400 hover:text-slate-600"
+              className="p-1.5 sm:p-2 text-slate-400 hover:text-slate-600"
             >
-              <Download className="h-4 w-4" />
+              <Download className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             </Button>
-            <ChevronRight className="text-slate-400 h-4 w-4" />
+            <ChevronRight className="text-slate-400 h-3.5 w-3.5 sm:h-4 sm:w-4" />
           </div>
         </div>
       </CardContent>

@@ -162,17 +162,17 @@ export function MiniPlayer() {
         style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
       >
         <div 
-          className="px-4 py-3 cursor-pointer"
+          className="px-3 sm:px-4 py-2 sm:py-3 cursor-pointer"
           onClick={() => setIsExpanded(true)}
         >
           <div className="flex items-center justify-between">
             {/* Left side - Track info */}
-            <div className="flex items-center gap-3 flex-1 min-w-0">
-              <div className="w-12 h-12 bg-accent rounded-lg flex items-center justify-center flex-shrink-0">
-                <div className="w-6 h-6 bg-primary rounded-full animate-pulse" />
+            <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-accent rounded-lg flex items-center justify-center flex-shrink-0">
+                <div className="w-5 h-5 sm:w-6 sm:h-6 bg-primary rounded-full animate-pulse" />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium text-foreground truncate">
+                <p className="text-xs sm:text-sm font-medium text-foreground truncate">
                   {currentChapter.title}
                 </p>
                 <p className="text-xs text-muted-foreground truncate">
@@ -182,20 +182,20 @@ export function MiniPlayer() {
             </div>
 
             {/* Right side - Controls */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 sm:gap-2">
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-10 w-10"
+                className="h-9 w-9 sm:h-10 sm:w-10"
                 onClick={(e) => {
                   e.stopPropagation();
                   togglePlay();
                 }}
               >
                 {isPlaying ? (
-                  <Pause className="h-5 w-5" />
+                  <Pause className="h-4 w-4 sm:h-5 sm:w-5" />
                 ) : (
-                  <Play className="h-5 w-5 ml-0.5" />
+                  <Play className="h-4 w-4 sm:h-5 sm:w-5 ml-0.5" />
                 )}
               </Button>
               <Button
@@ -211,7 +211,7 @@ export function MiniPlayer() {
 
           {/* Time display with progress bar */}
           <div className="flex items-center gap-2 mt-1">
-            <span className="text-xs text-muted-foreground tabular-nums">
+            <span className="text-xs text-muted-foreground tabular-nums min-w-[32px]">
               {formatTime(currentTime)}
             </span>
             <LinearProgress 
@@ -220,7 +220,7 @@ export function MiniPlayer() {
               height={2}
               className="flex-1"
             />
-            <span className="text-xs text-muted-foreground tabular-nums">
+            <span className="text-xs text-muted-foreground tabular-nums min-w-[32px] text-right">
               {formatTime(duration)}
             </span>
           </div>
