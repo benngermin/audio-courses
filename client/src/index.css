@@ -226,6 +226,20 @@
     @apply font-medium tracking-tight;
   }
   
+  /* Mobile safe area handling for iOS */
+  body {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+
+  /* Touch target optimization */
+  button, [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
   /* Typography styles based on design spec */
   .text-page-header {
     font-size: var(--text-2xl); /* 24px */

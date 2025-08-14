@@ -24,7 +24,7 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
       setIsLoading(false);
       return;
     }
-    
+
     // If we already have an audio element with the same src, don't recreate it
     if (audioRef.current && audioRef.current.src.includes(src)) {
       // Start interval to update current time for smooth progress
@@ -33,21 +33,21 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
           setCurrentTime(audioRef.current.currentTime);
         }
       }, 100); // Update every 100ms for smooth animation
-      
+
       return () => clearInterval(progressInterval);
     }
-    
+
     // Pause previous audio if switching to a new track
     if (audioRef.current && !audioRef.current.src.includes(src)) {
       audioRef.current.pause();
       setIsPlaying(false);
     }
-    
+
     const audio = new Audio(src);
     audio.preload = "metadata";
     audio.crossOrigin = "anonymous"; // Add CORS support
     audioRef.current = audio;
-    
+
     // Test if the audio URL is accessible (silently)
     fetch(src, { method: 'HEAD' })
       .then(response => {
@@ -148,23 +148,23 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
   }, [src, onTimeUpdate, onEnded, onLoadedMetadata]);
 
   const play = useCallback(async () => {
-    if (audioRef.current) {
+    if (audioRef.current && !isPlaying) {
       try {
-        // Ensure volume is not muted
-        audioRef.current.volume = 1.0;
-        audioRef.current.muted = false;
-        
+        // Mobile Safari requires user interaction before playing
         const playPromise = audioRef.current.play();
-        await playPromise;
+        if (playPromise !== undefined) {
+          await playPromise;
+        }
         setIsPlaying(true);
       } catch (error) {
-        console.error("Error playing audio:", error);
-        setIsPlaying(false);
+        console.error('Error playing audio:', error);
+        // Handle autoplay restrictions on mobile
+        if (error.name === 'NotAllowedError') {
+          console.log('Autoplay prevented - user interaction required');
+        }
       }
-    } else {
-      console.error("No audio element available");
     }
-  }, []);
+  }, [isPlaying]);
 
   const pause = useCallback(() => {
     if (audioRef.current) {

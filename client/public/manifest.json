@@ -1,0 +1,19 @@
+
+{
+  "name": "Audio Learning Platform",
+  "short_name": "AudioLearn",
+  "description": "Mobile-first audio learning platform",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "any",
+      "type": "image/x-icon"
+    }
+  ],
+  "categories": ["education", "productivity"]
+}
