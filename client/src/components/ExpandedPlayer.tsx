@@ -232,16 +232,11 @@ export function ExpandedPlayer() {
               </p>
             </div>
 
-            {/* Time display with custom draggable progress bar */}
-            <div className="flex items-center gap-3 mb-8 px-2">
-              <span className="text-sm text-gray-500 tabular-nums min-w-[45px]">
-                {formatTime(currentTime)}
-              </span>
-              
-              {/* Custom draggable progress bar */}
-              <div className="flex-1 relative group py-2">
+            {/* Custom draggable progress bar - full width */}
+            <div className="mb-8">
+              <div className="relative group">
                 <div 
-                  className="relative h-1.5 bg-gray-300 rounded-full cursor-pointer"
+                  className="relative h-1 bg-[#d3d3d3] cursor-pointer"
                   onClick={(e) => {
                     if (!duration || !seek) return;
                     const rect = e.currentTarget.getBoundingClientRect();
@@ -253,14 +248,14 @@ export function ExpandedPlayer() {
                 >
                   {/* Progress fill */}
                   <div
-                    className="absolute top-0 left-0 h-full bg-[#ff6b35] rounded-full transition-all duration-100"
+                    className="absolute top-0 left-0 h-full bg-[#ff6b35] transition-all duration-100"
                     style={{ width: duration ? `${(currentTime / duration) * 100}%` : '0%' }}
                   />
                   
                   {/* Draggable handle */}
                   <div
-                    className="absolute top-1/2 -translate-y-1/2 w-5 h-5 bg-white border-2 border-[#ff6b35] rounded-full shadow-lg cursor-grab active:cursor-grabbing hover:scale-125 transition-transform touch-none"
-                    style={{ left: duration ? `${(currentTime / duration) * 100}%` : '0%', marginLeft: '-10px' }}
+                    className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white border-2 border-white rounded-full shadow-md cursor-grab active:cursor-grabbing hover:scale-110 transition-transform touch-none"
+                    style={{ left: duration ? `${(currentTime / duration) * 100}%` : '0%', marginLeft: '-8px' }}
                     onMouseDown={(e) => {
                       if (!duration || !seek) return;
                       e.preventDefault();
@@ -313,9 +308,15 @@ export function ExpandedPlayer() {
                 </div>
               </div>
               
-              <span className="text-sm text-gray-500 tabular-nums min-w-[55px] text-right">
-                -{formatTime(duration - currentTime)}
-              </span>
+              {/* Time display below the bar */}
+              <div className="flex justify-between mt-2">
+                <span className="text-sm text-gray-500 tabular-nums">
+                  {formatTime(currentTime)}
+                </span>
+                <span className="text-sm text-gray-500 tabular-nums">
+                  -{formatTime(duration - currentTime)}
+                </span>
+              </div>
             </div>
 
             {/* Main playback controls - matching podcast app layout */}
