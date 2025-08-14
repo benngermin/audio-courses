@@ -94,6 +94,11 @@ export function ExpandedPlayer() {
   
   // Use audio state from context
   const isPlaying = contextIsPlaying;
+  
+  // Debug log to check state changes
+  useEffect(() => {
+    console.log('ExpandedPlayer - isPlaying state changed to:', isPlaying);
+  }, [isPlaying]);
   const currentTime = audioState.currentTime;
   const duration = audioState.duration || currentChapter?.duration || 0;
   const playbackRate = audioState.playbackRate;
@@ -366,6 +371,21 @@ export function ExpandedPlayer() {
                   30s
                 </span>
               </div>
+            </div>
+
+            {/* Test button - Skip to end for testing */}
+            <div className="mb-4 text-center">
+              <button 
+                onClick={() => {
+                  if (duration && seek) {
+                    console.log('Testing: Skipping to 5 seconds before end');
+                    seek(duration - 5);
+                  }
+                }}
+                className="text-xs text-blue-500 underline"
+              >
+                [TEST: Skip to -5s for testing ended event]
+              </button>
             </div>
 
             {/* Bottom row controls - updated design */}

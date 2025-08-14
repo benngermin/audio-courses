@@ -5,6 +5,7 @@ import { setupAuth, isAuthenticated } from "./replitAuth";
 import { bubbleApiService } from "./services/bubbleApi";
 import { audioService } from "./services/audioService";
 import * as wav from "node-wav";
+import * as path from "path";
 import { 
   insertCourseSchema, 
   insertAssignmentSchema, 
@@ -300,6 +301,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Test page for audio ended event
+  app.get('/test-audio-ended', (req, res) => {
+    res.sendFile(path.join(process.cwd(), 'test-audio-ended.html'));
+  });
+
   // Mock audio endpoint for testing - serves a WAV file
   // This must be before the catch-all route so it's handled properly
   app.get('/api/audio/:chapterId.mp3', async (req, res) => {
@@ -310,7 +316,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Create a simple tone
       const sampleRate = 44100;
-      const duration = 5; // 5 seconds for testing
+      const duration = 30; // 30 seconds for testing
       const samples = sampleRate * duration;
       const amplitude = 0.3;
       
