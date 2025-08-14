@@ -6,6 +6,16 @@ This is a mobile-first audio learning platform built for The Institutes educatio
 
 ## Recent Changes (August 14, 2025)
 
+- **Audio Visualizer Animation (Replaced Static Album Art)**:
+  - **Dynamic Visualizer**: Replaced static album art with animated audio visualizer
+  - **Wave Bars**: 15 vertical bars with orange gradient that animate based on playback state
+  - **Frequency Rings**: 3 concentric circles with ripple animation when playing
+  - **Center Orb**: Glowing orange orb with pulse animation during playback
+  - **Dynamic Behavior**: Bars update heights randomly every 500ms when playing
+  - **Paused State**: Slower animations with dimmed colors (opacity 0.3) when paused
+  - **Background**: Dark gradient (#1a1a2e to #0f0f1e) with 20px border radius
+  - **Smooth Animations**: All transitions use cubic-bezier(0.4, 0, 0.2, 1) for smooth feel
+
 - **Expanded Player Vertical Spacing Improvements**:
   - **Header Section**: Increased padding to 20px top, 40px bottom for better visual separation
   - **Album Art**: Added 40px top/bottom margins for more breathing room

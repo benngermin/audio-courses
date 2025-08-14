@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { CircularProgress, LinearProgress } from "@/components/ui/circular-progress";
@@ -45,6 +45,8 @@ export function ExpandedPlayer() {
   
   const [lastProgressUpdate, setLastProgressUpdate] = useState(0);
   const [showVolume, setShowVolume] = useState(false);
+  const [barHeights, setBarHeights] = useState<number[]>(Array(15).fill(0).map(() => Math.random()));
+  const animationRef = useRef<NodeJS.Timeout | null>(null);
 
   // Get all chapters for navigation
   const { data: chapters = [] } = useQuery<Chapter[]>({
@@ -130,6 +132,36 @@ export function ExpandedPlayer() {
     }
   }, [progress, seek]);
 
+  // Update visualizer bars dynamically when playing
+  useEffect(() => {
+    if (isPlaying) {
+      // Start animation interval
+      animationRef.current = setInterval(() => {
+        setBarHeights(prev => {
+          const newHeights = [...prev];
+          // Update 30% of bars randomly
+          for (let i = 0; i < 5; i++) {
+            const randomIndex = Math.floor(Math.random() * 15);
+            newHeights[randomIndex] = Math.random();
+          }
+          return newHeights;
+        });
+      }, 500);
+    } else {
+      // Clear animation when paused
+      if (animationRef.current) {
+        clearInterval(animationRef.current);
+        animationRef.current = null;
+      }
+    }
+
+    return () => {
+      if (animationRef.current) {
+        clearInterval(animationRef.current);
+      }
+    };
+  }, [isPlaying]);
+
   // Removed chapter navigation as per new design
 
   const formatTime = (seconds: number) => {
@@ -213,13 +245,43 @@ export function ExpandedPlayer() {
 
           {/* Main content area with increased padding */}
           <div className="flex-1 flex flex-col justify-center px-7 sm:px-10 pb-10 sm:pb-12 overflow-y-auto">
-            {/* Album art with increased vertical margins */}
+            {/* Audio Visualizer with increased vertical margins */}
             <div className="mx-auto mt-10 mb-10 relative">
-              <div className="w-56 h-56 sm:w-72 sm:h-72 bg-gradient-to-br from-primary/20 to-primary/5 rounded-2xl flex items-center justify-center shadow-inner">
-                <div className="text-primary/30">
-                  <svg className="w-24 h-24 sm:w-32 sm:h-32" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
-                  </svg>
+              <div className="w-[280px] h-[280px] bg-gradient-to-b from-[#1a1a2e] to-[#0f0f1e] rounded-[20px] flex items-center justify-center shadow-2xl overflow-hidden relative">
+                {/* Frequency rings */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className={`absolute rounded-full border border-orange-500/20 ${isPlaying ? 'animate-ripple-1' : ''}`} 
+                       style={{width: '100px', height: '100px'}} />
+                  <div className={`absolute rounded-full border border-orange-500/20 ${isPlaying ? 'animate-ripple-2' : ''}`} 
+                       style={{width: '150px', height: '150px'}} />
+                  <div className={`absolute rounded-full border border-orange-500/20 ${isPlaying ? 'animate-ripple-3' : ''}`} 
+                       style={{width: '200px', height: '200px'}} />
+                </div>
+                
+                {/* Wave bars */}
+                <div className="relative z-10 flex items-end justify-center gap-[6px] h-full pb-12">
+                  {barHeights.map((height, i) => (
+                    <div
+                      key={i}
+                      className={`visualizer-bar ${!isPlaying ? 'paused' : ''}`}
+                      style={{
+                        width: '4px',
+                        background: 'linear-gradient(to top, #ff6b35, #ff8c42, #ffaa00)',
+                        borderRadius: '2px',
+                        animationDelay: `${i * 50}ms`,
+                        '--height': height,
+                      } as React.CSSProperties}
+                    />
+                  ))}
+                </div>
+                
+                {/* Center orb */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div className={`w-[60px] h-[60px] rounded-full ${isPlaying ? 'animate-pulse-glow' : ''}`}
+                       style={{
+                         background: 'radial-gradient(circle, rgba(255,107,53,0.8) 0%, rgba(255,107,53,0.4) 40%, transparent 70%)',
+                         boxShadow: '0 0 40px rgba(255,107,53,0.5)',
+                       }} />
                 </div>
               </div>
             </div>

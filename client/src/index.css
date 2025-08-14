@@ -339,6 +339,73 @@
   .skip-button-hover:hover {
     animation: pulse 1s infinite;
   }
+
+  /* Audio Visualizer Animations */
+  @keyframes wave {
+    0%, 100% {
+      height: calc(20px + var(--height) * 60px);
+      opacity: 0.6;
+    }
+    50% {
+      height: calc(10px + var(--height) * 100px);
+      opacity: 1;
+    }
+  }
+
+  @keyframes ripple-out {
+    0% {
+      transform: scale(0.5);
+      opacity: 0;
+    }
+    10% {
+      opacity: 0.5;
+    }
+    100% {
+      transform: scale(1.3);
+      opacity: 0;
+    }
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% {
+      transform: scale(1);
+      filter: brightness(1);
+    }
+    50% {
+      transform: scale(1.1);
+      filter: brightness(1.3);
+    }
+  }
+
+  .visualizer-bar {
+    animation: wave 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    box-shadow: 0 0 10px rgba(255, 107, 53, 0.5);
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .visualizer-bar.paused {
+    animation-play-state: paused;
+    opacity: 0.3;
+    height: 30px !important;
+  }
+
+  .animate-ripple-1 {
+    animation: ripple-out 3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+
+  .animate-ripple-2 {
+    animation: ripple-out 3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    animation-delay: 1s;
+  }
+
+  .animate-ripple-3 {
+    animation: ripple-out 3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    animation-delay: 2s;
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
 }
 
 @layer utilities {
