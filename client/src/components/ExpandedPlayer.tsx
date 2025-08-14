@@ -177,44 +177,29 @@ export function ExpandedPlayer() {
           className="fixed inset-0 bg-background z-[60] flex flex-col"
           style={{ paddingTop: 'env(safe-area-inset-top)' }}
         >
-          {/* Header with increased vertical padding */}
-          <div className="flex items-center justify-between px-6 sm:px-8 pt-5 pb-10">
+          {/* Header with reduced vertical padding */}
+          <div className="flex items-center justify-between px-6 sm:px-8 pt-3 pb-3">
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setIsExpanded(false)}
-              className="h-9 w-9 sm:h-10 sm:w-10"
+              className="h-12 w-12 sm:h-14 sm:w-14"
             >
-              <ChevronDown className="h-5 w-5 sm:h-6 sm:w-6" />
+              <ChevronDown className="h-8 w-8 sm:h-10 sm:w-10" />
             </Button>
             
             <div className="text-center flex-1">
               <p className="text-xs sm:text-sm font-medium text-gray-600">NOW PLAYING</p>
             </div>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10">
-                  <Settings2 className="h-4 w-4 sm:h-5 sm:w-5" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => downloadMutation.mutate(currentChapter.id)}>
-                  <Download className="h-4 w-4 mr-2" />
-                  Download for offline
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleShare}>
-                  <Share className="h-4 w-4 mr-2" />
-                  Share
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {/* Empty div to maintain spacing balance */}
+            <div className="h-12 w-12 sm:h-14 sm:w-14"></div>
           </div>
 
           {/* Main content area with increased padding */}
           <div className="flex-1 flex flex-col justify-center px-7 sm:px-10 pb-10 sm:pb-12 overflow-y-auto">
             {/* Audio Visualizer with animated orb */}
-            <div className="mx-auto mt-10 mb-10 relative">
+            <div className="mx-auto mt-4 mb-10 relative">
               <div className="w-56 h-56 sm:w-72 sm:h-72 bg-gradient-to-br from-[#1a1a2e] to-[#0f0f1e] rounded-2xl flex items-center justify-center shadow-[0_10px_30px_rgba(0,0,0,0.3)] overflow-hidden">
                 <div className={`visualizer ${isPlaying ? 'playing' : 'paused'} w-full h-full flex items-center justify-center relative`}>
                   <div className="center-orb relative w-[120px] h-[120px] flex items-center justify-center">
