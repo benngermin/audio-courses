@@ -273,10 +273,20 @@ export function ExpandedPlayer() {
               </p>
             </div>
 
-            {/* Time display */}
-            <div className="flex justify-between text-sm text-muted-foreground mb-6">
-              <span>{formatTime(currentTime)}</span>
-              <span>{formatTime(duration)}</span>
+            {/* Time display with progress bar */}
+            <div className="flex items-center gap-3 mb-6">
+              <span className="text-sm text-muted-foreground tabular-nums">
+                {formatTime(currentTime)}
+              </span>
+              <LinearProgress 
+                value={currentTime}
+                max={duration || 100}
+                height={4}
+                className="flex-1"
+              />
+              <span className="text-sm text-muted-foreground tabular-nums">
+                {formatTime(duration)}
+              </span>
             </div>
 
             {/* Playback controls - 16px gap between buttons per style guide */}

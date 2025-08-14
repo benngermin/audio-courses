@@ -167,14 +167,6 @@ export function MiniPlayer() {
           className="px-4 py-3 cursor-pointer"
           onClick={() => setIsExpanded(true)}
         >
-          {/* Progress bar at the top */}
-          <LinearProgress 
-            value={currentTime}
-            max={duration || 100}
-            height={2}
-            className="absolute top-0 left-0 right-0"
-          />
-
           <div className="flex items-center justify-between">
             {/* Left side - Track info */}
             <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -191,8 +183,27 @@ export function MiniPlayer() {
               </div>
             </div>
 
-            {/* Right side - Controls */}
-            <div className="flex items-center gap-2">
+            {/* Right side - Time, Progress, and Controls */}
+            <div className="flex items-center gap-3">
+              {/* Current time */}
+              <span className="text-xs text-muted-foreground tabular-nums">
+                {formatTime(currentTime)}
+              </span>
+              
+              {/* Progress bar */}
+              <LinearProgress 
+                value={currentTime}
+                max={duration || 100}
+                height={3}
+                className="w-24"
+              />
+              
+              {/* Duration */}
+              <span className="text-xs text-muted-foreground tabular-nums">
+                {formatTime(duration)}
+              </span>
+              
+              {/* Play/Pause button */}
               <Button
                 variant="ghost"
                 size="icon"
