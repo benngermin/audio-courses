@@ -46,7 +46,7 @@ export function AppHeader({ currentCourse, currentAssignment, onAssignmentChange
           {/* Course Name - Left (maintains size, truncates on smaller screens) */}
           <div className="flex-1 min-w-0 pr-4">
             <h1 className="text-2xl font-medium text-foreground truncate leading-tight" style={{ lineHeight: '1.3' }}>
-              {currentCourse ? (currentCourse.code ? `${currentCourse.code}: ${currentCourse.name}` : currentCourse.name) : "Audio Learning Platform"}
+              {currentCourse ? (currentCourse.code ? `${currentCourse.code}: ${currentCourse.name}` : currentCourse.name) : ""}
             </h1>
           </div>
           
