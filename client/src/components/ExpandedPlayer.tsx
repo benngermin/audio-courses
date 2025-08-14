@@ -12,7 +12,7 @@ import {
   Download,
   Settings2,
   Cast,
-  Clock,
+  Gauge,
   RotateCcw,
   RotateCw
 } from "lucide-react";
@@ -30,7 +30,7 @@ import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Chapter } from "@shared/schema";
 
-const playbackSpeeds = [0.5, 0.75, 1, 1.25, 1.5, 2];
+const playbackSpeeds = [1, 1.25, 1.5, 1.75, 2, 3];
 
 export function ExpandedPlayer() {
   const { toast } = useToast();
@@ -340,7 +340,7 @@ export function ExpandedPlayer() {
                     className="h-14 w-14 sm:h-16 sm:w-16 rounded-full hover:bg-accent/10"
                   >
                     <div className="relative">
-                      <Clock className="h-9 w-9 sm:h-10 sm:w-10 text-foreground stroke-[3]" />
+                      <Gauge className="h-9 w-9 sm:h-10 sm:w-10 text-foreground stroke-[3]" />
                       {playbackRate !== 1 && (
                         <span className="absolute -top-1 -right-1 bg-primary text-white text-[10px] sm:text-xs font-bold rounded-full w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center">
                           {playbackRate}x
