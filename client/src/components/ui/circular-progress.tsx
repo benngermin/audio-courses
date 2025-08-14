@@ -57,12 +57,10 @@ export function CircularProgress({
           fill="none"
           strokeDasharray={circumference}
           strokeDashoffset={offset}
-          className={cn(
-            "text-primary transition-all duration-300 ease-in-out",
-            isPlaying && "animate-pulse"
-          )}
+          className="text-primary"
           style={{
             strokeLinecap: "round",
+            transition: "stroke-dashoffset 0.1s linear",
           }}
         />
       </svg>
@@ -111,8 +109,11 @@ export function LinearProgress({
         style={{ height }}
       >
         <div
-          className="absolute top-0 left-0 h-full bg-primary rounded-full transition-all duration-300 ease-out"
-          style={{ width: `${percentage}%` }}
+          className="absolute top-0 left-0 h-full bg-primary rounded-full"
+          style={{ 
+            width: `${percentage}%`,
+            transition: "width 0.1s linear"
+          }}
         />
       </div>
     </div>

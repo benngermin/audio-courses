@@ -99,6 +99,11 @@ export function ExpandedPlayer() {
   const volume = audioState.volume;
   const isMuted = audioState.isMuted;
   
+  // Debug log to check if currentTime is updating
+  useEffect(() => {
+    console.log("ExpandedPlayer - currentTime:", currentTime, "duration:", duration, "progress:", (currentTime / duration) * 100);
+  }, [currentTime, duration]);
+  
 
   
   // Use audio controls from context (provided by MiniPlayer)

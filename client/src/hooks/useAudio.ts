@@ -29,7 +29,14 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
     // If we already have an audio element with the same src, don't recreate it
     if (audioRef.current && audioRef.current.src.includes(src)) {
       console.log("Audio already initialized with this src, skipping re-initialization");
-      return;
+      // Start interval to update current time for smooth progress
+      const progressInterval = setInterval(() => {
+        if (audioRef.current && !audioRef.current.paused) {
+          setCurrentTime(audioRef.current.currentTime);
+        }
+      }, 100); // Update every 100ms for smooth animation
+      
+      return () => clearInterval(progressInterval);
     }
     
     // Pause previous audio if switching to a new track
@@ -127,7 +134,15 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
     audio.addEventListener("canplaythrough", handleCanPlayThrough);
     audio.addEventListener("error", handleError);
 
+    // Add interval for smooth progress updates
+    const progressInterval = setInterval(() => {
+      if (audio && !audio.paused) {
+        setCurrentTime(audio.currentTime);
+      }
+    }, 100); // Update every 100ms for smooth animation
+
     return () => {
+      clearInterval(progressInterval);
       audio.removeEventListener("timeupdate", handleTimeUpdate);
       audio.removeEventListener("loadedmetadata", handleLoadedMetadata);
       audio.removeEventListener("ended", handleEnded);
