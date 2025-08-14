@@ -200,50 +200,52 @@ function AssignmentHeader({
         <h2 className="text-2xl font-bold text-slate-800">
           {assignment.title}
         </h2>
-        <Button
-          onClick={handlePlayAll}
-          className="w-14 h-14 rounded-full bg-[#ed7738] hover:bg-[#d96429] flex items-center justify-center p-0 shadow-lg hover:shadow-xl transition-all duration-200"
-          disabled={chapters.length === 0}
-        >
-          <Play className="h-6 w-6 text-white ml-0.5" fill="currentColor" />
-        </Button>
-      </div>
-      <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-        {!allChaptersDownloaded && (
-          <button
-            onClick={() => downloadAllMutation.mutate()}
-            disabled={isDownloading}
-            className="flex items-center gap-3 px-6 py-3 border-2 border-[#f5a07c] rounded-lg bg-[#fef6f3] hover:bg-[#fee8e0] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-medium text-slate-800"
+        <div className="flex items-center gap-2">
+          {!allChaptersDownloaded && (
+            <button
+              onClick={() => downloadAllMutation.mutate()}
+              disabled={isDownloading}
+              className="flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2.5 border-2 border-[#f5a07c] rounded-lg bg-[#fef6f3] hover:bg-[#fee8e0] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-medium text-slate-800"
+              title="Download All Chapters"
+            >
+              {isDownloading ? (
+                <>
+                  <Loader2 className="h-5 w-5 animate-spin text-[#ed7738]" />
+                  <span className="hidden sm:inline">Downloading...</span>
+                </>
+              ) : (
+                <>
+                  <Download className="h-5 w-5 text-[#ed7738]" />
+                  <span className="hidden sm:inline">Download All</span>
+                </>
+              )}
+            </button>
+          )}
+          {allChaptersDownloaded && (
+            <button
+              disabled
+              className="flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2.5 border-2 border-green-400 rounded-lg bg-green-50 font-medium text-green-700 cursor-default"
+              title="All Chapters Downloaded"
+            >
+              <CheckCircle2 className="h-5 w-5 text-green-600" />
+              <span className="hidden sm:inline">All Downloaded</span>
+            </button>
+          )}
+          <Button
+            onClick={handlePlayAll}
+            className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#ed7738] hover:bg-[#d96429] flex items-center justify-center p-0 shadow-lg hover:shadow-xl transition-all duration-200"
+            disabled={chapters.length === 0}
+            title="Play All Chapters"
           >
-            {isDownloading ? (
-              <>
-                <Loader2 className="h-5 w-5 animate-spin text-[#ed7738]" />
-                <span>Downloading...</span>
-              </>
-            ) : (
-              <>
-                <Download className="h-5 w-5 text-[#ed7738]" />
-                <span>Download All</span>
-              </>
-            )}
-          </button>
-        )}
-        {allChaptersDownloaded && (
-          <button
-            disabled
-            className="flex items-center gap-3 px-6 py-3 border-2 border-green-400 rounded-lg bg-green-50 font-medium text-green-700 cursor-default"
-          >
-            <CheckCircle2 className="h-5 w-5 text-green-600" />
-            <span>All Downloaded</span>
-          </button>
-        )}
-        {someChaptersDownloaded && !allChaptersDownloaded && (
-          <div className="text-sm text-slate-500">
-            {downloadedChapterIds.filter(id => chapters.some(ch => ch.id === id)).length} of {chapters.length} downloaded
-          </div>
-        )}
-
+            <Play className="h-5 w-5 sm:h-6 sm:w-6 text-white ml-0.5" fill="currentColor" />
+          </Button>
+        </div>
       </div>
+      {someChaptersDownloaded && !allChaptersDownloaded && (
+        <div className="text-sm text-slate-500 text-right">
+          {downloadedChapterIds.filter(id => chapters.some(ch => ch.id === id)).length} of {chapters.length} downloaded
+        </div>
+      )}
     </div>
   );
 }
