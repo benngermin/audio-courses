@@ -53,11 +53,23 @@ export function MiniPlayer() {
     duration,
     togglePlay,
     seek,
+    play,
   } = useAudio({
     src: currentChapter?.audioUrl || "",
     onTimeUpdate: handleTimeUpdate,
     onEnded: handleEnded,
   });
+
+  // Auto-play when a new chapter is selected
+  useEffect(() => {
+    if (currentChapter?.audioUrl) {
+      // Small delay to ensure audio is loaded
+      const timer = setTimeout(() => {
+        play();
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [currentChapter?.id, play]);
 
   // Update Media Session metadata
   useEffect(() => {
