@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { LinearProgress } from "@/components/ui/circular-progress";
 import { Play, Pause, ChevronUp, X } from "lucide-react";
@@ -60,13 +60,15 @@ export function MiniPlayer() {
     onEnded: handleEnded,
   });
 
-  // Auto-play when a new chapter is selected
+  // Auto-play when a new chapter is selected (only when chapter changes)
+  const prevChapterIdRef = useRef<string | null>(null);
   useEffect(() => {
-    if (currentChapter?.audioUrl) {
+    if (currentChapter?.id && currentChapter.id !== prevChapterIdRef.current) {
+      prevChapterIdRef.current = currentChapter.id;
       // Small delay to ensure audio is loaded
       const timer = setTimeout(() => {
         play();
-      }, 100);
+      }, 300);
       return () => clearTimeout(timer);
     }
   }, [currentChapter?.id, play]);

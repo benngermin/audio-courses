@@ -32,11 +32,11 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
       return;
     }
     
-    // Pause and cleanup previous audio if switching to a new track
-    if (audioRef.current) {
+    // Pause previous audio if switching to a new track
+    if (audioRef.current && !audioRef.current.src.includes(src)) {
       console.log("Stopping previous audio before initializing new one");
       audioRef.current.pause();
-      audioRef.current.src = "";
+      setIsPlaying(false);
     }
     
     console.log("Initializing audio with src:", src);
@@ -135,7 +135,6 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
       audio.removeEventListener("waiting", handleWaiting);
       audio.removeEventListener("canplaythrough", handleCanPlayThrough);
       audio.pause();
-      audio.src = "";
       setIsPlaying(false);
     };
   }, [src, onTimeUpdate, onEnded, onLoadedMetadata]);
