@@ -248,19 +248,19 @@ export function ExpandedPlayer() {
             </div>
 
             {/* Main playback controls - matching podcast app layout */}
-            <div className="flex items-center justify-center gap-8 sm:gap-10 mb-10 sm:mb-12">
+            <div className="flex items-center justify-center gap-10 sm:gap-12 mb-10 sm:mb-12">
               {/* Rewind 15 seconds */}
               <div className="relative">
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => skipBackward(15)}
-                  className="h-14 w-14 sm:h-16 sm:w-16 rounded-full hover:bg-accent/20 transition-all"
+                  className="h-16 w-16 sm:h-20 sm:w-20 rounded-full hover:bg-accent/10 transition-all"
                 >
-                  <RotateCcw className="h-8 w-8 sm:h-10 sm:w-10 text-primary stroke-[2.5]" />
+                  <RotateCcw className="h-12 w-12 sm:h-14 sm:w-14 text-foreground stroke-[3]" />
                 </Button>
                 <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                  <span className="text-xs font-bold text-primary mt-0.5">15</span>
+                  <span className="text-base sm:text-lg font-bold text-foreground mt-1">15</span>
                 </span>
               </div>
 
@@ -269,12 +269,12 @@ export function ExpandedPlayer() {
                 variant="ghost"
                 size="icon"
                 onClick={togglePlay}
-                className="h-[72px] w-[72px] sm:h-20 sm:w-20 bg-primary hover:bg-primary/90 text-white rounded-full shadow-lg hover:scale-105 transition-all"
+                className="h-20 w-20 sm:h-24 sm:w-24 bg-primary hover:bg-primary/90 text-white rounded-full shadow-lg hover:scale-105 transition-all"
               >
                 {isPlaying ? (
-                  <Pause className="h-8 w-8 sm:h-10 sm:w-10 stroke-[3]" />
+                  <Pause className="h-10 w-10 sm:h-12 sm:w-12 stroke-[3]" />
                 ) : (
-                  <Play className="h-8 w-8 sm:h-10 sm:w-10 ml-1.5 sm:ml-2 stroke-[3]" />
+                  <Play className="h-10 w-10 sm:h-12 sm:w-12 ml-2 sm:ml-2.5 stroke-[3]" />
                 )}
               </Button>
 
@@ -284,18 +284,18 @@ export function ExpandedPlayer() {
                   variant="ghost"
                   size="icon"
                   onClick={() => skipForward(30)}
-                  className="h-14 w-14 sm:h-16 sm:w-16 rounded-full hover:bg-accent/20 transition-all"
+                  className="h-16 w-16 sm:h-20 sm:w-20 rounded-full hover:bg-accent/10 transition-all"
                 >
-                  <RotateCw className="h-8 w-8 sm:h-10 sm:w-10 text-primary stroke-[2.5]" />
+                  <RotateCw className="h-12 w-12 sm:h-14 sm:w-14 text-foreground stroke-[3]" />
                 </Button>
                 <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                  <span className="text-xs font-bold text-primary mt-0.5">30</span>
+                  <span className="text-base sm:text-lg font-bold text-foreground mt-1">30</span>
                 </span>
               </div>
             </div>
 
             {/* Bottom row controls - centered like podcast app */}
-            <div className="flex items-center justify-center gap-6 sm:gap-8">
+            <div className="flex items-center justify-center gap-8 sm:gap-10">
               {/* Volume/Mute button */}
               <Button
                 variant="ghost"
@@ -307,12 +307,12 @@ export function ExpandedPlayer() {
                     setShowVolume(!showVolume);
                   }
                 }}
-                className="h-11 w-11 sm:h-12 sm:w-12 rounded-full hover:bg-accent/20"
+                className="h-14 w-14 sm:h-16 sm:w-16 rounded-full hover:bg-accent/10"
               >
                 {isMuted ? (
-                  <VolumeX className="h-6 w-6 sm:h-7 sm:w-7 text-foreground stroke-[2.5]" />
+                  <VolumeX className="h-9 w-9 sm:h-10 sm:w-10 text-foreground stroke-[3]" />
                 ) : (
-                  <Volume2 className="h-6 w-6 sm:h-7 sm:w-7 text-foreground stroke-[2.5]" />
+                  <Volume2 className="h-9 w-9 sm:h-10 sm:w-10 text-foreground stroke-[3]" />
                 )}
               </Button>
 
@@ -326,9 +326,9 @@ export function ExpandedPlayer() {
                     description: "Casting feature coming soon",
                   });
                 }}
-                className="h-11 w-11 sm:h-12 sm:w-12 rounded-full hover:bg-accent/20"
+                className="h-14 w-14 sm:h-16 sm:w-16 rounded-full hover:bg-accent/10"
               >
-                <Cast className="h-6 w-6 sm:h-7 sm:w-7 text-foreground stroke-[2.5]" />
+                <Cast className="h-9 w-9 sm:h-10 sm:w-10 text-foreground stroke-[3]" />
               </Button>
 
               {/* Playback speed button */}
@@ -337,26 +337,26 @@ export function ExpandedPlayer() {
                   <Button 
                     variant="ghost" 
                     size="icon"
-                    className="h-11 w-11 sm:h-12 sm:w-12 rounded-full hover:bg-accent/20"
+                    className="h-14 w-14 sm:h-16 sm:w-16 rounded-full hover:bg-accent/10"
                   >
                     <div className="relative">
-                      <Clock className="h-6 w-6 sm:h-7 sm:w-7 text-foreground stroke-[2.5]" />
+                      <Clock className="h-9 w-9 sm:h-10 sm:w-10 text-foreground stroke-[3]" />
                       {playbackRate !== 1 && (
-                        <span className="absolute -top-1 -right-1 bg-primary text-white text-[9px] sm:text-[10px] font-bold rounded-full w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center">
+                        <span className="absolute -top-1 -right-1 bg-primary text-white text-[10px] sm:text-xs font-bold rounded-full w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center">
                           {playbackRate}x
                         </span>
                       )}
                     </div>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="center" className="min-w-[120px]">
+                <DropdownMenuContent align="center" className="min-w-[140px]">
                   {playbackSpeeds.map((speed) => (
                     <DropdownMenuItem
                       key={speed}
                       onClick={() => changePlaybackRate(speed)}
                       className={speed === playbackRate ? "bg-accent font-semibold" : ""}
                     >
-                      <span className="w-full text-center">{speed}x {speed === 1 && "(Normal)"}</span>
+                      <span className="w-full text-center text-base">{speed}x {speed === 1 && "(Normal)"}</span>
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuContent>
@@ -365,16 +365,16 @@ export function ExpandedPlayer() {
 
             {/* Volume slider - appears when volume button is clicked */}
             {showVolume && (
-              <div className="flex items-center gap-3 mt-4 px-8">
-                <VolumeX className="h-4 w-4 text-muted-foreground" />
+              <div className="flex items-center gap-4 mt-6 px-8">
+                <VolumeX className="h-5 w-5 text-muted-foreground" />
                 <Slider
                   value={[volume * 100]}
                   max={100}
                   step={1}
                   onValueChange={(value) => changeVolume(value[0] / 100)}
-                  className="flex-1"
+                  className="flex-1 [&_[role=slider]]:h-5 [&_[role=slider]]:w-5"
                 />
-                <Volume2 className="h-4 w-4 text-muted-foreground" />
+                <Volume2 className="h-5 w-5 text-muted-foreground" />
               </div>
             )}
           </div>
