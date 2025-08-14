@@ -274,20 +274,22 @@ export function ExpandedPlayer() {
 
             {/* Playback controls - 16px gap between buttons per style guide */}
             <div className="flex items-center justify-center gap-4 mb-6">
+              {/* Previous track (15 seconds back) */}
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={handlePrevious}
-                disabled={!hasPrevious}
+                onClick={() => skipBackward(15)}
                 className="h-10 w-10 text-muted-foreground hover:text-foreground"
               >
                 <ChevronLeft className="h-5 w-5" />
               </Button>
 
+              {/* Previous chapter */}
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => skipBackward(15)}
+                onClick={handlePrevious}
+                disabled={!hasPrevious}
                 className="h-10 w-10 text-muted-foreground hover:text-foreground"
               >
                 <SkipBack className="h-5 w-5" />
@@ -307,20 +309,22 @@ export function ExpandedPlayer() {
                 )}
               </Button>
 
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => skipForward(30)}
-                className="h-10 w-10 text-muted-foreground hover:text-foreground"
-              >
-                <SkipForward className="h-5 w-5" />
-              </Button>
-
+              {/* Next chapter */}
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={handleNext}
                 disabled={!hasNext}
+                className="h-10 w-10 text-muted-foreground hover:text-foreground"
+              >
+                <SkipForward className="h-5 w-5" />
+              </Button>
+
+              {/* Forward track (30 seconds forward) */}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => skipForward(30)}
                 className="h-10 w-10 text-muted-foreground hover:text-foreground"
               >
                 <ChevronRight className="h-5 w-5" />
