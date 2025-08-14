@@ -54,7 +54,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
   const setCurrentTrack = useCallback((chapter: Chapter, assignment: Assignment) => {
     setCurrentChapter(chapter);
     setCurrentAssignment(assignment);
-    setIsPlaying(true);
+    // Don't set isPlaying here - let the audio hook manage it
     // Don't auto-expand, let user click to expand
   }, []);
 

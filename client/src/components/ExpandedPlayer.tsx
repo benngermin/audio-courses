@@ -99,10 +99,7 @@ export function ExpandedPlayer() {
   const volume = audioState.volume;
   const isMuted = audioState.isMuted;
   
-  // Debug log to see audio state
-  useEffect(() => {
-    console.log("ExpandedPlayer audio state:", { currentTime, duration, isPlaying });
-  }, [currentTime, duration, isPlaying]);
+
   
   // Use audio controls from context (provided by MiniPlayer)
   const togglePlay = audioControls?.togglePlay || (() => {});

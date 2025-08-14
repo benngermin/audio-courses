@@ -62,10 +62,6 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
       const time = audio.currentTime;
       setCurrentTime(time);
       onTimeUpdate?.(time);
-      // Log only every second to avoid spam
-      if (Math.floor(time) !== Math.floor(currentTime)) {
-        console.log("Audio time update:", time.toFixed(1), "s");
-      }
     };
 
     const handleLoadedMetadata = () => {

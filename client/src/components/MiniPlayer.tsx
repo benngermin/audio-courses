@@ -17,6 +17,7 @@ export function MiniPlayer() {
     clearCurrentTrack,
     setAudioControls,
     setAudioState,
+    setIsPlaying,
   } = useAudioContext();
   
   const [lastProgressUpdate, setLastProgressUpdate] = useState(0);
@@ -42,7 +43,8 @@ export function MiniPlayer() {
 
   const handleEnded = useCallback(() => {
     if (!currentChapter) return;
-    // We'll handle completion in the audio hook
+    // The audio hook will handle setting isPlaying to false
+    // Mark as completed will be handled separately
   }, [currentChapter]);
 
   // Log when we're about to use the audio
@@ -99,6 +101,11 @@ export function MiniPlayer() {
       isMuted,
     });
   }, [currentTime, duration, volume, playbackRate, isMuted, setAudioState]);
+  
+  // Update isPlaying state in context
+  useEffect(() => {
+    setIsPlaying(isPlaying);
+  }, [isPlaying, setIsPlaying]);
 
   // Auto-play when a new chapter is selected (only when chapter changes)
   const prevChapterIdRef = useRef<string | null>(null);
