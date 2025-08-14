@@ -6,15 +6,15 @@ import {
   ChevronDown, 
   Play, 
   Pause, 
-  SkipBack, 
-  SkipForward,
   Volume2,
   VolumeX,
   Share,
   Download,
   Settings2,
-  ChevronLeft,
-  ChevronRight
+  Cast,
+  Clock,
+  RotateCcw,
+  RotateCw
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -127,31 +127,7 @@ export function ExpandedPlayer() {
     }
   }, [progress, seek]);
 
-  const getCurrentChapterIndex = () => {
-    if (!currentChapter) return -1;
-    return chapters.findIndex(ch => ch.id === currentChapter.id);
-  };
-
-  const handlePrevious = () => {
-    const currentIndex = getCurrentChapterIndex();
-    if (currentIndex > 0) {
-      const prevChapter = chapters[currentIndex - 1];
-      // Update context with new chapter
-      if (currentAssignment) {
-        setCurrentTrack(prevChapter, currentAssignment);
-      }
-    }
-  };
-
-  const handleNext = () => {
-    const currentIndex = getCurrentChapterIndex();
-    if (currentIndex < chapters.length - 1) {
-      const nextChapter = chapters[currentIndex + 1];
-      if (currentAssignment) {
-        setCurrentTrack(nextChapter, currentAssignment);
-      }
-    }
-  };
+  // Removed chapter navigation as per new design
 
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
@@ -184,10 +160,6 @@ export function ExpandedPlayer() {
       console.error("Error sharing:", error);
     }
   };
-
-  const currentIndex = getCurrentChapterIndex();
-  const hasPrevious = currentIndex > 0;
-  const hasNext = currentIndex < chapters.length - 1;
 
   if (!currentChapter || !currentAssignment) return null;
 
@@ -238,29 +210,15 @@ export function ExpandedPlayer() {
 
           {/* Main content area - Responsive scaling */}
           <div className="flex-1 flex flex-col justify-center px-4 sm:px-8 pb-6 sm:pb-8 overflow-y-auto">
-            {/* Circular Progress with Play Button - Responsive size */}
+            {/* Album art placeholder - podcast style */}
             <div className="mx-auto mb-6 sm:mb-8 relative">
-              <CircularProgress
-                value={currentTime}
-                max={duration || 100}
-                size={window.innerWidth < 640 ? 220 : 280}
-                strokeWidth={4}
-                isPlaying={isPlaying}
-                className="drop-shadow-xl"
-              >
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={togglePlay}
-                  className="h-20 w-20 sm:h-24 sm:w-24 rounded-full bg-primary hover:bg-primary-dark text-white shadow-play-button hover:scale-105 transition-all"
-                >
-                  {isPlaying ? (
-                    <Pause className="h-10 w-10 sm:h-12 sm:w-12" />
-                  ) : (
-                    <Play className="h-10 w-10 sm:h-12 sm:w-12 ml-1 sm:ml-2" />
-                  )}
-                </Button>
-              </CircularProgress>
+              <div className="w-56 h-56 sm:w-72 sm:h-72 bg-gradient-to-br from-primary/20 to-primary/5 rounded-2xl flex items-center justify-center shadow-inner">
+                <div className="text-primary/30">
+                  <svg className="w-24 h-24 sm:w-32 sm:h-32" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+                  </svg>
+                </div>
+              </div>
             </div>
 
             {/* Track info - Responsive text sizes */}
@@ -273,125 +231,152 @@ export function ExpandedPlayer() {
               </p>
             </div>
 
-            {/* Time display with progress bar */}
-            <div className="flex items-center gap-3 mb-6">
-              <span className="text-sm text-muted-foreground tabular-nums">
+            {/* Time display with progress bar - matching podcast app style */}
+            <div className="flex items-center gap-3 mb-8 px-2">
+              <span className="text-sm text-muted-foreground tabular-nums min-w-[45px]">
                 {formatTime(currentTime)}
               </span>
               <LinearProgress 
                 value={currentTime}
                 max={duration || 100}
-                height={4}
+                height={6}
                 className="flex-1"
               />
-              <span className="text-sm text-muted-foreground tabular-nums">
-                {formatTime(duration)}
+              <span className="text-sm text-muted-foreground tabular-nums min-w-[55px] text-right">
+                -{formatTime(duration - currentTime)}
               </span>
             </div>
 
-            {/* Playback controls - 16px gap between buttons per style guide */}
-            <div className="flex items-center justify-center gap-4 mb-6">
-              {/* Previous chapter */}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handlePrevious}
-                disabled={!hasPrevious}
-                className="h-10 w-10 text-muted-foreground hover:text-foreground"
-              >
-                <SkipBack className="h-5 w-5" />
-              </Button>
+            {/* Main playback controls - matching podcast app layout */}
+            <div className="flex items-center justify-center gap-8 sm:gap-10 mb-10 sm:mb-12">
+              {/* Rewind 15 seconds */}
+              <div className="relative">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => skipBackward(15)}
+                  className="h-14 w-14 sm:h-16 sm:w-16 rounded-full hover:bg-accent/20 transition-all"
+                >
+                  <RotateCcw className="h-8 w-8 sm:h-10 sm:w-10 text-primary stroke-[2.5]" />
+                </Button>
+                <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <span className="text-xs font-bold text-primary mt-0.5">15</span>
+                </span>
+              </div>
 
-              {/* Previous track (15 seconds back) */}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => skipBackward(15)}
-                className="h-10 w-10 text-muted-foreground hover:text-foreground"
-              >
-                <ChevronLeft className="h-5 w-5" />
-              </Button>
-
-              {/* Play/Pause button in the middle */}
+              {/* Play/Pause button - larger and centered */}
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={togglePlay}
-                className="h-12 w-12 bg-primary hover:bg-primary/90 text-white rounded-full"
+                className="h-[72px] w-[72px] sm:h-20 sm:w-20 bg-primary hover:bg-primary/90 text-white rounded-full shadow-lg hover:scale-105 transition-all"
               >
                 {isPlaying ? (
-                  <Pause className="h-6 w-6" />
+                  <Pause className="h-8 w-8 sm:h-10 sm:w-10 stroke-[3]" />
                 ) : (
-                  <Play className="h-6 w-6 ml-1" />
+                  <Play className="h-8 w-8 sm:h-10 sm:w-10 ml-1.5 sm:ml-2 stroke-[3]" />
                 )}
               </Button>
 
-              {/* Forward track (30 seconds forward) */}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => skipForward(30)}
-                className="h-10 w-10 text-muted-foreground hover:text-foreground"
-              >
-                <ChevronRight className="h-5 w-5" />
-              </Button>
-
-              {/* Next chapter */}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleNext}
-                disabled={!hasNext}
-                className="h-10 w-10 text-muted-foreground hover:text-foreground"
-              >
-                <SkipForward className="h-5 w-5" />
-              </Button>
-            </div>
-
-            {/* Volume and speed controls */}
-            <div className="flex items-center justify-between px-4">
-              <div className="flex items-center gap-2">
+              {/* Forward 30 seconds */}
+              <div className="relative">
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={toggleMute}
-                  className="h-8 w-8"
+                  onClick={() => skipForward(30)}
+                  className="h-14 w-14 sm:h-16 sm:w-16 rounded-full hover:bg-accent/20 transition-all"
                 >
-                  {isMuted ? (
-                    <VolumeX className="h-4 w-4" />
-                  ) : (
-                    <Volume2 className="h-4 w-4" />
-                  )}
+                  <RotateCw className="h-8 w-8 sm:h-10 sm:w-10 text-primary stroke-[2.5]" />
                 </Button>
-                {showVolume && (
-                  <Slider
-                    value={[volume * 100]}
-                    max={100}
-                    step={1}
-                    onValueChange={(value) => changeVolume(value[0] / 100)}
-                    className="w-24"
-                  />
-                )}
+                <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <span className="text-xs font-bold text-primary mt-0.5">30</span>
+                </span>
               </div>
+            </div>
 
+            {/* Bottom row controls - centered like podcast app */}
+            <div className="flex items-center justify-center gap-6 sm:gap-8">
+              {/* Volume/Mute button */}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => {
+                  if (isMuted) {
+                    toggleMute();
+                  } else {
+                    setShowVolume(!showVolume);
+                  }
+                }}
+                className="h-11 w-11 sm:h-12 sm:w-12 rounded-full hover:bg-accent/20"
+              >
+                {isMuted ? (
+                  <VolumeX className="h-6 w-6 sm:h-7 sm:w-7 text-foreground stroke-[2.5]" />
+                ) : (
+                  <Volume2 className="h-6 w-6 sm:h-7 sm:w-7 text-foreground stroke-[2.5]" />
+                )}
+              </Button>
+
+              {/* AirPlay/Cast button - works for both iOS and Android */}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => {
+                  toast({
+                    title: "Cast",
+                    description: "Casting feature coming soon",
+                  });
+                }}
+                className="h-11 w-11 sm:h-12 sm:w-12 rounded-full hover:bg-accent/20"
+              >
+                <Cast className="h-6 w-6 sm:h-7 sm:w-7 text-foreground stroke-[2.5]" />
+              </Button>
+
+              {/* Playback speed button */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm">
-                    {playbackRate}x
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    className="h-11 w-11 sm:h-12 sm:w-12 rounded-full hover:bg-accent/20"
+                  >
+                    <div className="relative">
+                      <Clock className="h-6 w-6 sm:h-7 sm:w-7 text-foreground stroke-[2.5]" />
+                      {playbackRate !== 1 && (
+                        <span className="absolute -top-1 -right-1 bg-primary text-white text-[9px] sm:text-[10px] font-bold rounded-full w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center">
+                          {playbackRate}x
+                        </span>
+                      )}
+                    </div>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent>
+                <DropdownMenuContent align="center" className="min-w-[120px]">
                   {playbackSpeeds.map((speed) => (
                     <DropdownMenuItem
                       key={speed}
                       onClick={() => changePlaybackRate(speed)}
+                      className={speed === playbackRate ? "bg-accent font-semibold" : ""}
                     >
-                      {speed}x {speed === 1 && "(Normal)"}
+                      <span className="w-full text-center">{speed}x {speed === 1 && "(Normal)"}</span>
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
+
+            {/* Volume slider - appears when volume button is clicked */}
+            {showVolume && (
+              <div className="flex items-center gap-3 mt-4 px-8">
+                <VolumeX className="h-4 w-4 text-muted-foreground" />
+                <Slider
+                  value={[volume * 100]}
+                  max={100}
+                  step={1}
+                  onValueChange={(value) => changeVolume(value[0] / 100)}
+                  className="flex-1"
+                />
+                <Volume2 className="h-4 w-4 text-muted-foreground" />
+              </div>
+            )}
           </div>
         </motion.div>
       )}

@@ -12,9 +12,18 @@ This is a mobile-first audio learning platform built for The Institutes educatio
   - **Responsive Sizing**: All buttons, icons, and text scale appropriately for mobile devices
   - **Improved Touch Targets**: Optimized button sizes for better mobile interaction (minimum 44px touch targets)
   - **Mini Player**: Reduced padding and icon sizes for mobile while maintaining usability
-  - **Expanded Player**: Adjusted circular progress size (220px mobile vs 280px desktop) for better fit on small screens
   - **Chapter Cards**: Condensed layout with smaller icons and wrapped text for duration/status indicators
   - **Consistent Breakpoints**: Uses `sm:` prefix for desktop styles (640px breakpoint)
+
+- **Expanded Player Redesign - Podcast App Layout**:
+  - **Removed Circular Progress**: Replaced with album art placeholder showing music note icon
+  - **New Playback Controls**: -15 and +30 second skip buttons (matching standard podcast apps)
+  - **Removed Chapter Navigation**: No more previous/next chapter buttons in expanded player
+  - **Bottom Controls Row**: Centered layout with Volume, Cast/AirPlay, and Speed controls
+  - **Cast Button**: Added universal cast icon that works for both iOS AirPlay and Android Cast
+  - **Time Display**: Shows remaining time with minus sign (e.g., "-23:45") like podcast apps
+  - **Responsive Button Sizes**: 72px play button on mobile, 80px on desktop for optimal touch targets
+  - **Playback Speed Indicator**: Speed badge appears on clock icon when not at 1x speed
 
 - **Debugging and Performance Improvements**:
   - Fixed excessive console logging from audio hooks and player components
