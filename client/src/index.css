@@ -412,4 +412,91 @@
       padding: var(--spacing-default);
     }
   }
+
+  /* Audio Visualizer Orb Animations */
+  .orb-inner {
+    background: radial-gradient(circle, #ff6b35 0%, #ff8c42 40%, rgba(255, 107, 53, 0.3) 70%);
+    animation: pulse-core 2s ease-in-out infinite;
+    box-shadow: 0 0 40px rgba(255, 107, 53, 0.6);
+  }
+
+  .orb-pulse {
+    background: radial-gradient(circle, rgba(255, 107, 53, 0.4) 0%, transparent 70%);
+    animation: pulse-expand 2s ease-in-out infinite;
+  }
+
+  .orb-glow {
+    background: radial-gradient(circle, rgba(255, 140, 66, 0.2) 0%, transparent 60%);
+    animation: glow-rotate 4s linear infinite;
+  }
+
+  /* Core pulsing animation */
+  @keyframes pulse-core {
+    0%, 100% {
+      transform: scale(1);
+      box-shadow: 0 0 40px rgba(255, 107, 53, 0.6);
+    }
+    50% {
+      transform: scale(1.15);
+      box-shadow: 0 0 60px rgba(255, 107, 53, 0.8);
+    }
+  }
+
+  /* Expanding pulse animation */
+  @keyframes pulse-expand {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 0.4;
+    }
+    50% {
+      transform: scale(1.3);
+      opacity: 0.2;
+    }
+  }
+
+  /* Rotating glow animation */
+  @keyframes glow-rotate {
+    0% {
+      transform: rotate(0deg) scale(1);
+      opacity: 0.3;
+    }
+    50% {
+      transform: rotate(180deg) scale(1.2);
+      opacity: 0.5;
+    }
+    100% {
+      transform: rotate(360deg) scale(1);
+      opacity: 0.3;
+    }
+  }
+
+  /* Playing state - faster, brighter animations */
+  .visualizer.playing .orb-inner {
+    animation-duration: 1.5s;
+  }
+
+  .visualizer.playing .orb-pulse {
+    animation-duration: 1.5s;
+  }
+
+  .visualizer.playing .orb-glow {
+    animation-duration: 3s;
+  }
+
+  /* Paused state - slower, dimmer animations */
+  .visualizer.paused .orb-inner {
+    animation-duration: 4s;
+    opacity: 0.5;
+    box-shadow: 0 0 20px rgba(255, 107, 53, 0.3);
+  }
+
+  .visualizer.paused .orb-pulse {
+    animation-duration: 4s;
+    opacity: 0.2;
+  }
+
+  .visualizer.paused .orb-glow {
+    animation-duration: 6s;
+    opacity: 0.15;
+  }
 }

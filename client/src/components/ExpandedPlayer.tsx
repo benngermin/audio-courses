@@ -213,13 +213,15 @@ export function ExpandedPlayer() {
 
           {/* Main content area with increased padding */}
           <div className="flex-1 flex flex-col justify-center px-7 sm:px-10 pb-10 sm:pb-12 overflow-y-auto">
-            {/* Album art with increased vertical margins */}
+            {/* Audio Visualizer with animated orb */}
             <div className="mx-auto mt-10 mb-10 relative">
-              <div className="w-56 h-56 sm:w-72 sm:h-72 bg-gradient-to-br from-primary/20 to-primary/5 rounded-2xl flex items-center justify-center shadow-inner">
-                <div className="text-primary/30">
-                  <svg className="w-24 h-24 sm:w-32 sm:h-32" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
-                  </svg>
+              <div className="w-56 h-56 sm:w-72 sm:h-72 bg-gradient-to-br from-[#1a1a2e] to-[#0f0f1e] rounded-2xl flex items-center justify-center shadow-[0_10px_30px_rgba(0,0,0,0.3)] overflow-hidden">
+                <div className={`visualizer ${isPlaying ? 'playing' : 'paused'} w-full h-full flex items-center justify-center relative`}>
+                  <div className="center-orb relative w-[120px] h-[120px] flex items-center justify-center">
+                    <div className="orb-inner absolute w-[60px] h-[60px] rounded-full"></div>
+                    <div className="orb-pulse absolute w-[100px] h-[100px] rounded-full"></div>
+                    <div className="orb-glow absolute w-[120px] h-[120px] rounded-full"></div>
+                  </div>
                 </div>
               </div>
             </div>
