@@ -241,11 +241,7 @@ function AssignmentHeader({
           </Button>
         </div>
       </div>
-      {someChaptersDownloaded && !allChaptersDownloaded && (
-        <div className="text-sm text-slate-500 text-right">
-          {downloadedChapterIds.filter(id => chapters.some(ch => ch.id === id)).length} of {chapters.length} downloaded
-        </div>
-      )}
+      
     </div>
   );
 }
