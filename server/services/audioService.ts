@@ -25,7 +25,15 @@ class AudioService {
 
   async downloadAudio(audioUrl: string, chapterId: string): Promise<string> {
     try {
-      const response = await fetch(audioUrl);
+      // If audioUrl is a relative path, construct the full URL
+      let fullUrl = audioUrl;
+      if (audioUrl.startsWith('/')) {
+        // Use localhost with the Express server port for internal API calls
+        const port = process.env.PORT || '5000';
+        fullUrl = `http://localhost:${port}${audioUrl}`;
+      }
+      
+      const response = await fetch(fullUrl);
       if (!response.ok) {
         throw new Error(`Failed to download audio: ${response.statusText}`);
       }

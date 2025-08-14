@@ -21,14 +21,12 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
   useEffect(() => {
     // Only initialize if src changes and is not empty
     if (!src) {
-      console.error("No audio source provided!");
       setIsLoading(false);
       return;
     }
     
     // If we already have an audio element with the same src, don't recreate it
     if (audioRef.current && audioRef.current.src.includes(src)) {
-      console.log("Audio already initialized with this src, skipping re-initialization");
       // Start interval to update current time for smooth progress
       const progressInterval = setInterval(() => {
         if (audioRef.current && !audioRef.current.paused) {
@@ -41,22 +39,18 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
     
     // Pause previous audio if switching to a new track
     if (audioRef.current && !audioRef.current.src.includes(src)) {
-      console.log("Stopping previous audio before initializing new one");
       audioRef.current.pause();
       setIsPlaying(false);
     }
-    
-    console.log("Initializing audio with src:", src);
     
     const audio = new Audio(src);
     audio.preload = "metadata";
     audio.crossOrigin = "anonymous"; // Add CORS support
     audioRef.current = audio;
     
-    // Test if the audio URL is accessible
+    // Test if the audio URL is accessible (silently)
     fetch(src, { method: 'HEAD' })
       .then(response => {
-        console.log("Audio URL test - status:", response.status, "ok:", response.ok);
         if (!response.ok) {
           console.error("Audio URL not accessible:", response.status, response.statusText);
         }
@@ -73,7 +67,6 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
 
     const handleLoadedMetadata = () => {
       const dur = audio.duration;
-      console.log("Audio metadata loaded - duration:", dur, "src:", audio.src);
       setDuration(dur);
       setIsLoading(false);
       onLoadedMetadata?.(dur);
@@ -156,15 +149,6 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
 
   const play = useCallback(async () => {
     if (audioRef.current) {
-      console.log("Play button clicked - attempting to play audio");
-      console.log("Audio state:", {
-        src: audioRef.current.src,
-        readyState: audioRef.current.readyState,
-        paused: audioRef.current.paused,
-        duration: audioRef.current.duration,
-        volume: audioRef.current.volume,
-        muted: audioRef.current.muted
-      });
       try {
         // Ensure volume is not muted
         audioRef.current.volume = 1.0;
@@ -172,20 +156,7 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
         
         const playPromise = audioRef.current.play();
         await playPromise;
-        console.log("Audio playback started successfully");
-        console.log("Playing state:", !audioRef.current.paused);
         setIsPlaying(true);
-        
-        // Check if audio is actually playing after a short delay
-        setTimeout(() => {
-          if (audioRef.current) {
-            console.log("Audio check after 100ms:", {
-              currentTime: audioRef.current.currentTime,
-              paused: audioRef.current.paused,
-              ended: audioRef.current.ended
-            });
-          }
-        }, 100);
       } catch (error) {
         console.error("Error playing audio:", error);
         setIsPlaying(false);

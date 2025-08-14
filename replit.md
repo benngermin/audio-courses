@@ -4,7 +4,17 @@
 
 This is a mobile-first audio learning platform built for The Institutes educational content consumption. Users access the platform directly from Moodle LMS via SSO authentication, immediately landing on their course assignments page. The application allows users to consume course materials through audio playback, with features like offline downloads, progress tracking, and automatic authentication. The system is designed to support learning on-the-go scenarios such as commuting or exercising.
 
-## Recent Changes (August 13, 2025)
+## Recent Changes (August 14, 2025)
+
+- **Debugging and Performance Improvements**:
+  - Fixed excessive console logging from audio hooks and player components
+  - Resolved multiple audio element initialization issue - now reuses existing audio elements
+  - Fixed download functionality by constructing full URLs for internal audio fetching
+  - Reduced console noise by removing debug logs from MiniPlayer and ExpandedPlayer
+  - Optimized audio state synchronization between components
+  - Audio playback now smoother with less re-rendering
+
+## Previous Changes (August 13, 2025)
 
 - **Audio Playback Fix**:
   - Fixed audio playback issue where nothing would play due to non-existent external audio URLs
