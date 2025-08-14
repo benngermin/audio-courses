@@ -232,18 +232,88 @@ export function ExpandedPlayer() {
               </p>
             </div>
 
-            {/* Time display with progress bar - matching podcast app style */}
+            {/* Time display with custom draggable progress bar */}
             <div className="flex items-center gap-3 mb-8 px-2">
-              <span className="text-sm text-muted-foreground tabular-nums min-w-[45px]">
+              <span className="text-sm text-gray-500 tabular-nums min-w-[45px]">
                 {formatTime(currentTime)}
               </span>
-              <LinearProgress 
-                value={currentTime}
-                max={duration || 100}
-                height={6}
-                className="flex-1"
-              />
-              <span className="text-sm text-muted-foreground tabular-nums min-w-[55px] text-right">
+              
+              {/* Custom draggable progress bar */}
+              <div className="flex-1 relative group py-2">
+                <div 
+                  className="relative h-1.5 bg-gray-300 rounded-full cursor-pointer"
+                  onClick={(e) => {
+                    if (!duration || !seek) return;
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const percentage = x / rect.width;
+                    const newTime = percentage * duration;
+                    seek(newTime);
+                  }}
+                >
+                  {/* Progress fill */}
+                  <div
+                    className="absolute top-0 left-0 h-full bg-[#ff6b35] rounded-full transition-all duration-100"
+                    style={{ width: duration ? `${(currentTime / duration) * 100}%` : '0%' }}
+                  />
+                  
+                  {/* Draggable handle */}
+                  <div
+                    className="absolute top-1/2 -translate-y-1/2 w-5 h-5 bg-white border-2 border-[#ff6b35] rounded-full shadow-lg cursor-grab active:cursor-grabbing hover:scale-125 transition-transform touch-none"
+                    style={{ left: duration ? `${(currentTime / duration) * 100}%` : '0%', marginLeft: '-10px' }}
+                    onMouseDown={(e) => {
+                      if (!duration || !seek) return;
+                      e.preventDefault();
+                      const startX = e.clientX;
+                      const startTime = currentTime;
+                      const rect = e.currentTarget.parentElement?.getBoundingClientRect();
+                      
+                      const handleMouseMove = (moveEvent: MouseEvent) => {
+                        if (!rect || !duration || !seek) return;
+                        const deltaX = moveEvent.clientX - startX;
+                        const deltaPercentage = deltaX / rect.width;
+                        const newTime = Math.max(0, Math.min(duration, startTime + (deltaPercentage * duration)));
+                        seek(newTime);
+                      };
+                      
+                      const handleMouseUp = () => {
+                        document.removeEventListener('mousemove', handleMouseMove);
+                        document.removeEventListener('mouseup', handleMouseUp);
+                      };
+                      
+                      document.addEventListener('mousemove', handleMouseMove);
+                      document.addEventListener('mouseup', handleMouseUp);
+                    }}
+                    onTouchStart={(e) => {
+                      if (!duration || !seek) return;
+                      e.preventDefault();
+                      const touch = e.touches[0];
+                      const startX = touch.clientX;
+                      const startTime = currentTime;
+                      const rect = e.currentTarget.parentElement?.getBoundingClientRect();
+                      
+                      const handleTouchMove = (moveEvent: TouchEvent) => {
+                        if (!rect || !duration || !seek) return;
+                        const touch = moveEvent.touches[0];
+                        const deltaX = touch.clientX - startX;
+                        const deltaPercentage = deltaX / rect.width;
+                        const newTime = Math.max(0, Math.min(duration, startTime + (deltaPercentage * duration)));
+                        seek(newTime);
+                      };
+                      
+                      const handleTouchEnd = () => {
+                        document.removeEventListener('touchmove', handleTouchMove);
+                        document.removeEventListener('touchend', handleTouchEnd);
+                      };
+                      
+                      document.addEventListener('touchmove', handleTouchMove);
+                      document.addEventListener('touchend', handleTouchEnd);
+                    }}
+                  />
+                </div>
+              </div>
+              
+              <span className="text-sm text-gray-500 tabular-nums min-w-[55px] text-right">
                 -{formatTime(duration - currentTime)}
               </span>
             </div>
