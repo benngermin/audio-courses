@@ -272,9 +272,9 @@ export function ExpandedPlayer() {
                 className="h-20 w-20 sm:h-24 sm:w-24 bg-primary hover:bg-white text-white hover:text-primary rounded-full shadow-lg hover:scale-105 transition-all hover:shadow-xl"
               >
                 {isPlaying ? (
-                  <Pause className="h-12 w-12 sm:h-14 sm:w-14 stroke-[3]" />
+                  <Pause className="h-14 w-14 sm:h-16 sm:w-16 stroke-[3]" />
                 ) : (
-                  <Play className="h-12 w-12 sm:h-14 sm:w-14 ml-2 sm:ml-2.5 stroke-[3]" />
+                  <Play className="h-14 w-14 sm:h-16 sm:w-16 ml-2 sm:ml-2.5 stroke-[3]" />
                 )}
               </Button>
 
