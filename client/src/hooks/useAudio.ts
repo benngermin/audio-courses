@@ -159,7 +159,7 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
       } catch (error) {
         console.error('Error playing audio:', error);
         // Handle autoplay restrictions on mobile
-        if (error.name === 'NotAllowedError') {
+        if (error instanceof Error && error.name === 'NotAllowedError') {
           console.log('Autoplay prevented - user interaction required');
         }
       }
