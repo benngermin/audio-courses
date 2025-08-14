@@ -248,19 +248,19 @@ export function ExpandedPlayer() {
             </div>
 
             {/* Main playback controls - matching podcast app layout */}
-            <div className="flex items-center justify-center gap-10 sm:gap-12 mb-10 sm:mb-12">
-              {/* Rewind 15 seconds */}
+            <div className="flex items-center justify-center gap-6 sm:gap-8 mb-10 sm:mb-12">
+              {/* Rewind 15 seconds - 3X BIGGER */}
               <div className="relative">
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => skipBackward(15)}
-                  className="h-16 w-16 sm:h-20 sm:w-20 rounded-full hover:bg-accent/10 transition-all"
+                  className="h-[48px] w-[48px] sm:h-[60px] sm:w-[60px] rounded-full hover:bg-accent/10 transition-all"
                 >
-                  <RotateCcw className="h-12 w-12 sm:h-14 sm:w-14 text-foreground stroke-[3]" />
+                  <RotateCcw className="h-[36px] w-[36px] sm:h-[42px] sm:w-[42px] text-foreground stroke-[2]" />
                 </Button>
                 <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                  <span className="text-base sm:text-lg font-bold text-foreground mt-1">15</span>
+                  <span className="text-2xl sm:text-3xl font-bold text-foreground mt-1">15</span>
                 </span>
               </div>
 
@@ -278,18 +278,18 @@ export function ExpandedPlayer() {
                 )}
               </Button>
 
-              {/* Forward 30 seconds */}
+              {/* Forward 30 seconds - 3X BIGGER */}
               <div className="relative">
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => skipForward(30)}
-                  className="h-16 w-16 sm:h-20 sm:w-20 rounded-full hover:bg-accent/10 transition-all"
+                  className="h-[48px] w-[48px] sm:h-[60px] sm:w-[60px] rounded-full hover:bg-accent/10 transition-all"
                 >
-                  <RotateCw className="h-12 w-12 sm:h-14 sm:w-14 text-foreground stroke-[3]" />
+                  <RotateCw className="h-[36px] w-[36px] sm:h-[42px] sm:w-[42px] text-foreground stroke-[2]" />
                 </Button>
                 <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                  <span className="text-base sm:text-lg font-bold text-foreground mt-1">30</span>
+                  <span className="text-2xl sm:text-3xl font-bold text-foreground mt-1">30</span>
                 </span>
               </div>
             </div>
