@@ -183,27 +183,8 @@ export function MiniPlayer() {
               </div>
             </div>
 
-            {/* Right side - Time, Progress, and Controls */}
-            <div className="flex items-center gap-3">
-              {/* Current time */}
-              <span className="text-xs text-muted-foreground tabular-nums">
-                {formatTime(currentTime)}
-              </span>
-              
-              {/* Progress bar */}
-              <LinearProgress 
-                value={currentTime}
-                max={duration || 100}
-                height={3}
-                className="w-24"
-              />
-              
-              {/* Duration */}
-              <span className="text-xs text-muted-foreground tabular-nums">
-                {formatTime(duration)}
-              </span>
-              
-              {/* Play/Pause button */}
+            {/* Right side - Controls */}
+            <div className="flex items-center gap-2">
               <Button
                 variant="ghost"
                 size="icon"
@@ -230,10 +211,20 @@ export function MiniPlayer() {
             </div>
           </div>
 
-          {/* Time display */}
-          <div className="flex justify-between mt-1 text-xs text-muted-foreground">
-            <span>{formatTime(currentTime)}</span>
-            <span>{formatTime(duration)}</span>
+          {/* Time display with progress bar */}
+          <div className="flex items-center gap-2 mt-1">
+            <span className="text-xs text-muted-foreground tabular-nums">
+              {formatTime(currentTime)}
+            </span>
+            <LinearProgress 
+              value={currentTime}
+              max={duration || 100}
+              height={2}
+              className="flex-1"
+            />
+            <span className="text-xs text-muted-foreground tabular-nums">
+              {formatTime(duration)}
+            </span>
           </div>
         </div>
       </motion.div>
