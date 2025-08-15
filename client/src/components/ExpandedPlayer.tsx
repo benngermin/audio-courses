@@ -15,8 +15,7 @@ import {
   Gauge,
   RotateCcw,
   RotateCw,
-  Volume1,
-  ListMusic
+  Volume1
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -41,8 +40,7 @@ export function ExpandedPlayer() {
     currentAssignment, 
     isExpanded, 
     setIsExpanded,
-    setCurrentTrack,
-    isPlayAllMode 
+    setCurrentTrack 
   } = useAudioContext();
   
   const [lastProgressUpdate, setLastProgressUpdate] = useState(0);
@@ -215,17 +213,9 @@ export function ExpandedPlayer() {
 
             {/* Track info with more spacing */}
             <div className="text-center mb-8 px-4">
-              <div className="flex items-center justify-center gap-2 mb-3">
-                <h1 className="text-xl sm:text-2xl font-bold text-foreground line-clamp-2">
-                  {currentChapter.title}
-                </h1>
-                {isPlayAllMode && (
-                  <div className="flex items-center gap-1.5 px-2.5 py-1 bg-green-600/10 rounded-full flex-shrink-0">
-                    <ListMusic className="w-4 h-4 text-green-600" />
-                    <span className="text-xs font-semibold text-green-600">Play All</span>
-                  </div>
-                )}
-              </div>
+              <h1 className="text-xl sm:text-2xl font-bold text-foreground mb-3 line-clamp-2">
+                {currentChapter.title}
+              </h1>
               <p className="text-base sm:text-lg text-muted-foreground line-clamp-1">
                 {currentAssignment.title}
               </p>
