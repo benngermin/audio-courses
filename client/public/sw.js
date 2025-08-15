@@ -1,4 +1,4 @@
-const CACHE_NAME = 'audio-learning-v2'; // Updated to clear old WAV cache
+const CACHE_NAME = 'audio-learning-v3'; // Updated for proper MP3 files
 const OFFLINE_URL = '/offline.html';
 
 // Files to cache for offline functionality

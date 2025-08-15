@@ -4,7 +4,12 @@ import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import { bubbleApiService } from "./services/bubbleApi";
 import { audioService } from "./services/audioService";
-// We'll generate simple MP3-compatible audio without lamejs due to its browser dependencies
+import { exec } from 'child_process';
+import { promisify } from 'util';
+import * as fs from 'fs';
+import * as os from 'os';
+
+const execAsync = promisify(exec);
 import * as path from "path";
 import { 
   insertCourseSchema, 
@@ -306,62 +311,61 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.sendFile(path.join(process.cwd(), 'test-audio-ended.html'));
   });
 
-  // Mock audio endpoint for testing - serves a simple valid MP3 file
+  // Mock audio endpoint for testing - generates valid MP3 using ffmpeg
   // This must be before the catch-all route so it's handled properly
   app.get('/api/audio/:chapterId.mp3', async (req, res) => {
     try {
       const chapterId = req.params.chapterId.replace('.mp3', '');
       
-      console.log(`Generating test MP3 for chapter: ${chapterId}`);
+      console.log(`Generating MP3 audio for chapter: ${chapterId}`);
       
-      // Use chapter ID to create unique variations
+      // Use chapter ID to create unique speech patterns
       const hash = chapterId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-      const variation = hash % 256;
+      const baseFreq = 200 + (hash % 200); // Base frequency 200-400 Hz
+      const variation = hash % 100;
       
-      // Create a very simple but valid MP3
-      // We'll create a basic MP3 with proper structure
-      const frames = [];
-      const frameCount = 1000; // ~26 seconds
+      // Create temp files
+      const tempDir = os.tmpdir();
+      const tempMp3 = path.join(tempDir, `audio_${chapterId}_${Date.now()}.mp3`);
       
-      for (let i = 0; i < frameCount; i++) {
-        // Create MP3 frame (418 bytes for 128kbps, 44.1kHz)
-        const frame = Buffer.alloc(418);
-        
-        // MP3 Frame header (4 bytes)
-        frame[0] = 0xFF; // Frame sync (first 8 bits of 11)
-        frame[1] = 0xFB; // Frame sync (last 3 bits) + MPEG-1 + Layer 3 + no protection
-        frame[2] = 0x90; // 128kbps bitrate index
-        frame[3] = 0x00; // 44.1kHz + no padding + private bit + mono
-        
-        // Generate simple audio data
-        const frequency = 440 + (variation % 200); // A4 note with variation
-        const wordIndex = Math.floor(i / 40); // Change every ~1 second
-        const isWord = (wordIndex % 4) < 3; // 3 beats on, 1 beat off
-        
-        // Fill frame with audio data
-        for (let j = 4; j < 418; j++) {
-          if (isWord) {
-            // Generate a simple tone
-            const t = (i * 418 + j - 4) / 44100;
-            const envelope = Math.sin(Math.PI * ((i % 40) / 40)) * 0.5; // Simple envelope
-            const sample = Math.sin(2 * Math.PI * frequency * t) * envelope;
-            
-            // Convert to MP3 data range and add some variation
-            const value = Math.floor(128 + sample * 100);
-            frame[j] = Math.max(0, Math.min(255, value));
-          } else {
-            // Quiet/silence between words
-            frame[j] = 128 + Math.floor(Math.random() * 4 - 2); // Near-silence with tiny noise
-          }
-        }
-        
-        frames.push(frame);
-      }
+      // Generate speech-like audio using ffmpeg's built-in synthesis
+      // Create multiple tones with speech-like patterns
+      const duration = 30; // 30 seconds
+      const sampleRate = 44100;
       
-      // Combine all frames into final MP3
-      const mp3Buffer = Buffer.concat(frames);
+      // Build ffmpeg command to generate speech-like audio
+      // Use sine waves with envelopes to simulate speech
+      const ffmpegCommand = `ffmpeg -f lavfi -i "` +
+        `sine=frequency=${baseFreq}:duration=0.3,` +
+        `apad=pad_dur=0.1[s1];` +
+        `sine=frequency=${baseFreq * 1.5}:duration=0.2,` +
+        `apad=pad_dur=0.15[s2];` +
+        `sine=frequency=${baseFreq * 2}:duration=0.25,` +
+        `apad=pad_dur=0.1[s3];` +
+        `sine=frequency=${baseFreq * 0.8}:duration=0.35,` +
+        `apad=pad_dur=0.05[s4];` +
+        `[s1][s2][s3][s4]concat=n=4:v=0:a=1[mix];` +
+        `[mix]aloop=loop=25:size=${sampleRate}[loop];` +
+        `[loop]atrim=duration=${duration},` +
+        `volume=0.5,` +
+        `tremolo=f=4:d=0.3,` +
+        `aformat=sample_rates=44100:channel_layouts=mono" ` +
+        `-t ${duration} ` +
+        `-b:a 128k ` +
+        `-ar 44100 ` +
+        `-ac 1 ` +
+        `-y ${tempMp3}`;
       
-      console.log(`Generated MP3 file of ${mp3Buffer.length} bytes for chapter ${chapterId}`);
+      // Execute ffmpeg command
+      await execAsync(ffmpegCommand);
+      
+      // Read the generated MP3 file
+      const mp3Buffer = await fs.promises.readFile(tempMp3);
+      
+      // Clean up temp file
+      await fs.promises.unlink(tempMp3).catch(() => {}); // Ignore errors
+      
+      console.log(`Generated valid MP3 file of ${mp3Buffer.length} bytes for chapter ${chapterId}`);
       
       // Set proper headers for audio streaming
       res.setHeader('Content-Type', 'audio/mpeg');
