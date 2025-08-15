@@ -25,18 +25,39 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
       return;
     }
 
+    // Normalize URLs for comparison
+    const normalizeUrl = (url: string) => {
+      try {
+        // If it's already a full URL, return it
+        if (url.startsWith('http://') || url.startsWith('https://')) {
+          return url;
+        }
+        // Otherwise, construct full URL based on current origin
+        return new URL(url, window.location.origin).href;
+      } catch {
+        return url;
+      }
+    };
+
+    const normalizedSrc = normalizeUrl(src);
+    
     // If we already have an audio element with the same src, don't recreate it
-    if (audioRef.current && audioRef.current.src.includes(src)) {
-      // Don't create a new interval here - it's already created below
+    if (audioRef.current && normalizeUrl(audioRef.current.src) === normalizedSrc) {
+      // Audio element already exists with same source, just ensure it's ready
+      setIsLoading(false);
       return;
     }
 
-    // Pause previous audio if switching to a new track
-    if (audioRef.current && !audioRef.current.src.includes(src)) {
+    // Pause and clean up previous audio if switching to a new track
+    if (audioRef.current) {
       audioRef.current.pause();
+      // Remove all event listeners from old audio element
+      const oldAudio = audioRef.current;
+      // We'll clean up listeners below, just pause here
       setIsPlaying(false);
     }
 
+    console.log('Creating new audio element for:', src);
     const audio = new Audio();
     audio.preload = "metadata";
     audio.crossOrigin = "anonymous"; // Add CORS support
@@ -45,22 +66,8 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
     audio.src = src;
     audioRef.current = audio;
 
-    // Test if the audio URL is accessible
-    fetch(src, { method: 'HEAD' })
-      .then(response => {
-        if (!response.ok) {
-          console.error("Audio URL not accessible:", response.status, response.statusText);
-          setIsLoading(false);
-        } else {
-          // Check content type
-          const contentType = response.headers.get('content-type');
-          console.log('Audio content-type:', contentType, 'for URL:', src);
-        }
-      })
-      .catch(error => {
-        console.error("Failed to fetch audio URL:", error);
-        setIsLoading(false);
-      });
+    // Remove HEAD request check - let the audio element handle loading
+    // The audio element's error event will catch any loading issues
 
     const handleTimeUpdate = () => {
       const time = audio.currentTime;
@@ -135,8 +142,9 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
     audio.addEventListener("waiting", handleWaiting);
     audio.addEventListener("canplaythrough", handleCanPlayThrough);
     audio.addEventListener("error", handleError);
-    audio.addEventListener("loadstart", () => console.log("Audio load started for:", src));
-    audio.addEventListener("loadeddata", () => console.log("Audio data loaded for:", src));
+    // Remove verbose logging
+    // audio.addEventListener("loadstart", () => console.log("Audio load started for:", src));
+    // audio.addEventListener("loadeddata", () => console.log("Audio data loaded for:", src));
     
 
 
@@ -156,13 +164,15 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
       audio.removeEventListener("waiting", handleWaiting);
       audio.removeEventListener("canplaythrough", handleCanPlayThrough);
       audio.removeEventListener("error", handleError);
-      audio.pause();
-      // Clean up the audio element
-      audio.src = "";
-      audioRef.current = null;
+      // Don't set src to empty string as it causes AbortError
+      // Just pause the audio and keep the reference
+      if (audioRef.current === audio) {
+        audio.pause();
+        audioRef.current = null;
+      }
       setIsPlaying(false);
     };
-  }, [src, onTimeUpdate, onEnded, onLoadedMetadata]);
+  }, [src]); // Only depend on src, callbacks don't need to trigger re-initialization
 
   const play = useCallback(async () => {
     if (audioRef.current) {
@@ -257,12 +267,34 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
   // Setup Media Session API for background playback controls
   useEffect(() => {
     if ('mediaSession' in navigator && audioRef.current) {
-      navigator.mediaSession.setActionHandler('play', play);
-      navigator.mediaSession.setActionHandler('pause', pause);
-      navigator.mediaSession.setActionHandler('seekbackward', () => skipBackward());
-      navigator.mediaSession.setActionHandler('seekforward', () => skipForward());
+      navigator.mediaSession.setActionHandler('play', () => {
+        if (audioRef.current) {
+          audioRef.current.play();
+          setIsPlaying(true);
+        }
+      });
+      navigator.mediaSession.setActionHandler('pause', () => {
+        if (audioRef.current) {
+          audioRef.current.pause();
+          setIsPlaying(false);
+        }
+      });
+      navigator.mediaSession.setActionHandler('seekbackward', () => {
+        if (audioRef.current) {
+          const newTime = Math.max(audioRef.current.currentTime - 15, 0);
+          audioRef.current.currentTime = newTime;
+          setCurrentTime(newTime);
+        }
+      });
+      navigator.mediaSession.setActionHandler('seekforward', () => {
+        if (audioRef.current) {
+          const newTime = Math.min(audioRef.current.currentTime + 15, audioRef.current.duration);
+          audioRef.current.currentTime = newTime;
+          setCurrentTime(newTime);
+        }
+      });
     }
-  }, [play, pause, skipBackward, skipForward]);
+  }, [src]); // Only re-register when src changes
 
   return {
     isPlaying,
