@@ -112,7 +112,7 @@ function ChapterCard({ chapter, isCurrentlyPlaying, onPlay, onDownload, isDownlo
   const formatDuration = (seconds: number | null) => {
     if (!seconds) return "Unknown duration";
     const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
+    const remainingSeconds = Math.round(seconds % 60);
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
@@ -156,10 +156,10 @@ function ChapterCard({ chapter, isCurrentlyPlaying, onPlay, onDownload, isDownlo
               </h3>
               <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs sm:text-sm text-slate-500">
                 <span className="whitespace-nowrap">{formatDuration(chapter.duration)}</span>
-                {progress?.currentTime && progress.currentTime > 0 && !progress.isCompleted && (
+                {remainingTime && !progress?.isCompleted && (
                   <>
                     <span className="hidden sm:inline">•</span>
-                    <span className="whitespace-nowrap">{remainingTime} left</span>
+                    <span className="whitespace-nowrap">{remainingTime} remaining</span>
                   </>
                 )}
                 {progress?.isCompleted && (
