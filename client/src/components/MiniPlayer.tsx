@@ -229,58 +229,62 @@ export function MiniPlayer() {
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <p className="text-base sm:text-lg font-medium text-foreground truncate">
+                  <p className="text-sm sm:text-base font-medium text-foreground truncate">
                     {currentChapter.title}
                   </p>
                   {isPlayAllMode && (
                     <div className="flex items-center gap-1.5 px-2.5 py-1 bg-primary/10 rounded-full flex-shrink-0">
-                      <ListMusic className="w-4 h-4 text-primary" />
+                      <ListMusic className="w-5 h-5 text-primary" />
                       <span className="text-xs font-medium text-primary">Play All</span>
                     </div>
                   )}
                 </div>
-                <p className="text-sm sm:text-base text-muted-foreground truncate">
+                <p className="text-sm text-muted-foreground truncate">
                   {currentAssignment.title}
                 </p>
               </div>
             </div>
 
             {/* Right side - Controls */}
-            <div className="flex items-center gap-2 ml-auto">
-              <button
-                className="h-10 w-10 sm:h-11 sm:w-11 flex items-center justify-center rounded-lg transition-opacity hover:opacity-60"
+            <div className="flex items-center gap-2 sm:gap-3">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-14 w-14 sm:h-16 sm:w-16"
                 onClick={(e) => {
                   e.stopPropagation();
                   togglePlay();
                 }}
               >
                 {isPlaying ? (
-                  <Pause className="h-6 w-6 sm:h-7 sm:w-7 text-foreground" />
+                  <Pause className="h-6 w-6 sm:h-8 sm:w-8" />
                 ) : (
-                  <Play className="h-6 w-6 sm:h-7 sm:w-7 ml-0.5 text-foreground" />
+                  <Play className="h-6 w-6 sm:h-8 sm:w-8 ml-0.5" />
                 )}
-              </button>
-              <button
-                className="h-9 w-9 sm:h-10 sm:w-10 flex items-center justify-center rounded-lg transition-opacity hover:opacity-60 mr-1"
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-12 w-12"
                 onClick={handleClose}
               >
-                <X className="h-6 w-6 sm:h-7 sm:w-7 text-foreground" />
-              </button>
+                <X className="h-6 w-6" />
+              </Button>
             </div>
           </div>
 
           {/* Time display with progress bar */}
           <div className="flex items-center gap-3 mt-2">
-            <span className="text-sm sm:text-base text-muted-foreground tabular-nums min-w-[45px] sm:min-w-[52px]">
+            <span className="text-sm text-muted-foreground tabular-nums min-w-[48px]">
               {formatTime(currentTime)}
             </span>
             <LinearProgress 
               value={currentTime}
               max={duration || 100}
-              height={4}
+              height={3}
               className="flex-1"
             />
-            <span className="text-sm sm:text-base text-muted-foreground tabular-nums min-w-[45px] sm:min-w-[52px] text-right">
+            <span className="text-sm text-muted-foreground tabular-nums min-w-[48px] text-right">
               {formatTime(duration)}
             </span>
           </div>
