@@ -15,7 +15,7 @@ import type { Course, Assignment, Chapter, UserProgress, DownloadedContent } fro
 export default function Assignments() {
   const { user } = useAuth();
   const [location, navigate] = useLocation();
-  const { setCurrentTrack, currentChapter } = useAudioContext();
+  const { setCurrentTrack, currentChapter, setIsPlayAllMode } = useAudioContext();
   const [currentAssignment, setCurrentAssignment] = useState<Assignment | undefined>(undefined);
 
   const { data: courses = [], isLoading: coursesLoading } = useQuery<Course[]>({
@@ -111,6 +111,7 @@ function AssignmentHeader({
 }) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { setIsPlayAllMode } = useAudioContext();
   
   const { data: chapters = [] } = useQuery<Chapter[]>({
     queryKey: ["/api/assignments", assignment.id, "chapters"],
@@ -191,6 +192,7 @@ function AssignmentHeader({
   
   const handlePlayAll = () => {
     if (chapters.length > 0 && chapters[0]) {
+      setIsPlayAllMode(true); // Enable Play All mode
       onChapterSelect(chapters[0]); // Start with first chapter
     }
   };

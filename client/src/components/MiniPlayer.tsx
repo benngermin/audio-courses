@@ -1,12 +1,13 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { LinearProgress } from "@/components/ui/circular-progress";
-import { Play, Pause, ChevronUp, X } from "lucide-react";
+import { Play, Pause, ChevronUp, X, ListMusic } from "lucide-react";
 import { useAudioContext } from "@/contexts/AudioContext";
 import { useAudio } from "@/hooks/useAudio";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { motion, AnimatePresence } from "framer-motion";
+import type { Chapter } from "@shared/schema";
 
 export function MiniPlayer() {
   const { 
@@ -18,6 +19,9 @@ export function MiniPlayer() {
     setAudioControls,
     setAudioState,
     setIsPlaying,
+    isPlayAllMode,
+    setCurrentTrack,
+    setIsPlayAllMode,
   } = useAudioContext();
   
   const [lastProgressUpdate, setLastProgressUpdate] = useState(0);
@@ -41,11 +45,30 @@ export function MiniPlayer() {
     }
   }, [currentChapter, lastProgressUpdate, progressMutation]);
 
+  // Get all chapters for the current assignment to enable Play All
+  const { data: chapters = [] } = useQuery<Chapter[]>({
+    queryKey: ["/api/assignments", currentAssignment?.id, "chapters"],
+    enabled: !!currentAssignment?.id && isPlayAllMode,
+  });
+
   const handleEnded = useCallback(() => {
-    if (!currentChapter) return;
-    // The audio hook will handle setting isPlaying to false
-    // Mark as completed will be handled separately
-  }, [currentChapter]);
+    if (!currentChapter || !currentAssignment) return;
+    
+    // If in Play All mode, advance to the next chapter
+    if (isPlayAllMode && chapters.length > 0) {
+      const currentIndex = chapters.findIndex(ch => ch.id === currentChapter.id);
+      if (currentIndex !== -1 && currentIndex < chapters.length - 1) {
+        // There's a next chapter, play it
+        const nextChapter = chapters[currentIndex + 1];
+        console.log('Play All: Advancing to next chapter:', nextChapter.title);
+        setCurrentTrack(nextChapter, currentAssignment);
+      } else {
+        // No more chapters, end Play All mode
+        console.log('Play All: Finished all chapters');
+        setIsPlayAllMode(false);
+      }
+    }
+  }, [currentChapter, currentAssignment, isPlayAllMode, chapters, setCurrentTrack, setIsPlayAllMode]);
 
   // Log when we're about to use the audio (reduced logging)
   // console.log("MiniPlayer - Setting up audio with:", {
@@ -179,6 +202,7 @@ export function MiniPlayer() {
   const handleClose = (e: React.MouseEvent) => {
     e.stopPropagation();
     clearCurrentTrack();
+    setIsPlayAllMode(false); // Clear Play All mode when closing
   };
 
   if (!currentChapter || !currentAssignment) return null;
@@ -204,9 +228,17 @@ export function MiniPlayer() {
                 <div className="w-5 h-5 sm:w-6 sm:h-6 bg-primary rounded-full animate-pulse" />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-xs sm:text-sm font-medium text-foreground truncate">
-                  {currentChapter.title}
-                </p>
+                <div className="flex items-center gap-1.5">
+                  <p className="text-xs sm:text-sm font-medium text-foreground truncate">
+                    {currentChapter.title}
+                  </p>
+                  {isPlayAllMode && (
+                    <div className="flex items-center gap-1 px-1.5 py-0.5 bg-primary/10 rounded-full flex-shrink-0">
+                      <ListMusic className="w-3 h-3 text-primary" />
+                      <span className="text-[10px] font-medium text-primary">Play All</span>
+                    </div>
+                  )}
+                </div>
                 <p className="text-xs text-muted-foreground truncate">
                   {currentAssignment.title}
                 </p>

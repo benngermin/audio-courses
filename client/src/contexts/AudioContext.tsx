@@ -6,10 +6,12 @@ interface AudioContextType {
   currentAssignment: Assignment | null;
   isPlaying: boolean;
   isExpanded: boolean;
+  isPlayAllMode: boolean;
   setCurrentTrack: (chapter: Chapter, assignment: Assignment) => void;
   clearCurrentTrack: () => void;
   setIsPlaying: (playing: boolean) => void;
   setIsExpanded: (expanded: boolean) => void;
+  setIsPlayAllMode: (playAll: boolean) => void;
   toggleExpanded: () => void;
   // Shared audio controls
   audioControls: {
@@ -42,6 +44,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
   const [currentAssignment, setCurrentAssignment] = useState<Assignment | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isPlayAllMode, setIsPlayAllMode] = useState(false);
   const [audioControls, setAudioControls] = useState<AudioContextType['audioControls']>(null);
   const [audioState, setAudioState] = useState<AudioContextType['audioState']>({
     currentTime: 0,
@@ -63,6 +66,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     setCurrentAssignment(null);
     setIsPlaying(false);
     setIsExpanded(false);
+    setIsPlayAllMode(false);
   }, []);
 
   const toggleExpanded = useCallback(() => {
@@ -76,10 +80,12 @@ export function AudioProvider({ children }: { children: ReactNode }) {
         currentAssignment,
         isPlaying,
         isExpanded,
+        isPlayAllMode,
         setCurrentTrack,
         clearCurrentTrack,
         setIsPlaying,
         setIsExpanded,
+        setIsPlayAllMode,
         toggleExpanded,
         audioControls,
         setAudioControls,
