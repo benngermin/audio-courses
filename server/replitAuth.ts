@@ -137,10 +137,13 @@ export async function setupAuth(app: Express) {
   });
 }
 
+// Track ongoing refresh operations to prevent race conditions
+const refreshPromises = new Map<string, Promise<any>>();
+
 export const isAuthenticated: RequestHandler = async (req, res, next) => {
   const user = req.user as any;
 
-  if (!req.isAuthenticated() || !user.expires_at) {
+  if (!req.isAuthenticated() || !user?.expires_at) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
@@ -155,10 +158,38 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
     return;
   }
 
+  // Check if a refresh is already in progress for this user
+  const userId = user.id || user.claims?.sub;
+  if (!userId) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  
+  if (refreshPromises.has(userId)) {
+    try {
+      await refreshPromises.get(userId);
+      return next();
+    } catch (error) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+  }
+
+  // Create new refresh promise
+  const refreshPromise = (async () => {
+    try {
+      const config = await getOidcConfig();
+      const tokenResponse = await client.refreshTokenGrant(config, refreshToken);
+      updateUserSession(user, tokenResponse);
+    } finally {
+      // Clean up the promise after completion
+      refreshPromises.delete(userId);
+    }
+  })();
+
+  refreshPromises.set(userId, refreshPromise);
+
   try {
-    const config = await getOidcConfig();
-    const tokenResponse = await client.refreshTokenGrant(config, refreshToken);
-    updateUserSession(user, tokenResponse);
+    await refreshPromise;
     return next();
   } catch (error) {
     res.status(401).json({ message: "Unauthorized" });

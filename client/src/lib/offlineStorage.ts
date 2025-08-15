@@ -268,6 +268,8 @@ export const offlineStorage = new OfflineStorage();
 // Initialize offline storage when the module is loaded
 offlineStorage.initialize().catch(error => {
   console.warn('Failed to initialize offline storage:', error);
+  // Set a flag that can be checked by components
+  (offlineStorage as any).initError = error;
 });
 
 export default offlineStorage;

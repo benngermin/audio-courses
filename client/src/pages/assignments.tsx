@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useLocation } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import { Play, Pause, Download, ChevronRight, CheckCircle, CheckCircle2, Trash2, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
@@ -21,7 +22,7 @@ export default function Assignments() {
     queryKey: ["/api/courses"],
   });
 
-  const currentCourse = courses[0]; // For now, use first course
+  const currentCourse = courses.length > 0 ? courses[0] : undefined; // For now, use first course
 
   const { data: assignments = [], isLoading: assignmentsLoading } = useQuery<Assignment[]>({
     queryKey: ["/api/courses", currentCourse?.id, "assignments"],
@@ -42,7 +43,7 @@ export default function Assignments() {
   };
 
   const handleChapterSelect = (chapter: Chapter) => {
-    if (currentAssignment) {
+    if (currentAssignment && chapter) {
       setCurrentTrack(chapter, currentAssignment);
     }
   };
@@ -189,7 +190,7 @@ function AssignmentHeader({
   const isDownloading = downloadAllMutation.isPending || downloadingChapters.length > 0;
   
   const handlePlayAll = () => {
-    if (chapters.length > 0) {
+    if (chapters.length > 0 && chapters[0]) {
       onChapterSelect(chapters[0]); // Start with first chapter
     }
   };

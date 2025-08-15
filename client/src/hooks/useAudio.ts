@@ -27,14 +27,8 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
 
     // If we already have an audio element with the same src, don't recreate it
     if (audioRef.current && audioRef.current.src.includes(src)) {
-      // Start interval to update current time for smooth progress
-      const progressInterval = setInterval(() => {
-        if (audioRef.current && !audioRef.current.paused) {
-          setCurrentTime(audioRef.current.currentTime);
-        }
-      }, 100); // Update every 100ms for smooth animation
-
-      return () => clearInterval(progressInterval);
+      // Don't create a new interval here - it's already created below
+      return;
     }
 
     // Pause previous audio if switching to a new track
@@ -118,6 +112,7 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
         }
       }
       setIsLoading(false);
+      setIsPlaying(false);
     };
 
     audio.addEventListener("timeupdate", handleTimeUpdate);
@@ -152,7 +147,7 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
   }, [src, onTimeUpdate, onEnded, onLoadedMetadata]);
 
   const play = useCallback(async () => {
-    if (audioRef.current && !isPlaying) {
+    if (audioRef.current) {
       try {
         // Mobile Safari requires user interaction before playing
         const playPromise = audioRef.current.play();
@@ -165,10 +160,12 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
         // Handle autoplay restrictions on mobile
         if (error instanceof Error && error.name === 'NotAllowedError') {
           console.log('Autoplay prevented - user interaction required');
+          // Ensure state reflects that playback failed
+          setIsPlaying(false);
         }
       }
     }
-  }, [isPlaying]);
+  }, []);
 
   const pause = useCallback(() => {
     if (audioRef.current) {

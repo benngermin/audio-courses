@@ -109,14 +109,28 @@ export function MiniPlayer() {
 
   // Auto-play when a new chapter is selected (only when chapter changes)
   const prevChapterIdRef = useRef<string | null>(null);
+  const isAutoPlayingRef = useRef(false);
+  
   useEffect(() => {
     if (currentChapter?.id && currentChapter.id !== prevChapterIdRef.current) {
       prevChapterIdRef.current = currentChapter.id;
-      // Small delay to ensure audio is loaded
-      const timer = setTimeout(() => {
-        play();
-      }, 300);
-      return () => clearTimeout(timer);
+      
+      // Prevent concurrent auto-play attempts
+      if (isAutoPlayingRef.current) return;
+      
+      isAutoPlayingRef.current = true;
+      
+      // Use requestAnimationFrame instead of setTimeout for better timing
+      const rafId = requestAnimationFrame(() => {
+        play().finally(() => {
+          isAutoPlayingRef.current = false;
+        });
+      });
+      
+      return () => {
+        cancelAnimationFrame(rafId);
+        isAutoPlayingRef.current = false;
+      };
     }
   }, [currentChapter?.id, play]);
 

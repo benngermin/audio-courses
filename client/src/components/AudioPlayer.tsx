@@ -99,16 +99,17 @@ export function AudioPlayer({
   }, [chapter.id, lastProgressUpdate, progressMutation]);
 
   const handleEnded = useCallback(() => {
+    // Mark chapter as completed
     progressMutation.mutate({
       chapterId: chapter.id,
-      currentTime: duration,
+      currentTime: chapter.duration || 0,
       isCompleted: true,
     });
     // Auto-advance to next chapter if enabled and available
     if (autoAdvance && hasNext && onNext) {
       onNext();
     }
-  }, [chapter.id, progressMutation, autoAdvance, hasNext, onNext]);
+  }, [chapter.id, chapter.duration, progressMutation, autoAdvance, hasNext, onNext]);
 
   const handleLoadedMetadata = useCallback((audioDuration: number) => {
     // Update chapter duration if not set
