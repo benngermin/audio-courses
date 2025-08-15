@@ -248,7 +248,7 @@ export function MiniPlayer() {
             {/* Right side - Controls */}
             <div className="flex items-center gap-2 ml-auto">
               <button
-                className="h-10 w-10 sm:h-11 sm:w-11 flex items-center justify-center rounded-lg transition-opacity hover:opacity-60"
+                className="h-10 w-10 sm:h-11 sm:w-11 flex items-center justify-center rounded-lg transition-opacity hover:opacity-60 mr-2"
                 onClick={(e) => {
                   e.stopPropagation();
                   togglePlay();
