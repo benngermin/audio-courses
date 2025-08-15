@@ -246,29 +246,29 @@ export function MiniPlayer() {
             </div>
 
             {/* Right side - Controls */}
-            <div className="flex items-center gap-2 sm:gap-3">
+            <div className="flex items-center gap-1">
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-12 w-12 sm:h-14 sm:w-14"
+                className="h-10 w-10 sm:h-11 sm:w-11"
                 onClick={(e) => {
                   e.stopPropagation();
                   togglePlay();
                 }}
               >
                 {isPlaying ? (
-                  <Pause className="h-5 w-5 sm:h-6 sm:w-6" />
+                  <Pause className="h-6 w-6 sm:h-7 sm:w-7" />
                 ) : (
-                  <Play className="h-5 w-5 sm:h-6 sm:w-6 ml-0.5" />
+                  <Play className="h-6 w-6 sm:h-7 sm:w-7 ml-0.5" />
                 )}
               </Button>
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-10 w-10 sm:h-12 sm:w-12"
+                className="h-9 w-9 sm:h-10 sm:w-10"
                 onClick={handleClose}
               >
-                <X className="h-5 w-5 sm:h-6 sm:w-6" />
+                <X className="h-6 w-6 sm:h-7 sm:w-7" />
               </Button>
             </div>
           </div>
