@@ -7,7 +7,7 @@ import { useLocation } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Play, Pause, Download, ChevronRight, CheckCircle, CheckCircle2, Trash2, Loader2 } from "lucide-react";
+import { Play, Pause, Download, ChevronRight, CheckCircle, CheckCircle2, Trash2, Loader2, ListMusic } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import type { Course, Assignment, Chapter, UserProgress, DownloadedContent } from "@shared/schema";
@@ -111,7 +111,7 @@ function AssignmentHeader({
 }) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { setIsPlayAllMode } = useAudioContext();
+  const { setIsPlayAllMode, isPlayAllMode, currentChapter } = useAudioContext();
   
   const { data: chapters = [] } = useQuery<Chapter[]>({
     queryKey: ["/api/assignments", assignment.id, "chapters"],
@@ -191,9 +191,18 @@ function AssignmentHeader({
   const isDownloading = downloadAllMutation.isPending || downloadingChapters.length > 0;
   
   const handlePlayAll = () => {
-    if (chapters.length > 0 && chapters[0]) {
-      setIsPlayAllMode(true); // Enable Play All mode
-      onChapterSelect(chapters[0]); // Start with first chapter
+    if (isPlayAllMode) {
+      // Toggle off Play All mode (but keep playing current chapter)
+      setIsPlayAllMode(false);
+    } else {
+      // Toggle on Play All mode
+      if (chapters.length > 0 && chapters[0]) {
+        setIsPlayAllMode(true);
+        // Only start playing if nothing is currently playing
+        if (!currentChapter) {
+          onChapterSelect(chapters[0]);
+        }
+      }
     }
   };
 
@@ -236,11 +245,19 @@ function AssignmentHeader({
           )}
           <Button
             onClick={handlePlayAll}
-            className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#ed7738] hover:bg-[#d96429] flex items-center justify-center p-0 shadow-lg hover:shadow-xl transition-all duration-200"
+            className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center p-0 shadow-lg hover:shadow-xl transition-all duration-200 ${
+              isPlayAllMode 
+                ? "bg-green-600 hover:bg-green-700 ring-2 ring-green-400 ring-offset-2" 
+                : "bg-[#ed7738] hover:bg-[#d96429]"
+            }`}
             disabled={chapters.length === 0}
-            title="Play All Chapters"
+            title={isPlayAllMode ? "Stop Play All Mode" : "Play All Chapters"}
           >
-            <Play className="h-5 w-5 sm:h-6 sm:w-6 text-white ml-0.5" fill="currentColor" />
+            {isPlayAllMode ? (
+              <ListMusic className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+            ) : (
+              <Play className="h-5 w-5 sm:h-6 sm:w-6 text-white ml-0.5" fill="currentColor" />
+            )}
           </Button>
         </div>
       </div>
