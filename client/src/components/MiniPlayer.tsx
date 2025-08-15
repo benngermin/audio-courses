@@ -218,73 +218,73 @@ export function MiniPlayer() {
         style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
       >
         <div 
-          className="px-3 sm:px-4 py-2 sm:py-3 cursor-pointer"
+          className="px-5 sm:px-6 py-3 sm:py-5 cursor-pointer"
           onClick={() => setIsExpanded(true)}
         >
           <div className="flex items-center justify-between">
             {/* Left side - Track info */}
-            <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-accent rounded-lg flex items-center justify-center flex-shrink-0">
-                <div className="w-5 h-5 sm:w-6 sm:h-6 bg-primary rounded-full animate-pulse" />
+            <div className="flex items-center gap-3 sm:gap-5 flex-1 min-w-0">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-accent rounded-lg flex items-center justify-center flex-shrink-0">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-primary rounded-full animate-pulse" />
               </div>
               <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-1.5">
-                  <p className="text-xs sm:text-sm font-medium text-foreground truncate">
+                <div className="flex items-center gap-2">
+                  <p className="text-sm sm:text-base font-medium text-foreground truncate">
                     {currentChapter.title}
                   </p>
                   {isPlayAllMode && (
-                    <div className="flex items-center gap-1 px-1.5 py-0.5 bg-primary/10 rounded-full flex-shrink-0">
-                      <ListMusic className="w-3 h-3 text-primary" />
-                      <span className="text-[10px] font-medium text-primary">Play All</span>
+                    <div className="flex items-center gap-1.5 px-2.5 py-1 bg-primary/10 rounded-full flex-shrink-0">
+                      <ListMusic className="w-5 h-5 text-primary" />
+                      <span className="text-xs font-medium text-primary">Play All</span>
                     </div>
                   )}
                 </div>
-                <p className="text-xs text-muted-foreground truncate">
+                <p className="text-sm text-muted-foreground truncate">
                   {currentAssignment.title}
                 </p>
               </div>
             </div>
 
             {/* Right side - Controls */}
-            <div className="flex items-center gap-1 sm:gap-2">
+            <div className="flex items-center gap-2 sm:gap-3">
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-9 w-9 sm:h-10 sm:w-10"
+                className="h-14 w-14 sm:h-16 sm:w-16"
                 onClick={(e) => {
                   e.stopPropagation();
                   togglePlay();
                 }}
               >
                 {isPlaying ? (
-                  <Pause className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <Pause className="h-6 w-6 sm:h-8 sm:w-8" />
                 ) : (
-                  <Play className="h-4 w-4 sm:h-5 sm:w-5 ml-0.5" />
+                  <Play className="h-6 w-6 sm:h-8 sm:w-8 ml-0.5" />
                 )}
               </Button>
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8"
+                className="h-12 w-12"
                 onClick={handleClose}
               >
-                <X className="h-4 w-4" />
+                <X className="h-6 w-6" />
               </Button>
             </div>
           </div>
 
           {/* Time display with progress bar */}
-          <div className="flex items-center gap-2 mt-1">
-            <span className="text-xs text-muted-foreground tabular-nums min-w-[32px]">
+          <div className="flex items-center gap-3 mt-2">
+            <span className="text-sm text-muted-foreground tabular-nums min-w-[48px]">
               {formatTime(currentTime)}
             </span>
             <LinearProgress 
               value={currentTime}
               max={duration || 100}
-              height={2}
+              height={3}
               className="flex-1"
             />
-            <span className="text-xs text-muted-foreground tabular-nums min-w-[32px] text-right">
+            <span className="text-sm text-muted-foreground tabular-nums min-w-[48px] text-right">
               {formatTime(duration)}
             </span>
           </div>
