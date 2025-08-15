@@ -5,7 +5,6 @@ import { Play, Pause, Download, ChevronRight, ArrowLeft, CheckCircle } from "luc
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { Progress } from "@/components/ui/progress";
 import type { Assignment, Chapter, UserProgress } from "@shared/schema";
 
 interface ChapterListProps {
@@ -116,18 +115,12 @@ function ChapterCard({ chapter, isCurrentlyPlaying, onPlay, onDownload, isDownlo
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
-  const getProgressPercentage = () => {
-    if (!progress?.currentTime || !chapter.duration) return 0;
-    return (progress.currentTime / chapter.duration) * 100;
-  };
-
   const getRemainingTime = () => {
     if (!progress?.currentTime || !chapter.duration) return null;
     const remaining = chapter.duration - progress.currentTime;
     return remaining > 0 ? formatDuration(remaining) : null;
   };
 
-  const progressPercentage = getProgressPercentage();
   const remainingTime = getRemainingTime();
 
   return (
@@ -169,9 +162,6 @@ function ChapterCard({ chapter, isCurrentlyPlaying, onPlay, onDownload, isDownlo
                   </>
                 )}
               </div>
-              {progressPercentage > 0 && !progress?.isCompleted && (
-                <Progress value={progressPercentage} className="w-full h-1 sm:h-1.5 mt-2" />
-              )}
             </div>
           </div>
           <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
