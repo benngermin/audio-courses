@@ -6,7 +6,6 @@ import { useAuth } from "@/hooks/useAuth";
 import { useLocation } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import { Play, Pause, Download, ChevronRight, CheckCircle, CheckCircle2, Trash2, Loader2, ListMusic } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
@@ -354,18 +353,12 @@ function ChapterCard({ chapter, onPlay }: ChapterCardProps) {
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
-  const getProgressPercentage = () => {
-    if (!progress?.currentTime || !chapter.duration) return 0;
-    return (progress.currentTime / chapter.duration) * 100;
-  };
-
   const getRemainingTime = () => {
     if (!progress?.currentTime || !chapter.duration) return null;
     const remaining = chapter.duration - progress.currentTime;
     return remaining > 0 ? formatDuration(remaining) : null;
   };
 
-  const progressPercentage = getProgressPercentage();
   const remainingTime = getRemainingTime();
 
   return (
@@ -412,9 +405,6 @@ function ChapterCard({ chapter, onPlay }: ChapterCardProps) {
                   </>
                 )}
               </div>
-              {progressPercentage > 0 && !progress?.isCompleted && (
-                <Progress value={progressPercentage} className="w-full h-1.5 mt-2" />
-              )}
             </div>
           </div>
           <div className="flex items-center gap-2">
