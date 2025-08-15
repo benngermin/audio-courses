@@ -37,20 +37,29 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
       setIsPlaying(false);
     }
 
-    const audio = new Audio(src);
+    const audio = new Audio();
     audio.preload = "metadata";
     audio.crossOrigin = "anonymous"; // Add CORS support
+    
+    // Set the source after configuring the audio element
+    audio.src = src;
     audioRef.current = audio;
 
-    // Test if the audio URL is accessible (silently)
+    // Test if the audio URL is accessible
     fetch(src, { method: 'HEAD' })
       .then(response => {
         if (!response.ok) {
           console.error("Audio URL not accessible:", response.status, response.statusText);
+          setIsLoading(false);
+        } else {
+          // Check content type
+          const contentType = response.headers.get('content-type');
+          console.log('Audio content-type:', contentType, 'for URL:', src);
         }
       })
       .catch(error => {
         console.error("Failed to fetch audio URL:", error);
+        setIsLoading(false);
       });
 
     const handleTimeUpdate = () => {
@@ -85,7 +94,6 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
     };
 
     const handleError = (e: Event) => {
-      console.error("Audio error:", e);
       const audioError = audio.error;
       if (audioError) {
         console.error("Audio error details:", {
@@ -93,7 +101,8 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
           message: audioError.message,
           src: audio.src,
           readyState: audio.readyState,
-          networkState: audio.networkState
+          networkState: audio.networkState,
+          currentSrc: audio.currentSrc
         });
         // Log specific error codes
         switch(audioError.code) {
@@ -108,8 +117,12 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
             break;
           case 4:
             console.error("MEDIA_ERR_SRC_NOT_SUPPORTED: The media format is not supported");
+            // Try to provide a fallback or better error message
+            console.error("Browser may not support WAV format. Consider using MP3 or OGG.");
             break;
         }
+      } else {
+        console.error("Audio error event:", e);
       }
       setIsLoading(false);
       setIsPlaying(false);
@@ -122,6 +135,8 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
     audio.addEventListener("waiting", handleWaiting);
     audio.addEventListener("canplaythrough", handleCanPlayThrough);
     audio.addEventListener("error", handleError);
+    audio.addEventListener("loadstart", () => console.log("Audio load started for:", src));
+    audio.addEventListener("loadeddata", () => console.log("Audio data loaded for:", src));
     
 
 
@@ -142,6 +157,9 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
       audio.removeEventListener("canplaythrough", handleCanPlayThrough);
       audio.removeEventListener("error", handleError);
       audio.pause();
+      // Clean up the audio element
+      audio.src = "";
+      audioRef.current = null;
       setIsPlaying(false);
     };
   }, [src, onTimeUpdate, onEnded, onLoadedMetadata]);
@@ -156,13 +174,19 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
         }
         setIsPlaying(true);
       } catch (error) {
-        console.error('Error playing audio:', error);
-        // Handle autoplay restrictions on mobile
-        if (error instanceof Error && error.name === 'NotAllowedError') {
-          console.log('Autoplay prevented - user interaction required');
-          // Ensure state reflects that playback failed
-          setIsPlaying(false);
+        // Properly log the error
+        if (error instanceof Error) {
+          console.error('Error playing audio:', error.message, error.name);
+          if (error.name === 'NotAllowedError') {
+            console.log('Autoplay prevented - user interaction required');
+          } else if (error.name === 'NotSupportedError') {
+            console.error('Audio format not supported by browser');
+          }
+        } else {
+          console.error('Error playing audio:', String(error));
         }
+        // Ensure state reflects that playback failed
+        setIsPlaying(false);
       }
     }
   }, []);
