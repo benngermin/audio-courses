@@ -306,85 +306,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.sendFile(path.join(process.cwd(), 'test-audio-ended.html'));
   });
 
-  // Mock audio endpoint for testing - serves an MP3 file with speech-like patterns
+  // Mock audio endpoint for testing - serves a simple valid MP3 file
   // This must be before the catch-all route so it's handled properly
   app.get('/api/audio/:chapterId.mp3', async (req, res) => {
     try {
       const chapterId = req.params.chapterId.replace('.mp3', '');
       
-      console.log(`Generating speech-like audio for chapter: ${chapterId}`);
+      console.log(`Generating test MP3 for chapter: ${chapterId}`);
       
-      // Since lamejs has browser dependencies, we'll create a minimal valid MP3
-      // with speech-like patterns using a simpler approach
-      
-      // Use chapter ID to seed variations for unique content per chapter
+      // Use chapter ID to create unique variations
       const hash = chapterId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
       const variation = hash % 256;
       
-      // Create a minimal but valid MP3 file
-      // MP3 header for 128 kbps, 44.1 kHz, mono
-      const mp3Header = Buffer.from([
-        0xFF, 0xFB, // Frame sync + MPEG-1 Layer 3
-        0x90 + (variation % 16), // Bitrate index (128kbps) + sampling rate (44.1kHz)
-        0x00, // Padding + Private + Channel mode (mono)
-      ]);
-      
-      // Generate multiple MP3 frames with speech-like variations
+      // Create a very simple but valid MP3
+      // We'll create a basic MP3 with proper structure
       const frames = [];
-      const frameCount = 1000; // About 26 seconds of audio
+      const frameCount = 1000; // ~26 seconds
       
       for (let i = 0; i < frameCount; i++) {
-        // Create frame header
-        const frame = Buffer.alloc(417); // Standard MP3 frame size for 128kbps
+        // Create MP3 frame (418 bytes for 128kbps, 44.1kHz)
+        const frame = Buffer.alloc(418);
         
-        // Copy header
-        mp3Header.copy(frame, 0);
+        // MP3 Frame header (4 bytes)
+        frame[0] = 0xFF; // Frame sync (first 8 bits of 11)
+        frame[1] = 0xFB; // Frame sync (last 3 bits) + MPEG-1 + Layer 3 + no protection
+        frame[2] = 0x90; // 128kbps bitrate index
+        frame[3] = 0x00; // 44.1kHz + no padding + private bit + mono
         
-        // Generate speech-like pattern in the frame data
-        // Simulate formants and speech rhythm
-        const wordIndex = Math.floor(i / 40); // Change "word" every ~1 second
-        const wordPosition = (i % 40) / 40; // Position within word
+        // Generate simple audio data
+        const frequency = 440 + (variation % 200); // A4 note with variation
+        const wordIndex = Math.floor(i / 40); // Change every ~1 second
+        const isWord = (wordIndex % 4) < 3; // 3 beats on, 1 beat off
         
-        // Create envelope for word boundaries
-        const envelope = Math.sin(Math.PI * wordPosition);
-        
-        // Fill frame with speech-like data
-        for (let j = 4; j < 417; j++) {
-          // Mix multiple frequency components to simulate speech
-          const t = (i * 417 + j) / 44100;
-          
-          // Fundamental frequency varies by "word"
-          const f0 = 100 + (wordIndex * 37 + variation) % 200;
-          
-          // Formants (characteristic frequencies of vowel sounds)
-          const formant1 = f0 * 2;
-          const formant2 = f0 * 3.5;
-          const formant3 = f0 * 5;
-          
-          // Mix formants with different amplitudes
-          let sample = 
-            Math.sin(2 * Math.PI * f0 * t) * 0.4 +
-            Math.sin(2 * Math.PI * formant1 * t) * 0.3 +
-            Math.sin(2 * Math.PI * formant2 * t) * 0.2 +
-            Math.sin(2 * Math.PI * formant3 * t) * 0.1;
-          
-          // Apply envelope and add some noise for consonants
-          sample = sample * envelope;
-          
-          // Add slight noise at word boundaries (consonant simulation)
-          if (wordPosition < 0.1 || wordPosition > 0.9) {
-            sample += (Math.random() - 0.5) * 0.1;
-          }
-          
-          // Convert to byte value
-          frame[j] = Math.floor((sample + 1) * 127.5);
-        }
-        
-        // Add silence between some "words" for more natural speech rhythm
-        if (wordIndex % 5 === 4) {
-          // Make this frame quieter (pause between phrases)
-          for (let j = 4; j < 417; j++) {
-            frame[j] = Math.floor(frame[j] * 0.1);
+        // Fill frame with audio data
+        for (let j = 4; j < 418; j++) {
+          if (isWord) {
+            // Generate a simple tone
+            const t = (i * 418 + j - 4) / 44100;
+            const envelope = Math.sin(Math.PI * ((i % 40) / 40)) * 0.5; // Simple envelope
+            const sample = Math.sin(2 * Math.PI * frequency * t) * envelope;
+            
+            // Convert to MP3 data range and add some variation
+            const value = Math.floor(128 + sample * 100);
+            frame[j] = Math.max(0, Math.min(255, value));
+          } else {
+            // Quiet/silence between words
+            frame[j] = 128 + Math.floor(Math.random() * 4 - 2); // Near-silence with tiny noise
           }
         }
         
