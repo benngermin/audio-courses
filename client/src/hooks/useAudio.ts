@@ -118,7 +118,7 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
           case 4:
             console.error("MEDIA_ERR_SRC_NOT_SUPPORTED: The media format is not supported");
             // Try to provide a fallback or better error message
-            console.error("Browser may not support WAV format. Consider using MP3 or OGG.");
+            console.error("Browser may not support the audio format.");
             break;
         }
       } else {
