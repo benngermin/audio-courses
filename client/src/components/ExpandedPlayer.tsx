@@ -368,10 +368,10 @@ export function ExpandedPlayer() {
                 variant="ghost"
                 size="icon"
                 onClick={() => setIsPlayAllMode(!isPlayAllMode)}
-                className="p-3 hover:bg-gray-100 transition-colors"
+                className={`p-3 transition-colors ${isPlayAllMode ? 'bg-primary/10 hover:bg-primary/20' : 'hover:bg-gray-100'}`}
                 title={isPlayAllMode ? "Play All Mode: On" : "Play All Mode: Off"}
               >
-                <ListMusic className="h-7 w-7 text-[#666]" />
+                <ListMusic className={`h-7 w-7 ${isPlayAllMode ? 'text-[#ff6b35]' : 'text-[#666]'}`} />
               </Button>
 
               {/* Center - Track/Music Note button */}
