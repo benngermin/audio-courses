@@ -411,7 +411,7 @@ export function ExpandedPlayer() {
                 <DropdownMenuContent 
                   align="center" 
                   sideOffset={8}
-                  className="min-w-[120px] z-[100] bg-white border border-gray-200 shadow-lg rounded-md p-1"
+                  className="min-w-[120px] z-[100] bg-white rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.15)] p-2"
                   style={{ zIndex: 100 }}
                 >
                   {playbackSpeeds.map((speed) => (
@@ -421,10 +421,10 @@ export function ExpandedPlayer() {
                         console.log('Speed selected:', speed);
                         changePlaybackRate(speed);
                       }}
-                      className="px-3 py-2 text-sm cursor-pointer hover:bg-gray-100 rounded focus:bg-gray-100 focus:outline-none data-[highlighted]:bg-gray-100"
+                      className="px-5 py-3.5 text-[17px] font-medium text-[#333] cursor-pointer hover:bg-[#f5f5f5] rounded-lg focus:bg-[#f5f5f5] focus:outline-none data-[highlighted]:bg-[#f5f5f5] leading-[1.2]"
                     >
                       <span className={`w-full text-center ${
-                        speed === playbackRate ? "text-[#ff6b35] font-semibold" : "text-gray-700"
+                        speed === playbackRate ? "text-[#ff6b35] font-semibold" : ""
                       }`}>
                         {speed === 0.5 && "0.5x"}
                         {speed === 0.75 && "0.75x"}
