@@ -362,38 +362,43 @@ export function ExpandedPlayer() {
             </div>
 
             {/* Bottom controls with added top padding */}
-            <div className="flex items-center justify-between w-full">
+            <div className="flex items-center w-full">
               {/* Left side - Queue/Playlist button */}
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsPlayAllMode(!isPlayAllMode)}
-                className={`p-3 min-h-[48px] transition-all ${isPlayAllMode ? 'bg-primary/10 hover:bg-primary/20 px-4' : 'hover:bg-gray-100'} flex items-center gap-2`}
-                title={isPlayAllMode ? "Play All Mode: On" : "Play All Mode: Off"}
-              >
-                <ListMusic className={`h-7 w-7 ${isPlayAllMode ? 'text-[#ff6b35]' : 'text-[#666]'}`} />
-                {isPlayAllMode && (
-                  <span className="text-base font-medium text-[#ff6b35]">Play All</span>
-                )}
-              </Button>
+              <div className="flex-1 flex justify-start">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsPlayAllMode(!isPlayAllMode)}
+                  className={`p-3 min-h-[48px] transition-all ${isPlayAllMode ? 'bg-primary/10 hover:bg-primary/20 px-4' : 'hover:bg-gray-100'} flex items-center gap-2`}
+                  title={isPlayAllMode ? "Play All Mode: On" : "Play All Mode: Off"}
+                >
+                  <ListMusic className={`h-7 w-7 ${isPlayAllMode ? 'text-[#ff6b35]' : 'text-[#666]'}`} />
+                  {isPlayAllMode && (
+                    <span className="text-base font-medium text-[#ff6b35]">Play All</span>
+                  )}
+                </Button>
+              </div>
 
               {/* Center - Cast button */}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => {
-                  toast({
-                    title: "Cast",
-                    description: "Casting feature coming soon",
-                  });
-                }}
-                className="p-3 hover:bg-gray-100 transition-colors"
-              >
-                <Cast className="h-7 w-7 text-[#666]" />
-              </Button>
+              <div className="flex-1 flex justify-center">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => {
+                    toast({
+                      title: "Cast",
+                      description: "Casting feature coming soon",
+                    });
+                  }}
+                  className="p-3 hover:bg-gray-100 transition-colors"
+                >
+                  <Cast className="h-7 w-7 text-[#666]" />
+                </Button>
+              </div>
 
               {/* Right side - Playback speed button */}
-              <DropdownMenu modal={false}>
+              <div className="flex-1 flex justify-end">
+                <DropdownMenu modal={false}>
                 <DropdownMenuTrigger asChild>
                   <Button 
                     variant="ghost" 
@@ -432,6 +437,7 @@ export function ExpandedPlayer() {
                   ))}
                 </DropdownMenuContent>
               </DropdownMenu>
+              </div>
             </div>
 
 
