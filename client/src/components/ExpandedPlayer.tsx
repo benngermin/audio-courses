@@ -334,12 +334,12 @@ export function ExpandedPlayer() {
                 variant="ghost"
                 size="icon"
                 onClick={togglePlay}
-                className="h-20 w-20 sm:h-24 sm:w-24 bg-[#ff6b35] hover:bg-[#ff6b35]/90 text-white rounded-full shadow-lg hover:scale-105 transition-all hover:shadow-xl active:scale-95"
+                className="h-[72px] w-[72px] bg-[#ff6b35] hover:bg-[#ff6b35]/90 text-white rounded-full shadow-lg hover:scale-105 transition-all hover:shadow-xl active:scale-95"
               >
                 {isPlaying ? (
-                  <Pause className="h-8 w-8 sm:h-10 sm:w-10 fill-white" />
+                  <Pause className="h-8 w-8 fill-white" />
                 ) : (
-                  <Play className="h-8 w-8 sm:h-10 sm:w-10 ml-1 fill-white" />
+                  <Play className="h-8 w-8 ml-1 fill-white" />
                 )}
               </Button>
 
