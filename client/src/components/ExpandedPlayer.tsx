@@ -366,12 +366,15 @@ export function ExpandedPlayer() {
               {/* Left side - Queue/Playlist button */}
               <Button
                 variant="ghost"
-                size="icon"
+                size="sm"
                 onClick={() => setIsPlayAllMode(!isPlayAllMode)}
-                className={`p-3 transition-colors ${isPlayAllMode ? 'bg-primary/10 hover:bg-primary/20' : 'hover:bg-gray-100'}`}
+                className={`p-3 min-h-[48px] transition-all ${isPlayAllMode ? 'bg-primary/10 hover:bg-primary/20 px-4' : 'hover:bg-gray-100'} flex items-center gap-2`}
                 title={isPlayAllMode ? "Play All Mode: On" : "Play All Mode: Off"}
               >
                 <ListMusic className={`h-7 w-7 ${isPlayAllMode ? 'text-[#ff6b35]' : 'text-[#666]'}`} />
+                {isPlayAllMode && (
+                  <span className="text-base font-medium text-[#ff6b35]">Play All</span>
+                )}
               </Button>
 
               {/* Center - Track/Music Note button */}
