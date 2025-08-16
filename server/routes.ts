@@ -311,11 +311,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.sendFile(path.join(process.cwd(), 'test-audio-ended.html'));
   });
 
-  // Mock audio endpoint for testing - generates valid MP3 using ffmpeg
+  // Audio endpoint - serves actual MP3 files or generates mock audio for testing
   // This must be before the catch-all route so it's handled properly
   app.get('/api/audio/:chapterId.mp3', async (req, res) => {
     try {
       const chapterId = req.params.chapterId.replace('.mp3', '');
+      
+      // Check if we have an actual audio file for this chapter
+      if (chapterId === 'chapter-4-business-insurance') {
+        const audioPath = path.join(process.cwd(), 'server', 'audio-files', 'chapter-4.mp3');
+        
+        // Check if file exists
+        try {
+          await fs.promises.access(audioPath);
+          
+          // Get file stats for content-length
+          const stats = await fs.promises.stat(audioPath);
+          
+          // Set proper headers for audio streaming
+          res.setHeader('Content-Type', 'audio/mpeg');
+          res.setHeader('Content-Length', stats.size.toString());
+          res.setHeader('Accept-Ranges', 'bytes');
+          res.setHeader('Cache-Control', 'public, max-age=3600');
+          res.setHeader('Access-Control-Allow-Origin', '*');
+          
+          // Stream the file
+          const stream = fs.createReadStream(audioPath);
+          stream.pipe(res);
+          
+          console.log(`Serving actual MP3 file for chapter: ${chapterId}`);
+          return;
+        } catch (err) {
+          console.log(`Audio file not found for ${chapterId}, generating mock audio`);
+        }
+      }
       
       console.log(`Generating MP3 audio for chapter: ${chapterId}`);
       
