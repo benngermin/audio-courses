@@ -339,7 +339,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           res.setHeader('Content-Type', 'audio/mpeg');
           res.setHeader('Content-Length', stats.size.toString());
           res.setHeader('Accept-Ranges', 'bytes');
-          res.setHeader('Cache-Control', 'public, max-age=3600');
+          res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+          res.setHeader('Pragma', 'no-cache');
+          res.setHeader('Expires', '0');
           res.setHeader('Access-Control-Allow-Origin', '*');
           
           // Stream the file
@@ -411,7 +413,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.setHeader('Content-Type', 'audio/mpeg');
       res.setHeader('Content-Length', mp3Buffer.length.toString());
       res.setHeader('Accept-Ranges', 'bytes');
-      res.setHeader('Cache-Control', 'public, max-age=3600');
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
       res.setHeader('Access-Control-Allow-Origin', '*');
       
       // Send the MP3 file
