@@ -318,10 +318,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const chapterId = req.params.chapterId.replace('.mp3', '');
       
       // Check if we have an actual audio file for this chapter
-      if (chapterId === 'chapter-4-business-insurance') {
-        const audioPath = path.join(process.cwd(), 'server', 'audio-files', 'chapter-4.mp3');
-        
-        // Check if file exists
+      // First try with the chapter ID as filename
+      const possiblePaths = [
+        path.join(process.cwd(), 'server', 'audio-files', `${chapterId}.mp3`),
+        // Special case for chapter-4-business-insurance
+        chapterId === 'chapter-4-business-insurance' ? 
+          path.join(process.cwd(), 'server', 'audio-files', 'chapter-4.mp3') : null
+      ].filter(Boolean);
+      
+      for (const audioPath of possiblePaths) {
         try {
           await fs.promises.access(audioPath);
           
@@ -339,12 +344,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const stream = fs.createReadStream(audioPath);
           stream.pipe(res);
           
-          console.log(`Serving actual MP3 file for chapter: ${chapterId}`);
+          console.log(`Serving actual MP3 file for chapter: ${chapterId} from ${audioPath}`);
           return;
         } catch (err) {
-          console.log(`Audio file not found for ${chapterId}, generating mock audio`);
+          // File doesn't exist, try next path
+          continue;
         }
       }
+      
+      console.log(`Audio file not found for ${chapterId}, generating mock audio`);
       
       console.log(`Generating MP3 audio for chapter: ${chapterId}`);
       
