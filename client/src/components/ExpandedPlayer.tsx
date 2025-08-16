@@ -201,9 +201,9 @@ export function ExpandedPlayer() {
           </div>
 
           {/* Main content area with increased padding */}
-          <div className="flex-1 flex flex-col justify-center px-7 sm:px-10 pb-10 sm:pb-12 overflow-y-auto">
+          <div className="flex-1 flex flex-col justify-center px-7 sm:px-10 pt-6 pb-10 sm:pb-12 overflow-y-auto">
             {/* Audio Visualizer with animated orb */}
-            <div className="w-full mb-10 relative">
+            <div className="w-full mb-4 relative">
               <div className="w-full aspect-square bg-[#2c2d3e] rounded-[20px] flex items-center justify-center overflow-hidden">
                 <div className={`visualizer ${isPlaying ? 'playing' : 'paused'} w-full h-full flex items-center justify-center relative`}>
                   <div className="center-orb relative w-[120px] h-[120px] flex items-center justify-center">
@@ -216,7 +216,7 @@ export function ExpandedPlayer() {
             </div>
 
             {/* Track info with more spacing */}
-            <div className="text-center mt-10 mb-9 px-4">
+            <div className="text-center mt-4 mb-9 px-4">
               <h1 className="text-[22px] font-semibold text-[#333] mb-2 line-clamp-2 leading-[1.3]">
                 {currentChapter.title}
               </h1>
