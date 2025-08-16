@@ -284,12 +284,53 @@ export function MiniPlayer() {
             <span className="text-sm text-muted-foreground tabular-nums min-w-[48px]">
               {formatTime(currentTime)}
             </span>
-            <LinearProgress 
-              value={currentTime}
-              max={duration || 100}
-              height={3}
-              className="flex-1"
-            />
+            <div 
+              className="flex-1 relative h-1 bg-[#d3d3d3] cursor-pointer"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (!duration || !seek) return;
+                const rect = e.currentTarget.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const percentage = x / rect.width;
+                const newTime = percentage * duration;
+                seek(newTime);
+              }}
+            >
+              {/* Progress fill */}
+              <div
+                className="absolute top-0 left-0 h-full bg-[#ff6b35] transition-all duration-100"
+                style={{ width: duration ? `${(currentTime / duration) * 100}%` : '0%' }}
+              />
+              
+              {/* Draggable handle */}
+              <div
+                className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-white border-2 border-white rounded-full shadow-md cursor-grab active:cursor-grabbing hover:scale-110 transition-transform"
+                style={{ left: duration ? `${(currentTime / duration) * 100}%` : '0%', marginLeft: '-6px' }}
+                onClick={(e) => e.stopPropagation()}
+                onMouseDown={(e) => {
+                  e.stopPropagation();
+                  if (!duration || !seek) return;
+                  e.preventDefault();
+                  const rect = e.currentTarget.parentElement?.getBoundingClientRect();
+                  
+                  const handleMouseMove = (moveEvent: MouseEvent) => {
+                    if (!rect) return;
+                    const x = Math.max(0, Math.min(moveEvent.clientX - rect.left, rect.width));
+                    const percentage = x / rect.width;
+                    const newTime = percentage * duration;
+                    seek(newTime);
+                  };
+                  
+                  const handleMouseUp = () => {
+                    document.removeEventListener('mousemove', handleMouseMove);
+                    document.removeEventListener('mouseup', handleMouseUp);
+                  };
+                  
+                  document.addEventListener('mousemove', handleMouseMove);
+                  document.addEventListener('mouseup', handleMouseUp);
+                }}
+              />
+            </div>
             <span className="text-sm text-muted-foreground tabular-nums min-w-[48px] text-right">
               {formatTime(duration)}
             </span>
