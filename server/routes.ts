@@ -318,15 +318,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const chapterId = req.params.chapterId.replace('.mp3', '');
       
       // Check if we have an actual audio file for this chapter
-      // Map special chapter IDs to their file names
-      const chapterFileMap: { [key: string]: string } = {
-        'chapter-4-business-insurance': 'chapter-4.mp3',
-        'chapter-1': 'chapter-1.mp3'
-      };
-      
-      const audioFileName = chapterFileMap[chapterId];
-      if (audioFileName) {
-        const audioPath = path.join(process.cwd(), 'server', 'audio-files', audioFileName);
+      if (chapterId === 'chapter-4-business-insurance') {
+        const audioPath = path.join(process.cwd(), 'server', 'audio-files', 'chapter-4.mp3');
         
         // Check if file exists
         try {
