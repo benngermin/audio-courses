@@ -391,7 +391,7 @@ export function ExpandedPlayer() {
               </Button>
 
               {/* Playback speed button with popup menu */}
-              <DropdownMenu>
+              <DropdownMenu modal={false}>
                 <DropdownMenuTrigger asChild>
                   <Button 
                     variant="ghost" 
@@ -401,16 +401,24 @@ export function ExpandedPlayer() {
                     {playbackRate}x
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="center" className="min-w-[120px] bg-white shadow-lg border rounded-lg">
+                <DropdownMenuContent 
+                  align="center" 
+                  sideOffset={8}
+                  className="min-w-[120px] z-[100] bg-white border border-gray-200 shadow-lg rounded-md p-1"
+                  style={{ zIndex: 100 }}
+                >
                   {playbackSpeeds.map((speed) => (
                     <DropdownMenuItem
                       key={speed}
-                      onSelect={() => changePlaybackRate(speed)}
-                      className={`cursor-pointer px-4 py-2 hover:bg-gray-50 ${
-                        speed === playbackRate ? "bg-[#ff6b35]/10 text-[#ff6b35] font-semibold" : "text-gray-700"
-                      }`}
+                      onSelect={() => {
+                        console.log('Speed selected:', speed);
+                        changePlaybackRate(speed);
+                      }}
+                      className="px-3 py-2 text-sm cursor-pointer hover:bg-gray-100 rounded focus:bg-gray-100 focus:outline-none data-[highlighted]:bg-gray-100"
                     >
-                      <span className="w-full text-center">
+                      <span className={`w-full text-center ${
+                        speed === playbackRate ? "text-[#ff6b35] font-semibold" : "text-gray-700"
+                      }`}>
                         {speed === 0.5 && "0.5x"}
                         {speed === 0.75 && "0.75x"}
                         {speed === 1 && "Normal"}

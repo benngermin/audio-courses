@@ -289,14 +289,14 @@ export function AudioPlayer({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             {/* Playback Speed */}
-            <DropdownMenu>
+            <DropdownMenu modal={false}>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm" className="flex items-center gap-2">
                   <span>{playbackRate}x</span>
                   <ChevronDown className="h-3 w-3" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent>
+              <DropdownMenuContent className="z-50" sideOffset={5}>
                 {playbackSpeeds.map((speed) => (
                   <DropdownMenuItem
                     key={speed}
@@ -402,14 +402,14 @@ export function AudioPlayer({
                 <FastForward className="h-4 w-4 text-slate-600" />
                 <Label htmlFor="playback-speed" className="text-sm">Playback Speed</Label>
               </div>
-              <DropdownMenu>
+              <DropdownMenu modal={false}>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="sm" className="flex items-center gap-2">
                     <span>{playbackRate}x</span>
                     <ChevronDown className="h-3 w-3" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent>
+                <DropdownMenuContent className="z-50" sideOffset={5}>
                   {playbackSpeeds.map((speed) => (
                     <DropdownMenuItem
                       key={speed}
