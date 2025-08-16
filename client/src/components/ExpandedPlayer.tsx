@@ -361,49 +361,54 @@ export function ExpandedPlayer() {
             </div>
 
             {/* Bottom controls with added top padding */}
-            <div className="flex items-center justify-center gap-12 pt-5">
-              {/* Play All Mode toggle button */}
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsPlayAllMode(!isPlayAllMode)}
-                className={`h-10 w-24 rounded-full transition-colors ${
-                  isPlayAllMode ? 'bg-primary/10 hover:bg-primary/20' : 'hover:bg-gray-100'
-                } flex items-center justify-center gap-1.5`}
-                title={isPlayAllMode ? "Play All Mode: On" : "Play All Mode: Off"}
-              >
-                <ListMusic className={`h-5 w-5 ${isPlayAllMode ? 'text-primary' : 'text-gray-600'}`} />
-                {isPlayAllMode && (
-                  <span className="text-sm font-medium text-primary">Play All</span>
-                )}
-              </Button>
+            <div className="flex items-center justify-between pt-5 relative">
+              {/* Left side - Play All Mode toggle button */}
+              <div className="flex-1 flex justify-start">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsPlayAllMode(!isPlayAllMode)}
+                  className={`h-10 w-24 rounded-full transition-colors ${
+                    isPlayAllMode ? 'bg-primary/10 hover:bg-primary/20' : 'hover:bg-gray-100'
+                  } flex items-center justify-center gap-1.5`}
+                  title={isPlayAllMode ? "Play All Mode: On" : "Play All Mode: Off"}
+                >
+                  <ListMusic className={`h-5 w-5 ${isPlayAllMode ? 'text-primary' : 'text-gray-600'}`} />
+                  {isPlayAllMode && (
+                    <span className="text-sm font-medium text-primary">Play All</span>
+                  )}
+                </Button>
+              </div>
 
-              {/* Cast/AirPlay button */}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => {
-                  toast({
-                    title: "Cast",
-                    description: "Casting feature coming soon",
-                  });
-                }}
-                className="h-10 w-10 rounded-full hover:bg-gray-100 transition-colors"
-              >
-                <Cast className="h-5 w-5 text-gray-600" />
-              </Button>
+              {/* Center - Cast/AirPlay button (absolutely positioned) */}
+              <div className="absolute left-1/2 transform -translate-x-1/2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => {
+                    toast({
+                      title: "Cast",
+                      description: "Casting feature coming soon",
+                    });
+                  }}
+                  className="h-10 w-10 rounded-full hover:bg-gray-100 transition-colors"
+                >
+                  <Cast className="h-5 w-5 text-gray-600" />
+                </Button>
+              </div>
 
-              {/* Playback speed button with popup menu */}
-              <DropdownMenu modal={false}>
-                <DropdownMenuTrigger asChild>
-                  <Button 
-                    variant="ghost" 
-                    size="sm"
-                    className="h-10 w-16 rounded-full hover:bg-gray-100 transition-colors font-semibold text-gray-700 flex items-center justify-center"
-                  >
-                    {playbackRate}x
-                  </Button>
-                </DropdownMenuTrigger>
+              {/* Right side - Playback speed button */}
+              <div className="flex-1 flex justify-end">
+                <DropdownMenu modal={false}>
+                  <DropdownMenuTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      className="h-10 w-16 rounded-full hover:bg-gray-100 transition-colors font-semibold text-gray-700 flex items-center justify-center"
+                    >
+                      {playbackRate}x
+                    </Button>
+                  </DropdownMenuTrigger>
                 <DropdownMenuContent 
                   align="center" 
                   sideOffset={8}
@@ -433,6 +438,7 @@ export function ExpandedPlayer() {
                   ))}
                 </DropdownMenuContent>
               </DropdownMenu>
+              </div>
             </div>
 
 
