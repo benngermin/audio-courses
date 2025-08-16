@@ -224,8 +224,14 @@ export function MiniPlayer() {
           <div className="flex items-center justify-between">
             {/* Left side - Track info */}
             <div className="flex items-center gap-3 sm:gap-5 flex-1 min-w-0">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-accent rounded-lg flex items-center justify-center flex-shrink-0">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-primary rounded-full animate-pulse" />
+              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-[#2c2d3e] rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
+                <div className={`visualizer ${isPlaying ? 'playing' : 'paused'} w-full h-full flex items-center justify-center relative scale-[0.4]`}>
+                  <div className="center-orb relative w-[120px] h-[120px] flex items-center justify-center">
+                    <div className="orb-inner absolute w-[60px] h-[60px] rounded-full"></div>
+                    <div className="orb-pulse absolute w-[100px] h-[100px] rounded-full"></div>
+                    <div className="orb-glow absolute w-[120px] h-[120px] rounded-full"></div>
+                  </div>
+                </div>
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
