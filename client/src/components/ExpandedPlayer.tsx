@@ -16,7 +16,8 @@ import {
   RotateCcw,
   RotateCw,
   Volume1,
-  ListMusic
+  ListMusic,
+  Music
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -361,54 +362,44 @@ export function ExpandedPlayer() {
             </div>
 
             {/* Bottom controls with added top padding */}
-            <div className="flex items-center justify-between pt-5 relative">
-              {/* Left side - Play All Mode toggle button */}
-              <div className="flex-1 flex justify-start">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setIsPlayAllMode(!isPlayAllMode)}
-                  className={`h-14 w-32 sm:h-16 sm:w-36 rounded-full transition-colors ${
-                    isPlayAllMode ? 'bg-primary/10 hover:bg-primary/20' : 'hover:bg-gray-100'
-                  } flex items-center justify-center gap-2`}
-                  title={isPlayAllMode ? "Play All Mode: On" : "Play All Mode: Off"}
-                >
-                  <ListMusic className={`h-7 w-7 sm:h-8 sm:w-8 ${isPlayAllMode ? 'text-primary' : 'text-gray-600'}`} />
-                  {isPlayAllMode && (
-                    <span className="text-base sm:text-lg font-medium text-primary">Play All</span>
-                  )}
-                </Button>
-              </div>
+            <div className="flex items-center justify-between w-full">
+              {/* Left side - Queue/Playlist button */}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsPlayAllMode(!isPlayAllMode)}
+                className="p-3 hover:bg-gray-100 transition-colors"
+                title={isPlayAllMode ? "Play All Mode: On" : "Play All Mode: Off"}
+              >
+                <ListMusic className="h-7 w-7 text-[#666]" />
+              </Button>
 
-              {/* Center - Cast/AirPlay button (absolutely positioned) */}
-              <div className="absolute left-1/2 transform -translate-x-1/2">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => {
-                    toast({
-                      title: "Cast",
-                      description: "Casting feature coming soon",
-                    });
-                  }}
-                  className="h-14 w-14 sm:h-16 sm:w-16 rounded-full hover:bg-gray-100 transition-colors"
-                >
-                  <Cast className="h-7 w-7 sm:h-8 sm:w-8 text-gray-600" />
-                </Button>
-              </div>
+              {/* Center - Track/Music Note button */}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => {
+                  toast({
+                    title: "Track Info",
+                    description: "Track information coming soon",
+                  });
+                }}
+                className="p-3 hover:bg-gray-100 transition-colors"
+              >
+                <Music className="h-7 w-7 text-[#666]" />
+              </Button>
 
               {/* Right side - Playback speed button */}
-              <div className="flex-1 flex justify-end">
-                <DropdownMenu modal={false}>
-                  <DropdownMenuTrigger asChild>
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
-                      className="h-14 w-20 sm:h-16 sm:w-24 rounded-full hover:bg-gray-100 transition-colors font-semibold text-gray-700 flex items-center justify-center text-lg sm:text-xl"
-                    >
-                      {playbackRate}x
-                    </Button>
-                  </DropdownMenuTrigger>
+              <DropdownMenu modal={false}>
+                <DropdownMenuTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    className="min-h-[48px] min-w-[48px] p-3 hover:bg-gray-100 transition-colors text-[#ff6b35] font-semibold text-[20px] flex items-center justify-center"
+                  >
+                    {playbackRate}x
+                  </Button>
+                </DropdownMenuTrigger>
                 <DropdownMenuContent 
                   align="center" 
                   sideOffset={8}
@@ -438,7 +429,6 @@ export function ExpandedPlayer() {
                   ))}
                 </DropdownMenuContent>
               </DropdownMenu>
-              </div>
             </div>
 
 
