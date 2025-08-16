@@ -377,19 +377,19 @@ export function ExpandedPlayer() {
                 )}
               </Button>
 
-              {/* Center - Track/Music Note button */}
+              {/* Center - Cast button */}
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => {
                   toast({
-                    title: "Track Info",
-                    description: "Track information coming soon",
+                    title: "Cast",
+                    description: "Casting feature coming soon",
                   });
                 }}
                 className="p-3 hover:bg-gray-100 transition-colors"
               >
-                <Music className="h-7 w-7 text-[#666]" />
+                <Cast className="h-7 w-7 text-[#666]" />
               </Button>
 
               {/* Right side - Playback speed button */}
