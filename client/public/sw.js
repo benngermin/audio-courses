@@ -1,4 +1,4 @@
-const CACHE_NAME = 'audio-learning-v3'; // Updated for proper MP3 files
+const CACHE_NAME = 'audio-learning-v4'; // Force cache refresh for new MP3 files
 const OFFLINE_URL = '/offline.html';
 
 // Files to cache for offline functionality
@@ -89,25 +89,33 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Handle audio file requests
+  // Handle audio file requests with network-first strategy
   if (event.request.url.includes('audio') || 
       event.request.headers.get('accept')?.includes('audio')) {
     event.respondWith(
-      caches.match(event.request).then((cachedResponse) => {
-        if (cachedResponse) {
-          console.log('Serving audio from cache');
-          return cachedResponse;
+      fetch(event.request).then((response) => {
+        // If network succeeds, cache the new version and return it
+        if (response.ok && response.headers.get('content-type')?.includes('audio')) {
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            console.log('Caching updated audio file');
+            cache.put(event.request, responseClone);
+          });
         }
-        
-        return fetch(event.request).then((response) => {
-          // Cache audio files for offline listening
-          if (response.ok && response.headers.get('content-type')?.includes('audio')) {
-            const responseClone = response.clone();
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(event.request, responseClone);
-            });
+        return response;
+      }).catch(() => {
+        // If network fails, try to serve from cache
+        console.log('Network failed, serving audio from cache if available');
+        return caches.match(event.request).then((cachedResponse) => {
+          if (cachedResponse) {
+            console.log('Serving audio from cache (offline)');
+            return cachedResponse;
           }
-          return response;
+          // Return error if not in cache
+          return new Response('Audio file not available offline', {
+            status: 503,
+            statusText: 'Service Unavailable'
+          });
         });
       })
     );
