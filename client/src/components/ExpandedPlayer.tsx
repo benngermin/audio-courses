@@ -187,9 +187,9 @@ export function ExpandedPlayer() {
               variant="ghost"
               size="icon"
               onClick={() => setIsExpanded(false)}
-              className="h-20 w-20 sm:h-24 sm:w-24"
+              className="h-10 w-10 sm:h-12 sm:w-12"
             >
-              <ChevronDown className="h-14 w-14 sm:h-16 sm:w-16" />
+              <ChevronDown className="h-7 w-7 sm:h-8 sm:w-8" />
             </Button>
             
             <div className="text-center flex-1">
@@ -197,7 +197,7 @@ export function ExpandedPlayer() {
             </div>
 
             {/* Empty div to maintain spacing balance */}
-            <div className="h-20 w-20 sm:h-24 sm:w-24"></div>
+            <div className="h-10 w-10 sm:h-12 sm:w-12"></div>
           </div>
 
           {/* Main content area with increased padding */}
