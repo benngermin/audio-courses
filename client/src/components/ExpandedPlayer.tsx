@@ -193,7 +193,7 @@ export function ExpandedPlayer() {
             </Button>
             
             <div className="text-center flex-1">
-              <p className="text-xs font-medium text-gray-600">NOW PLAYING</p>
+              <p className="text-xs text-gray-600 font-semibold">NOW PLAYING</p>
             </div>
 
             {/* Empty div to maintain spacing balance */}
