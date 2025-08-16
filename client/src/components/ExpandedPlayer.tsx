@@ -405,7 +405,7 @@ export function ExpandedPlayer() {
                   {playbackSpeeds.map((speed) => (
                     <DropdownMenuItem
                       key={speed}
-                      onClick={() => changePlaybackRate(speed)}
+                      onSelect={() => changePlaybackRate(speed)}
                       className={`cursor-pointer px-4 py-2 hover:bg-gray-50 ${
                         speed === playbackRate ? "bg-[#ff6b35]/10 text-[#ff6b35] font-semibold" : "text-gray-700"
                       }`}

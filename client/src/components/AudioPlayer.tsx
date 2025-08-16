@@ -300,7 +300,7 @@ export function AudioPlayer({
                 {playbackSpeeds.map((speed) => (
                   <DropdownMenuItem
                     key={speed}
-                    onClick={() => changePlaybackRate(speed)}
+                    onSelect={() => changePlaybackRate(speed)}
                     className={speed === playbackRate ? "bg-primary/10" : ""}
                   >
                     {speed}x
@@ -413,7 +413,7 @@ export function AudioPlayer({
                   {playbackSpeeds.map((speed) => (
                     <DropdownMenuItem
                       key={speed}
-                      onClick={() => changePlaybackRate(speed)}
+                      onSelect={() => changePlaybackRate(speed)}
                       className={speed === playbackRate ? "bg-primary/10" : ""}
                     >
                       {speed}x {speed === 1 && "(Normal)"}
