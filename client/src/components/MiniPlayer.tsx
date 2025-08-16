@@ -249,7 +249,7 @@ export function MiniPlayer() {
             <div className="flex items-center" style={{ gap: '12px' }}>
               {/* Title */}
               <p 
-                className="flex-1 truncate"
+                className="flex-1 line-clamp-2"
                 style={{
                   fontSize: '14px',
                   fontWeight: 500,
