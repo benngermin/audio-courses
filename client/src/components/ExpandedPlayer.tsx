@@ -396,28 +396,41 @@ export function ExpandedPlayer() {
                   <Button 
                     variant="ghost" 
                     size="sm"
-                    className="h-10 px-3 rounded-full hover:bg-gray-100 transition-colors font-semibold text-gray-700"
+                    className={`h-10 px-3 rounded-full transition-all font-semibold flex items-center gap-1 ${
+                      playbackRate !== 1 
+                        ? 'bg-primary/10 hover:bg-primary/20 text-primary' 
+                        : 'hover:bg-gray-100 text-gray-700'
+                    }`}
                   >
-                    {playbackRate}x
+                    <Gauge className={`h-4 w-4 ${playbackRate !== 1 ? 'text-primary' : 'text-gray-600'}`} />
+                    <span>{playbackRate}x</span>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="center" className="min-w-[120px] bg-white shadow-lg border rounded-lg">
+                <DropdownMenuContent align="center" className="min-w-[140px] bg-white shadow-xl border rounded-lg p-1">
+                  <div className="text-xs font-semibold text-gray-500 px-3 py-2 border-b mb-1">
+                    PLAYBACK SPEED
+                  </div>
                   {playbackSpeeds.map((speed) => (
                     <DropdownMenuItem
                       key={speed}
                       onClick={() => changePlaybackRate(speed)}
-                      className={`cursor-pointer px-4 py-2 hover:bg-gray-50 ${
-                        speed === playbackRate ? "bg-[#ff6b35]/10 text-[#ff6b35] font-semibold" : "text-gray-700"
+                      className={`cursor-pointer px-3 py-2.5 rounded-md transition-colors flex items-center justify-between ${
+                        speed === playbackRate 
+                          ? "bg-primary/10 text-primary font-semibold" 
+                          : "text-gray-700 hover:bg-gray-50"
                       }`}
                     >
-                      <span className="w-full text-center">
-                        {speed === 0.5 && "0.5x"}
-                        {speed === 0.75 && "0.75x"}
-                        {speed === 1 && "Normal"}
-                        {speed === 1.25 && "1.25x"}
-                        {speed === 1.5 && "1.5x"}
-                        {speed === 2 && "2x"}
+                      <span className="flex items-center gap-2">
+                        {speed === playbackRate && (
+                          <div className="w-2 h-2 rounded-full bg-primary" />
+                        )}
+                        <span>
+                          {speed === 1 ? "Normal" : `${speed}x`}
+                        </span>
                       </span>
+                      {speed === 1 && (
+                        <span className="text-xs text-gray-400">Default</span>
+                      )}
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuContent>
