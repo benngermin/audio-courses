@@ -54,27 +54,11 @@ export async function seedTestData() {
     chapterData.push(
       {
         assignmentId: insertedAssignments[0].id,
-        title: "Chapter 1.1: What is Risk?",
-        description: "Defining risk in the context of insurance",
-        audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-        duration: 369,
+        title: "Chapter 1: Introduction to Risk Management",
+        description: "Understanding fundamental concepts of risk and insurance",
+        audioUrl: "/api/audio/chapter-1.mp3",
+        duration: 480,
         orderIndex: 1,
-      },
-      {
-        assignmentId: insertedAssignments[0].id,
-        title: "Chapter 1.2: Types of Risk",
-        description: "Exploring different categories of risk",
-        audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
-        duration: 429,
-        orderIndex: 2,
-      },
-      {
-        assignmentId: insertedAssignments[0].id,
-        title: "Chapter 1.3: Risk Management Framework",
-        description: "Overview of the risk management process",
-        audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
-        duration: 353,
-        orderIndex: 3,
       }
     );
 
