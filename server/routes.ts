@@ -319,12 +319,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Check if we have an actual audio file for this chapter
       // First try with the chapter ID as filename
-      const possiblePaths = [
-        path.join(process.cwd(), 'server', 'audio-files', `${chapterId}.mp3`),
-        // Special case for chapter-4-business-insurance
-        chapterId === 'chapter-4-business-insurance' ? 
-          path.join(process.cwd(), 'server', 'audio-files', 'chapter-4.mp3') : null
-      ].filter(Boolean);
+      const possiblePaths: string[] = [
+        path.join(process.cwd(), 'server', 'audio-files', `${chapterId}.mp3`)
+      ];
+      
+      // Special case for chapter-4-business-insurance
+      if (chapterId === 'chapter-4-business-insurance') {
+        possiblePaths.push(path.join(process.cwd(), 'server', 'audio-files', 'chapter-4.mp3'));
+      }
       
       for (const audioPath of possiblePaths) {
         try {
@@ -348,6 +350,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           return;
         } catch (err) {
           // File doesn't exist, try next path
+          console.log(`File not found at: ${audioPath}`);
           continue;
         }
       }
