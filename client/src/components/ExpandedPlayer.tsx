@@ -216,11 +216,11 @@ export function ExpandedPlayer() {
             </div>
 
             {/* Track info with more spacing */}
-            <div className="text-center mb-8 px-4">
-              <h1 className="text-xl sm:text-2xl font-bold text-foreground mb-3 line-clamp-2">
+            <div className="text-center mt-10 mb-9 px-4">
+              <h1 className="text-[22px] font-semibold text-[#333] mb-2 line-clamp-2 leading-[1.3]">
                 {currentChapter.title}
               </h1>
-              <p className="text-base sm:text-lg text-muted-foreground line-clamp-1">
+              <p className="text-base font-normal text-[#999] line-clamp-1 leading-[1.4]">
                 {currentAssignment.title}
               </p>
             </div>
