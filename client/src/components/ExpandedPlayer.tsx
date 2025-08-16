@@ -365,11 +365,14 @@ export function ExpandedPlayer() {
               {/* Play All Mode toggle button */}
               <Button
                 variant="ghost"
-                size="icon"
+                size="sm"
                 onClick={() => setIsPlayAllMode(!isPlayAllMode)}
-                className={`h-10 w-10 rounded-full transition-all ${isPlayAllMode ? 'bg-primary/10 hover:bg-primary/20' : 'hover:bg-gray-100'}`}
+                className={`h-10 ${isPlayAllMode ? 'px-3' : 'w-10'} rounded-full transition-all ${isPlayAllMode ? 'bg-primary/10 hover:bg-primary/20' : 'hover:bg-gray-100'} flex items-center gap-1.5`}
               >
                 <ListMusic className={`h-5 w-5 ${isPlayAllMode ? 'text-primary' : 'text-gray-600'}`} />
+                {isPlayAllMode && (
+                  <span className="text-sm font-medium text-primary whitespace-nowrap">Play All</span>
+                )}
               </Button>
 
               {/* Cast/AirPlay button */}
