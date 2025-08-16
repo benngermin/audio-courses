@@ -368,14 +368,14 @@ export function ExpandedPlayer() {
                   variant="ghost"
                   size="sm"
                   onClick={() => setIsPlayAllMode(!isPlayAllMode)}
-                  className={`h-10 w-24 rounded-full transition-colors ${
+                  className={`h-14 w-32 sm:h-16 sm:w-36 rounded-full transition-colors ${
                     isPlayAllMode ? 'bg-primary/10 hover:bg-primary/20' : 'hover:bg-gray-100'
-                  } flex items-center justify-center gap-1.5`}
+                  } flex items-center justify-center gap-2`}
                   title={isPlayAllMode ? "Play All Mode: On" : "Play All Mode: Off"}
                 >
-                  <ListMusic className={`h-5 w-5 ${isPlayAllMode ? 'text-primary' : 'text-gray-600'}`} />
+                  <ListMusic className={`h-7 w-7 sm:h-8 sm:w-8 ${isPlayAllMode ? 'text-primary' : 'text-gray-600'}`} />
                   {isPlayAllMode && (
-                    <span className="text-sm font-medium text-primary">Play All</span>
+                    <span className="text-base sm:text-lg font-medium text-primary">Play All</span>
                   )}
                 </Button>
               </div>
@@ -391,9 +391,9 @@ export function ExpandedPlayer() {
                       description: "Casting feature coming soon",
                     });
                   }}
-                  className="h-10 w-10 rounded-full hover:bg-gray-100 transition-colors"
+                  className="h-14 w-14 sm:h-16 sm:w-16 rounded-full hover:bg-gray-100 transition-colors"
                 >
-                  <Cast className="h-5 w-5 text-gray-600" />
+                  <Cast className="h-7 w-7 sm:h-8 sm:w-8 text-gray-600" />
                 </Button>
               </div>
 
@@ -404,7 +404,7 @@ export function ExpandedPlayer() {
                     <Button 
                       variant="ghost" 
                       size="sm"
-                      className="h-10 w-16 rounded-full hover:bg-gray-100 transition-colors font-semibold text-gray-700 flex items-center justify-center"
+                      className="h-14 w-20 sm:h-16 sm:w-24 rounded-full hover:bg-gray-100 transition-colors font-semibold text-gray-700 flex items-center justify-center text-lg sm:text-xl"
                     >
                       {playbackRate}x
                     </Button>
