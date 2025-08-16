@@ -203,8 +203,8 @@ export function ExpandedPlayer() {
           {/* Main content area with increased padding */}
           <div className="flex-1 flex flex-col justify-center px-7 sm:px-10 pb-10 sm:pb-12 overflow-y-auto">
             {/* Audio Visualizer with animated orb */}
-            <div className="mx-auto mt-2 mb-10 relative">
-              <div className="w-56 h-56 sm:w-72 sm:h-72 bg-gradient-to-br from-[#1a1a2e] to-[#0f0f1e] rounded-2xl flex items-center justify-center shadow-[0_10px_30px_rgba(0,0,0,0.3)] overflow-hidden">
+            <div className="w-full mb-10 relative">
+              <div className="w-full aspect-square bg-[#2c2d3e] rounded-[20px] flex items-center justify-center overflow-hidden">
                 <div className={`visualizer ${isPlaying ? 'playing' : 'paused'} w-full h-full flex items-center justify-center relative`}>
                   <div className="center-orb relative w-[120px] h-[120px] flex items-center justify-center">
                     <div className="orb-inner absolute w-[60px] h-[60px] rounded-full"></div>
