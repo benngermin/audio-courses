@@ -15,7 +15,8 @@ import {
   Gauge,
   RotateCcw,
   RotateCw,
-  Volume1
+  Volume1,
+  ListMusic
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -40,7 +41,9 @@ export function ExpandedPlayer() {
     currentAssignment, 
     isExpanded, 
     setIsExpanded,
-    setCurrentTrack 
+    setCurrentTrack,
+    isPlayAllMode,
+    setIsPlayAllMode 
   } = useAudioContext();
   
   const [lastProgressUpdate, setLastProgressUpdate] = useState(0);
@@ -359,22 +362,14 @@ export function ExpandedPlayer() {
 
             {/* Bottom controls with added top padding */}
             <div className="flex items-center justify-center gap-12 pt-5">
-              {/* Mute/Unmute button */}
+              {/* Play All Mode toggle button */}
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={toggleMute}
-                className="h-10 w-10 rounded-full hover:bg-gray-100 transition-colors"
+                onClick={() => setIsPlayAllMode(!isPlayAllMode)}
+                className={`h-10 w-10 rounded-full transition-all ${isPlayAllMode ? 'bg-primary/10 hover:bg-primary/20' : 'hover:bg-gray-100'}`}
               >
-                {isMuted ? (
-                  <VolumeX className="h-5 w-5 text-gray-600" />
-                ) : volume > 0.5 ? (
-                  <Volume2 className="h-5 w-5 text-gray-600" />
-                ) : volume > 0 ? (
-                  <Volume1 className="h-5 w-5 text-gray-600" />
-                ) : (
-                  <VolumeX className="h-5 w-5 text-gray-600" />
-                )}
+                <ListMusic className={`h-5 w-5 ${isPlayAllMode ? 'text-primary' : 'text-gray-600'}`} />
               </Button>
 
               {/* Cast/AirPlay button */}
