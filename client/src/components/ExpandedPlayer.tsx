@@ -365,14 +365,14 @@ export function ExpandedPlayer() {
               {/* Play All Mode toggle button */}
               <Button
                 variant="ghost"
-                size="sm"
+                size="icon"
                 onClick={() => setIsPlayAllMode(!isPlayAllMode)}
-                className={`h-10 ${isPlayAllMode ? 'px-3' : 'w-10'} rounded-full transition-all ${isPlayAllMode ? 'bg-primary/10 hover:bg-primary/20' : 'hover:bg-gray-100'} flex items-center gap-1.5`}
+                className={`h-10 w-10 rounded-full transition-colors ${
+                  isPlayAllMode ? 'bg-primary/10 hover:bg-primary/20' : 'hover:bg-gray-100'
+                }`}
+                title={isPlayAllMode ? "Play All Mode: On" : "Play All Mode: Off"}
               >
                 <ListMusic className={`h-5 w-5 ${isPlayAllMode ? 'text-primary' : 'text-gray-600'}`} />
-                {isPlayAllMode && (
-                  <span className="text-sm font-medium text-primary whitespace-nowrap">Play All</span>
-                )}
               </Button>
 
               {/* Cast/AirPlay button */}
@@ -396,7 +396,7 @@ export function ExpandedPlayer() {
                   <Button 
                     variant="ghost" 
                     size="sm"
-                    className="h-10 px-3 rounded-full hover:bg-gray-100 transition-colors font-semibold text-gray-700"
+                    className="h-10 w-16 rounded-full hover:bg-gray-100 transition-colors font-semibold text-gray-700 flex items-center justify-center"
                   >
                     {playbackRate}x
                   </Button>
