@@ -47,7 +47,6 @@ export function ExpandedPlayer() {
     setIsPlayAllMode 
   } = useAudioContext();
   
-  const [lastProgressUpdate, setLastProgressUpdate] = useState(0);
   const [showVolume, setShowVolume] = useState(false);
 
   // Get all chapters for navigation
@@ -80,18 +79,6 @@ export function ExpandedPlayer() {
       });
     },
   });
-
-  const handleTimeUpdate = useCallback((currentTime: number) => {
-    if (!currentChapter) return;
-    if (currentTime - lastProgressUpdate >= 10) {
-      progressMutation.mutate({
-        chapterId: currentChapter.id,
-        currentTime,
-        isCompleted: false,
-      });
-      setLastProgressUpdate(currentTime);
-    }
-  }, [currentChapter, lastProgressUpdate, progressMutation]);
 
   // Use shared audio controls and state from MiniPlayer via context
   const { audioControls, audioState, isPlaying: contextIsPlaying } = useAudioContext();

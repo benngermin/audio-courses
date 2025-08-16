@@ -24,7 +24,7 @@ export function MiniPlayer() {
     setIsPlayAllMode,
   } = useAudioContext();
   
-  const [lastProgressUpdate, setLastProgressUpdate] = useState(0);
+  const lastProgressUpdateRef = useRef(0);
 
   const progressMutation = useMutation({
     mutationFn: async (data: { chapterId: string; currentTime: number; isCompleted: boolean }) => {
@@ -35,15 +35,15 @@ export function MiniPlayer() {
   const handleTimeUpdate = useCallback((currentTime: number) => {
     if (!currentChapter) return;
     // Update progress every 10 seconds
-    if (currentTime - lastProgressUpdate >= 10) {
+    if (currentTime - lastProgressUpdateRef.current >= 10) {
       progressMutation.mutate({
         chapterId: currentChapter.id,
         currentTime,
         isCompleted: false,
       });
-      setLastProgressUpdate(currentTime);
+      lastProgressUpdateRef.current = currentTime;
     }
-  }, [currentChapter, lastProgressUpdate, progressMutation]);
+  }, [currentChapter?.id, progressMutation]);
 
   // Get all chapters for the current assignment to enable Play All
   const { data: chapters = [] } = useQuery<Chapter[]>({
@@ -132,48 +132,32 @@ export function MiniPlayer() {
 
   // Auto-play when a new chapter is selected (only when chapter changes)
   const prevChapterIdRef = useRef<string | null>(null);
-  const isAutoPlayingRef = useRef(false);
-  const autoPlayTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const hasAutoPlayedRef = useRef(false);
   
   useEffect(() => {
     if (currentChapter?.id && currentChapter.id !== prevChapterIdRef.current) {
       prevChapterIdRef.current = currentChapter.id;
-      
-      // Clear any pending auto-play
-      if (autoPlayTimeoutRef.current) {
-        clearTimeout(autoPlayTimeoutRef.current);
-      }
-      
-      // Prevent concurrent auto-play attempts
-      if (isAutoPlayingRef.current) return;
-      
-      isAutoPlayingRef.current = true;
-      
-      // Give the audio element time to load
-      autoPlayTimeoutRef.current = setTimeout(() => {
-        console.log('Auto-playing chapter:', currentChapter.id);
-        play()
-          .then(() => {
-            console.log('Auto-play successful');
-          })
-          .catch((error) => {
-            console.error('Auto-play failed:', error);
-          })
-          .finally(() => {
-            isAutoPlayingRef.current = false;
-            autoPlayTimeoutRef.current = null;
-          });
-      }, 500); // Give more time for audio to load
-      
-      return () => {
-        if (autoPlayTimeoutRef.current) {
-          clearTimeout(autoPlayTimeoutRef.current);
-          autoPlayTimeoutRef.current = null;
-        }
-        isAutoPlayingRef.current = false;
-      };
+      hasAutoPlayedRef.current = false;
+      // Reset progress update tracking for new chapter
+      lastProgressUpdateRef.current = 0;
     }
-  }, [currentChapter?.id, play]);
+  }, [currentChapter?.id]);
+  
+  useEffect(() => {
+    // Only auto-play once when audio is ready and we haven't played yet
+    if (currentChapter?.id && duration > 0 && !hasAutoPlayedRef.current && !isPlaying) {
+      hasAutoPlayedRef.current = true;
+      console.log('Auto-playing chapter:', currentChapter.id);
+      play()
+        .then(() => {
+          console.log('Auto-play successful');
+        })
+        .catch((error) => {
+          console.error('Auto-play failed:', error);
+          hasAutoPlayedRef.current = false; // Allow retry on failure
+        });
+    }
+  }, [currentChapter?.id, duration, isPlaying, play]);
 
   // Update Media Session metadata
   useEffect(() => {

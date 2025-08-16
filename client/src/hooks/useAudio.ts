@@ -150,8 +150,8 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
 
     // Add interval for smooth progress updates
     const progressInterval = setInterval(() => {
-      if (audio && !audio.paused) {
-        setCurrentTime(audio.currentTime);
+      if (audioRef.current && !audioRef.current.paused) {
+        setCurrentTime(audioRef.current.currentTime);
       }
     }, 100); // Update every 100ms for smooth animation
 
@@ -172,10 +172,10 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
       }
       setIsPlaying(false);
     };
-  }, [src]); // Only depend on src, callbacks don't need to trigger re-initialization
+  }, [src]); // Only depend on src, callbacks are stable via useCallback in parent
 
   const play = useCallback(async () => {
-    if (audioRef.current) {
+    if (audioRef.current && audioRef.current.readyState >= 2) {
       try {
         // Mobile Safari requires user interaction before playing
         const playPromise = audioRef.current.play();
@@ -186,11 +186,14 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
       } catch (error) {
         // Properly log the error
         if (error instanceof Error) {
-          console.error('Error playing audio:', error.message, error.name);
-          if (error.name === 'NotAllowedError') {
-            console.log('Autoplay prevented - user interaction required');
-          } else if (error.name === 'NotSupportedError') {
-            console.error('Audio format not supported by browser');
+          // Only log non-abort errors (AbortError happens when play is interrupted)
+          if (error.name !== 'AbortError') {
+            console.error('Error playing audio:', error.message, error.name);
+            if (error.name === 'NotAllowedError') {
+              console.log('Autoplay prevented - user interaction required');
+            } else if (error.name === 'NotSupportedError') {
+              console.error('Audio format not supported by browser');
+            }
           }
         } else {
           console.error('Error playing audio:', String(error));
