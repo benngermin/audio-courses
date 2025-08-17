@@ -354,34 +354,34 @@ export function UnifiedContentManager() {
     setUploadProgress(0);
 
     try {
-      // First create the chapter with a placeholder URL
-      const newChapter = await apiRequest("POST", "/api/admin/chapters", {
-        ...chapterData,
-        audioUrl: "uploading...",
-      }) as Chapter;
-
-      // Then upload the audio file
+      // Upload the file first, then create the chapter with the audio URL
       const formData = new FormData();
       formData.append("audio", selectedFile);
-      formData.append("chapterId", newChapter.id);
 
-      const response = await fetch("/api/admin/upload-audio", {
+      // Upload to a temporary endpoint that doesn't require chapter ID
+      const uploadResponse = await fetch("/api/admin/upload-temp-audio", {
         method: "POST",
         body: formData,
         credentials: "include",
       });
 
-      if (!response.ok) {
-        const errorText = await response.text();
+      if (!uploadResponse.ok) {
+        const errorText = await uploadResponse.text();
         console.error("Upload error:", errorText);
-        throw new Error(`Failed to upload audio file: ${response.status}`);
+        throw new Error(`Failed to upload audio file: ${uploadResponse.status}`);
       }
 
-      const result = await response.json();
+      const uploadResult = await uploadResponse.json();
       setUploadProgress(100);
-      setIsUploading(false);
 
-      return { chapterId: newChapter.id, audioUrl: result.audioUrl };
+      // Now create the chapter with the actual audio URL
+      const newChapter = await apiRequest("POST", "/api/admin/chapters", {
+        ...chapterData,
+        audioUrl: uploadResult.audioUrl,
+      }) as any;
+
+      setIsUploading(false);
+      return { chapterId: newChapter.id, audioUrl: uploadResult.audioUrl };
     } catch (error) {
       setIsUploading(false);
       setUploadProgress(0);
@@ -492,12 +492,12 @@ export function UnifiedContentManager() {
             <div className="flex items-center gap-2">
               <Button
                 onClick={() => syncMutation.mutate()}
-                disabled={syncMutation.isPending || syncStatus?.status === "in_progress"}
+                disabled={syncMutation.isPending || (syncStatus as any)?.status === "in_progress"}
                 variant="outline"
                 size="sm"
                 className="flex items-center gap-2"
               >
-                {syncMutation.isPending || syncStatus?.status === "in_progress" ? (
+                {syncMutation.isPending || (syncStatus as any)?.status === "in_progress" ? (
                   <RefreshCw className="h-4 w-4 animate-spin" />
                 ) : (
                   <FolderSync className="h-4 w-4" />

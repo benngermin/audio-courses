@@ -431,6 +431,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Upload audio file temporarily (without chapter association)
+  app.post('/api/admin/upload-temp-audio', isAuthenticated, upload.single('audio'), async (req: any, res) => {
+    try {
+      const user = await storage.getUser(req.user.claims.sub);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      if (!req.file) {
+        return res.status(400).json({ message: "No audio file provided" });
+      }
+
+      // Upload the file to object storage with a temporary name
+      const fileName = `temp-${Date.now()}-${req.file.originalname}`;
+      const audioUrl = await objectStorageService.uploadAudioFile(req.file, fileName);
+
+      res.json({ 
+        message: "Audio file uploaded successfully",
+        audioUrl
+      });
+    } catch (error) {
+      console.error("Error uploading temporary audio file:", error);
+      // Clean up the uploaded file on error
+      if (req.file && fs.existsSync(req.file.path)) {
+        await fs.promises.unlink(req.file.path);
+      }
+      res.status(500).json({ message: "Failed to upload audio file" });
+    }
+  });
+
   // Upload audio file for a specific chapter
   app.post('/api/admin/upload-audio', isAuthenticated, upload.single('audio'), async (req: any, res) => {
     try {
