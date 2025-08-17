@@ -533,38 +533,50 @@ export function UnifiedContentManager() {
             <Accordion type="single" collapsible value={expandedCourse || undefined} onValueChange={(value) => setExpandedCourse(value)}>
               {coursesWithData.map((course) => (
                 <AccordionItem key={course.id} value={course.id}>
-                  <div className="flex items-center">
-                    <AccordionTrigger className="hover:no-underline flex-1">
-                      <div className="flex items-center gap-3">
-                        <div>
+                  <div className="flex items-center group">
+                    <AccordionTrigger className="hover:no-underline flex-1 pr-2">
+                      <div className="flex items-center justify-between w-full">
+                        <div className="flex flex-col items-start">
                           <div className="font-medium text-left">
                             {course.code ? `${course.code} - ${course.name}` : course.name}
                           </div>
-                          <div className="text-sm text-muted-foreground">
-                            {course.assignments?.length || 0} assignments
+                          <div className="text-sm text-muted-foreground mt-1">
+                            {course.assignments?.length || 0} assignment{(course.assignments?.length || 0) !== 1 ? 's' : ''}
                           </div>
                         </div>
                       </div>
                     </AccordionTrigger>
-                    <div className="flex items-center gap-2 px-4">
+                    <div className="flex items-center gap-1 pr-4 opacity-0 group-hover:opacity-100 transition-opacity">
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => openDialog("assignment", null, course.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openDialog("assignment", null, course.id);
+                        }}
+                        title="Add Assignment"
                       >
                         <Plus className="h-4 w-4" />
                       </Button>
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => openDialog("course", course)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openDialog("course", course);
+                        }}
+                        title="Edit Course"
                       >
                         <Edit2 className="h-4 w-4" />
                       </Button>
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => setDeleteItem({ type: "course", item: course })}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setDeleteItem({ type: "course", item: course });
+                        }}
+                        title="Delete Course"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -578,34 +590,48 @@ export function UnifiedContentManager() {
                         <Accordion type="single" collapsible value={expandedAssignment || undefined} onValueChange={(value) => setExpandedAssignment(value)}>
                           {course.assignments?.map((assignment) => (
                             <AccordionItem key={assignment.id} value={assignment.id}>
-                              <div className="flex items-center">
-                                <AccordionTrigger className="hover:no-underline flex-1">
-                                  <div>
-                                    <div className="font-medium text-left">{assignment.title}</div>
-                                    <div className="text-sm text-muted-foreground">
-                                      {assignment.chapters?.length || 0} chapters
+                              <div className="flex items-center group">
+                                <AccordionTrigger className="hover:no-underline flex-1 pr-2">
+                                  <div className="flex items-center justify-between w-full">
+                                    <div className="flex flex-col items-start">
+                                      <div className="font-medium text-left">{assignment.title}</div>
+                                      <div className="text-sm text-muted-foreground mt-1">
+                                        {assignment.chapters?.length || 0} chapter{(assignment.chapters?.length || 0) !== 1 ? 's' : ''}
+                                      </div>
                                     </div>
                                   </div>
                                 </AccordionTrigger>
-                                <div className="flex items-center gap-2 px-4">
+                                <div className="flex items-center gap-1 pr-4 opacity-0 group-hover:opacity-100 transition-opacity">
                                   <Button
                                     variant="ghost"
                                     size="sm"
-                                    onClick={() => openDialog("chapter", null, assignment.id)}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      openDialog("chapter", null, assignment.id);
+                                    }}
+                                    title="Add Chapter"
                                   >
                                     <FileAudio className="h-4 w-4" />
                                   </Button>
                                   <Button
                                     variant="ghost"
                                     size="sm"
-                                    onClick={() => openDialog("assignment", assignment)}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      openDialog("assignment", assignment);
+                                    }}
+                                    title="Edit Assignment"
                                   >
                                     <Edit2 className="h-4 w-4" />
                                   </Button>
                                   <Button
                                     variant="ghost"
                                     size="sm"
-                                    onClick={() => setDeleteItem({ type: "assignment", item: assignment })}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setDeleteItem({ type: "assignment", item: assignment });
+                                    }}
+                                    title="Delete Assignment"
                                   >
                                     <Trash2 className="h-4 w-4" />
                                   </Button>
@@ -617,28 +643,36 @@ export function UnifiedContentManager() {
                                     <p className="text-sm text-muted-foreground py-2">No chapters yet. Click the audio icon to add one.</p>
                                   ) : (
                                     assignment.chapters?.map((chapter) => (
-                                      <div key={chapter.id} className="flex items-center justify-between py-2 px-3 hover:bg-muted/50 rounded-lg">
-                                        <div className="flex items-center gap-3">
-                                          <Music className="h-4 w-4 text-muted-foreground" />
-                                          <div>
-                                            <div className="text-sm font-medium">{chapter.title}</div>
-                                            <div className="text-xs text-muted-foreground">
+                                      <div key={chapter.id} className="group flex items-center justify-between py-3 px-4 hover:bg-muted/50 rounded-lg transition-colors">
+                                        <div className="flex items-center gap-3 flex-1">
+                                          <Music className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                                          <div className="flex-1 min-w-0">
+                                            <div className="text-sm font-medium truncate">{chapter.title}</div>
+                                            <div className="text-xs text-muted-foreground mt-0.5">
                                               Duration: {formatDuration(chapter.duration)}
                                             </div>
                                           </div>
                                         </div>
-                                        <div className="flex items-center gap-2">
+                                        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                           <Button
                                             variant="ghost"
                                             size="sm"
-                                            onClick={() => openDialog("chapter", chapter)}
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              openDialog("chapter", chapter);
+                                            }}
+                                            title="Edit Chapter"
                                           >
                                             <Edit2 className="h-3 w-3" />
                                           </Button>
                                           <Button
                                             variant="ghost"
                                             size="sm"
-                                            onClick={() => setDeleteItem({ type: "chapter", item: chapter })}
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              setDeleteItem({ type: "chapter", item: chapter });
+                                            }}
+                                            title="Delete Chapter"
                                           >
                                             <Trash2 className="h-3 w-3" />
                                           </Button>
