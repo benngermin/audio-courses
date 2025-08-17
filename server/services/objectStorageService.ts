@@ -13,43 +13,55 @@ class ObjectStorageService {
   private privateDir: string;
 
   constructor() {
-    this.storage = new Storage();
+    // For Replit environment, use keyFilename pointing to service account credentials
+    const storageOptions: any = {};
+    
+    // Check if we're in Replit environment with object storage setup
+    if (process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID) {
+      // Use the Replit-provided authentication
+      if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+        storageOptions.keyFilename = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+      } else {
+        // Replit may provide authentication automatically
+        storageOptions.projectId = 'replit-objstore';
+      }
+    }
+    
+    this.storage = new Storage(storageOptions);
     this.bucketName = process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID || '';
-    this.privateDir = process.env.PRIVATE_OBJECT_DIR || '.private';
+    this.privateDir = process.env.PRIVATE_OBJECT_DIR || '/replit-objstore-acf44322-a117-4f93-bd59-40ae30f5d087/.private';
   }
 
   async uploadAudioFile(file: MulterFile, destinationPath: string): Promise<string> {
-    if (!this.bucketName) {
-      throw new Error('Object storage bucket not configured');
-    }
-
     try {
-      const bucket = this.storage.bucket(this.bucketName);
-      const fullPath = `${this.privateDir}/audio/${destinationPath}`;
+      // For now, store files locally in a public directory
+      const uploadsDir = path.join(process.cwd(), 'public', 'uploads', 'audio');
       
-      // Upload the file to the bucket
-      await bucket.upload(file.path, {
-        destination: fullPath,
-        metadata: {
-          contentType: file.mimetype,
-        },
-      });
-
-      // Generate a signed URL for accessing the file
-      const [url] = await bucket.file(fullPath).getSignedUrl({
-        version: 'v4',
-        action: 'read',
-        expires: Date.now() + 7 * 24 * 60 * 60 * 1000, // 7 days
-      });
-
+      // Ensure the uploads directory exists
+      if (!fs.existsSync(uploadsDir)) {
+        fs.mkdirSync(uploadsDir, { recursive: true });
+      }
+      
+      // Generate a unique filename
+      const fileName = `${Date.now()}-${destinationPath}`;
+      const filePath = path.join(uploadsDir, fileName);
+      
+      // Read the file and write it to the uploads directory
+      const fileData = fs.readFileSync(file.path);
+      fs.writeFileSync(filePath, fileData);
+      
       // Clean up the temporary file
       if (fs.existsSync(file.path)) {
         await unlink(file.path);
       }
-
-      return url;
+      
+      // Return a relative URL that can be served by the Express server
+      const audioUrl = `/uploads/audio/${fileName}`;
+      console.log('Audio file uploaded successfully to:', audioUrl);
+      
+      return audioUrl;
     } catch (error) {
-      console.error('Error uploading file to object storage:', error);
+      console.error('Error uploading file:', error);
       // Clean up the temporary file on error
       if (fs.existsSync(file.path)) {
         await unlink(file.path);
