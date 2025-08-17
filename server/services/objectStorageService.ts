@@ -2,7 +2,18 @@ import { Storage } from '@google-cloud/storage';
 import * as path from 'path';
 import * as fs from 'fs';
 import { promisify } from 'util';
-import type { File as MulterFile } from 'multer';
+// Type definition for multer file
+interface MulterFile {
+  fieldname: string;
+  originalname: string;
+  encoding: string;
+  mimetype: string;
+  size: number;
+  destination: string;
+  filename: string;
+  path: string;
+  buffer: Buffer;
+}
 
 const writeFile = promisify(fs.writeFile);
 const unlink = promisify(fs.unlink);

@@ -158,7 +158,6 @@ export function UnifiedContentManager() {
     defaultValues: {
       assignmentId: "",
       title: "",
-      description: "",
       orderIndex: 0,
       duration: 0,
     },
@@ -454,7 +453,7 @@ export function UnifiedContentManager() {
       if (item) {
         chapterForm.reset(item);
       } else {
-        chapterForm.reset({ assignmentId: parentId || "", title: "", description: "", orderIndex: 0, duration: 0 });
+        chapterForm.reset({ assignmentId: parentId || "", title: "", orderIndex: 0, duration: 0 });
         setSelectedAssignmentForChapter(parentId || "");
       }
     }

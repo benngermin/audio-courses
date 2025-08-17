@@ -153,7 +153,7 @@ function ChapterCard({ chapter, isCurrentlyPlaying, onPlay, onDownload, isDownlo
                   if (progress?.isCompleted) {
                     return (
                       <>
-                        <span className="whitespace-nowrap">{formatDuration(chapter.duration)}</span>
+                        <span className="whitespace-nowrap">{formatDuration(chapter.duration || 0)}</span>
                         <span className="hidden sm:inline">•</span>
                         <span className="text-green-600">Completed</span>
                       </>
@@ -165,7 +165,7 @@ function ChapterCard({ chapter, isCurrentlyPlaying, onPlay, onDownload, isDownlo
                       <>
                         <span className="whitespace-nowrap">{formatDuration(Math.floor(progress.currentTime))}</span>
                         <span className="hidden sm:inline">•</span>
-                        <span className="whitespace-nowrap">{formatDuration(Math.floor(chapter.duration - progress.currentTime))} remaining</span>
+                        <span className="whitespace-nowrap">{chapter.duration ? formatDuration(Math.floor(chapter.duration - progress.currentTime)) : '0:00'} remaining</span>
                       </>
                     );
                   }
