@@ -108,10 +108,11 @@ function ChapterCard({ chapter, isCurrentlyPlaying, onPlay, onDownload, isDownlo
   });
 
   const formatDuration = (seconds: number | null) => {
-    if (!seconds && seconds !== 0) return "Unknown duration";
-    const totalSeconds = Math.floor(seconds); // Ensure we're working with whole seconds
+    if (seconds === null || seconds === undefined) return "Unknown duration";
+    // Ensure we're working with whole seconds by flooring first
+    const totalSeconds = Math.floor(Math.abs(seconds));
     const minutes = Math.floor(totalSeconds / 60);
-    const remainingSeconds = totalSeconds % 60;
+    const remainingSeconds = Math.floor(totalSeconds % 60);
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
@@ -161,11 +162,14 @@ function ChapterCard({ chapter, isCurrentlyPlaying, onPlay, onDownload, isDownlo
                   }
                   // Playing/Paused chapters with progress
                   if (progress && progress.currentTime && progress.currentTime > 0) {
+                    const currentTimeInt = Math.floor(progress.currentTime);
+                    const durationInt = Math.floor(chapter.duration || 0);
+                    const remainingTime = Math.max(0, durationInt - currentTimeInt);
                     return (
                       <>
-                        <span className="whitespace-nowrap">{formatDuration(Math.floor(progress.currentTime))}</span>
+                        <span className="whitespace-nowrap">{formatDuration(currentTimeInt)}</span>
                         <span className="hidden sm:inline">•</span>
-                        <span className="whitespace-nowrap">{chapter.duration ? formatDuration(Math.floor(chapter.duration - progress.currentTime)) : '0:00'} remaining</span>
+                        <span className="whitespace-nowrap">{formatDuration(remainingTime)} remaining</span>
                       </>
                     );
                   }
