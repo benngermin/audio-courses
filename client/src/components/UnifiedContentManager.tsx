@@ -238,6 +238,7 @@ export function UnifiedContentManager() {
     },
     onSuccess: (_, variables) => {
       toast({ title: "Assignment created", description: "The assignment has been created successfully." });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/all-assignments"] });
       queryClient.invalidateQueries({ queryKey: [`/api/courses/${variables.courseId}/assignments`] });
       assignmentForm.reset();
       setDialogType(null);
@@ -253,6 +254,7 @@ export function UnifiedContentManager() {
     },
     onSuccess: (_, variables) => {
       toast({ title: "Assignment updated", description: "The assignment has been updated successfully." });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/all-assignments"] });
       queryClient.invalidateQueries({ queryKey: ["/api/courses"] });
       setEditingItem(null);
       setDialogType(null);
@@ -268,6 +270,7 @@ export function UnifiedContentManager() {
     },
     onSuccess: () => {
       toast({ title: "Assignment deleted", description: "The assignment has been deleted successfully." });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/all-assignments"] });
       queryClient.invalidateQueries({ queryKey: ["/api/courses"] });
       setDeleteItem(null);
     },
@@ -283,6 +286,7 @@ export function UnifiedContentManager() {
     },
     onSuccess: (_, variables) => {
       toast({ title: "Chapter created", description: "The chapter has been created successfully." });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/all-chapters"] });
       queryClient.invalidateQueries({ queryKey: [`/api/assignments/${variables.assignmentId}/chapters`] });
       chapterForm.reset();
       setSelectedFile(null);
@@ -299,6 +303,7 @@ export function UnifiedContentManager() {
     },
     onSuccess: () => {
       toast({ title: "Chapter updated", description: "The chapter has been updated successfully." });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/all-chapters"] });
       queryClient.invalidateQueries({ queryKey: ["/api/assignments"] });
       setEditingItem(null);
       setDialogType(null);
@@ -314,6 +319,7 @@ export function UnifiedContentManager() {
     },
     onSuccess: () => {
       toast({ title: "Chapter deleted", description: "The chapter has been deleted successfully." });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/all-chapters"] });
       queryClient.invalidateQueries({ queryKey: ["/api/assignments"] });
       setDeleteItem(null);
     },
