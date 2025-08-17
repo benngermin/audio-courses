@@ -545,6 +545,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get all chapters across all assignments for admin interface
+  app.get('/api/admin/all-chapters', isAuthenticated, async (req: any, res) => {
+    try {
+      const user = await storage.getUser(req.user.claims.sub);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const courses = await storage.getCourses();
+      const allChapters = [];
+      
+      for (const course of courses) {
+        const assignments = await storage.getAssignmentsByCourse(course.id);
+        for (const assignment of assignments) {
+          const chapters = await storage.getChaptersByAssignment(assignment.id);
+          for (const chapter of chapters) {
+            allChapters.push({
+              ...chapter,
+              assignmentId: assignment.id,
+              assignmentTitle: assignment.title,
+              courseId: course.id,
+              courseName: course.name,
+            });
+          }
+        }
+      }
+
+      res.json(allChapters);
+    } catch (error) {
+      console.error("Error fetching all chapters:", error);
+      res.status(500).json({ message: "Failed to fetch chapters" });
+    }
+  });
+
   // Upload course audio endpoint - uploads audio for all chapters in a course
   app.post('/api/admin/courses/:courseId/upload-audio', isAuthenticated, async (req: any, res) => {
     try {
