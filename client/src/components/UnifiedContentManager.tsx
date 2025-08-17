@@ -855,8 +855,8 @@ export function UnifiedContentManager() {
                           {coursesWithData.flatMap(course => 
                             course.assignments?.map((assignment) => (
                               <SelectItem key={assignment.id} value={assignment.id}>
-                                <div className="flex flex-col">
-                                  <span>{assignment.title}</span>
+                                <div className="flex flex-col items-start w-full">
+                                  <span className="font-medium">{assignment.title}</span>
                                   <span className="text-xs text-muted-foreground">
                                     {course.code ? `${course.code} - ${course.name}` : course.name}
                                   </span>
