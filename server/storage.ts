@@ -145,6 +145,13 @@ export class DatabaseStorage implements IStorage {
     await db.delete(assignments).where(eq(assignments.id, id));
   }
 
+  async getAllAssignments(): Promise<Assignment[]> {
+    return await db
+      .select()
+      .from(assignments)
+      .orderBy(asc(assignments.orderIndex));
+  }
+
   // Chapter operations
   async getChaptersByAssignment(assignmentId: string): Promise<Chapter[]> {
     return await db
@@ -175,6 +182,13 @@ export class DatabaseStorage implements IStorage {
 
   async deleteChapter(id: string): Promise<void> {
     await db.delete(chapters).where(eq(chapters.id, id));
+  }
+
+  async getAllChapters(): Promise<Chapter[]> {
+    return await db
+      .select()
+      .from(chapters)
+      .orderBy(asc(chapters.orderIndex));
   }
 
   // User progress operations

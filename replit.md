@@ -6,22 +6,23 @@ This is a mobile-first audio learning platform built for The Institutes educatio
 
 ## Recent Changes (January 18, 2025)
 
-### Manual Content Upload Feature
-- Added comprehensive manual content management system in the admin panel
-- Administrators can now manually create and manage courses, assignments, and chapters
-- Implemented direct audio file upload for chapters using object storage
-- Created ManualContentUpload component with three tabs:
-  - **Courses Tab**: Create, edit, and delete courses
-  - **Assignments Tab**: Create assignments and link them to courses
-  - **Chapters Tab**: Upload audio files and create chapters for assignments
-- Integrated Google Cloud Storage for audio file storage
-- Added multer middleware for handling file uploads
-- Created objectStorageService for managing cloud storage operations
+### Unified Content Management System
+- Created a single, unified interface for managing all educational content regardless of source (API or manual upload)
+- Replaced separate content management components with UnifiedContentManager component
+- Administrators can now manage courses, assignments, and chapters in one hierarchical interface
+- Features include:
+  - **Full CRUD Operations**: Create, read, update, and delete for all content types
+  - **API Sync Integration**: Import content from The Institutes content repository
+  - **Manual Upload**: Direct audio file upload to Google Cloud Storage
+  - **Hierarchical View**: Nested accordion interface showing courses → assignments → chapters
+  - **Inline Actions**: Edit and delete buttons for each content item
+  - **Form Validation**: Comprehensive validation using react-hook-form and zod
 
 ### Technical Implementation
-- **Backend Routes**: Added CRUD endpoints for courses, assignments, and chapters at `/api/admin/*`
-- **File Upload**: Implemented `/api/admin/upload-audio` endpoint with multer for audio file processing
-- **Object Storage**: Set up default bucket for storing audio files in the cloud
-- **Frontend Components**: Created ManualContentUpload component with full form validation using react-hook-form and zod
-- **Database Operations**: Extended storage interface with full CRUD support for all content types
+- **UnifiedContentManager Component**: Single component managing both API-sourced and manually uploaded content
+- **Backend Routes**: CRUD endpoints for courses, assignments, and chapters at `/api/admin/*`
+- **Storage Methods**: Added `getAllAssignments()` and `getAllChapters()` methods to DatabaseStorage
+- **File Upload**: Audio upload via multer middleware to Google Cloud Storage
+- **Object Storage**: Using default bucket for storing audio files with signed URLs
+- **Database Operations**: Full CRUD support in storage interface for all content types
 

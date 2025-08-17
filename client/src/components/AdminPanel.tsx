@@ -22,81 +22,21 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import type { Course, SyncLog, Assignment, Chapter } from "@shared/schema";
-import { ManualContentUpload } from "./ManualContentUpload";
+import { UnifiedContentManager } from "./UnifiedContentManager";
 
 export function AdminPanel() {
   const { toast } = useToast();
-  const queryClient = useQueryClient();
-  const [expandedCourse, setExpandedCourse] = useState<string | null>(null);
-
-  const { data: courses = [], isLoading: coursesLoading } = useQuery<Course[]>({
-    queryKey: ["/api/courses"],
-  });
-
-  const { data: syncStatus } = useQuery<SyncLog>({
-    queryKey: ["/api/admin/sync-status"],
-  });
-
+  
   // Fetch admin setup info
   const { data: adminSetupInfo } = useQuery<any>({
     queryKey: ["/api/admin/setup-info"],
   });
 
-  const syncMutation = useMutation({
-    mutationFn: async () => {
-      return await apiRequest("POST", "/api/admin/sync");
-    },
-    onSuccess: () => {
-      toast({
-        title: "Content Sync Started",
-        description: "Syncing course audio from content repository API",
-      });
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/sync-status"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/courses"] });
-    },
-    onError: (error) => {
-      toast({
-        title: "Sync Failed",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
-
-  const formatSyncTime = (timestamp: string) => {
-    const date = new Date(timestamp);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-    const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-
-    if (diffHours > 0) {
-      return `${diffHours} hours ago`;
-    } else if (diffMinutes > 0) {
-      return `${diffMinutes} minutes ago`;
-    } else {
-      return "Just now";
-    }
-  };
-
-  const getSyncStatusColor = (status: string) => {
-    switch (status) {
-      case "success":
-        return "bg-green-50 text-green-600";
-      case "error":
-        return "bg-red-50 text-red-600";
-      case "in_progress":
-        return "bg-blue-50 text-blue-600";
-      default:
-        return "bg-gray-50 text-gray-600";
-    }
-  };
-
   return (
     <div className="py-6 space-y-6">
       <div className="mb-6">
         <h2 className="text-2xl font-bold text-slate-800 mb-2">Admin Dashboard</h2>
-        <p className="text-slate-600">Manage course content and upload audio from the content repository API</p>
+        <p className="text-slate-600">Manage all course content in one unified interface</p>
       </div>
 
       {/* Admin Setup Info */}
@@ -116,105 +56,8 @@ export function AdminPanel() {
         </Alert>
       )}
 
-      {/* Content Sync Status */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Upload className="h-5 w-5" />
-              <span>Content Repository Sync</span>
-            </div>
-            {syncStatus && (
-              <Badge className={getSyncStatusColor(syncStatus.status)}>
-                Last synced: {syncStatus.syncedAt ? formatSyncTime(syncStatus.syncedAt.toString()) : 'Never'}
-              </Badge>
-            )}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-slate-600 mb-4">
-            Upload and sync course audio content from The Institutes content repository API. 
-            This will import courses, assignments, and audio chapters.
-          </p>
-          {syncStatus?.message && (
-            <div className="bg-slate-50 rounded-lg p-3 mb-4">
-              <p className="text-sm text-slate-700">{syncStatus.message}</p>
-            </div>
-          )}
-          <div className="flex gap-4">
-            <Button
-              onClick={() => syncMutation.mutate()}
-              disabled={syncMutation.isPending || syncStatus?.status === "in_progress"}
-              className="flex items-center gap-2"
-            >
-              {syncMutation.isPending || syncStatus?.status === "in_progress" ? (
-                <RefreshCw className="h-4 w-4 animate-spin" />
-              ) : (
-                <Upload className="h-4 w-4" />
-              )}
-              {syncMutation.isPending || syncStatus?.status === "in_progress" ? "Syncing..." : "Sync Content"}
-            </Button>
-            <Button variant="outline" className="flex items-center gap-2">
-              <History className="h-4 w-4" />
-              View Sync History
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Course Audio Management */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Music className="h-5 w-5" />
-              <span>Course Audio Management</span>
-            </div>
-            <Badge variant="outline">
-              {courses.length} {courses.length === 1 ? 'Course' : 'Courses'}
-            </Badge>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-slate-600 mb-4">
-            Browse courses and upload audio content for each chapter. Audio files are synced from the content repository.
-          </p>
-          {coursesLoading ? (
-            <div className="space-y-3">
-              {Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} className="border border-gray-200 rounded-lg p-4 animate-pulse">
-                  <div className="space-y-2">
-                    <div className="h-5 bg-gray-200 rounded w-48"></div>
-                    <div className="h-4 bg-gray-200 rounded w-32"></div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : courses.length === 0 ? (
-            <Alert>
-              <Info className="h-4 w-4" />
-              <AlertTitle>No courses available</AlertTitle>
-              <AlertDescription>
-                Click "Sync Content" above to import courses from the content repository API.
-              </AlertDescription>
-            </Alert>
-          ) : (
-            <div className="space-y-3">
-              {courses.map((course) => (
-                <CourseItem 
-                  key={course.id} 
-                  course={course}
-                  expanded={expandedCourse === course.id}
-                  onToggle={() => setExpandedCourse(expandedCourse === course.id ? null : course.id)}
-                />
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Manual Content Upload Section */}
-      <ManualContentUpload />
+      {/* Unified Content Manager */}
+      <UnifiedContentManager />
     </div>
   );
 }
