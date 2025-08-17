@@ -109,15 +109,16 @@ function ChapterCard({ chapter, isCurrentlyPlaying, onPlay, onDownload, isDownlo
   });
 
   const formatDuration = (seconds: number | null) => {
-    if (!seconds) return "Unknown duration";
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = Math.round(seconds % 60);
+    if (!seconds && seconds !== 0) return "Unknown duration";
+    const totalSeconds = Math.floor(seconds); // Ensure we're working with whole seconds
+    const minutes = Math.floor(totalSeconds / 60);
+    const remainingSeconds = totalSeconds % 60;
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
   const getRemainingTime = () => {
     if (!progress?.currentTime || !chapter.duration) return null;
-    const remaining = chapter.duration - progress.currentTime;
+    const remaining = Math.floor(chapter.duration - progress.currentTime);
     return remaining > 0 ? formatDuration(remaining) : null;
   };
 
@@ -148,15 +149,22 @@ function ChapterCard({ chapter, isCurrentlyPlaying, onPlay, onDownload, isDownlo
                 {chapter.title}
               </h3>
               <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs sm:text-sm text-slate-500">
-                <span className="whitespace-nowrap">{formatDuration(chapter.duration)}</span>
-                {remainingTime && !progress?.isCompleted && (
+                {/* Show duration as initial time for unplayed chapters */}
+                {(!progress || (progress.currentTime === 0 && !progress.isCompleted)) && (
+                  <span className="whitespace-nowrap">{formatDuration(chapter.duration)}</span>
+                )}
+                {/* Show progress for played chapters */}
+                {progress && progress.currentTime > 0 && !progress.isCompleted && (
                   <>
+                    <span className="whitespace-nowrap">{formatDuration(progress.currentTime)}</span>
                     <span className="hidden sm:inline">•</span>
                     <span className="whitespace-nowrap">{remainingTime} remaining</span>
                   </>
                 )}
+                {/* Show completed status */}
                 {progress?.isCompleted && (
                   <>
+                    <span className="whitespace-nowrap">{formatDuration(chapter.duration)}</span>
                     <span className="hidden sm:inline">•</span>
                     <span className="text-green-600">Completed</span>
                   </>
