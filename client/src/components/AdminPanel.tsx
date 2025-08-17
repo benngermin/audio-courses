@@ -22,6 +22,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import type { Course, SyncLog, Assignment, Chapter } from "@shared/schema";
+import { ManualContentUpload } from "./ManualContentUpload";
 
 export function AdminPanel() {
   const { toast } = useToast();
@@ -37,7 +38,7 @@ export function AdminPanel() {
   });
 
   // Fetch admin setup info
-  const { data: adminSetupInfo } = useQuery({
+  const { data: adminSetupInfo } = useQuery<any>({
     queryKey: ["/api/admin/setup-info"],
   });
 
@@ -125,7 +126,7 @@ export function AdminPanel() {
             </div>
             {syncStatus && (
               <Badge className={getSyncStatusColor(syncStatus.status)}>
-                Last synced: {formatSyncTime(syncStatus.syncedAt)}
+                Last synced: {syncStatus.syncedAt ? formatSyncTime(syncStatus.syncedAt.toString()) : 'Never'}
               </Badge>
             )}
           </CardTitle>
@@ -211,6 +212,9 @@ export function AdminPanel() {
           )}
         </CardContent>
       </Card>
+
+      {/* Manual Content Upload Section */}
+      <ManualContentUpload />
     </div>
   );
 }

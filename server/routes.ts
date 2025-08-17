@@ -4,10 +4,12 @@ import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import { bubbleApiService } from "./services/bubbleApi";
 import { audioService } from "./services/audioService";
+import { objectStorageService } from "./services/objectStorageService";
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import * as fs from 'fs';
 import * as os from 'os';
+import multer from 'multer';
 
 const execAsync = promisify(exec);
 import * as path from "path";
@@ -17,6 +19,23 @@ import {
   insertChapterSchema,
   insertUserProgressSchema 
 } from "@shared/schema";
+
+// Configure multer for file uploads
+const upload = multer({
+  dest: '/tmp/',
+  limits: {
+    fileSize: 100 * 1024 * 1024, // 100MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    // Accept audio files only
+    const allowedMimes = ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/mp4', 'audio/ogg', 'audio/webm'];
+    if (allowedMimes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Invalid file type. Only audio files are allowed.'));
+    }
+  },
+});
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
@@ -261,6 +280,238 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching sync status:", error);
       res.status(500).json({ message: "Failed to fetch sync status" });
+    }
+  });
+
+  // Manual content management endpoints
+  app.post('/api/admin/courses', isAuthenticated, async (req: any, res) => {
+    try {
+      const user = await storage.getUser(req.user.claims.sub);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const courseData = insertCourseSchema.parse(req.body);
+      const newCourse = await storage.createCourse(courseData);
+      res.json(newCourse);
+    } catch (error) {
+      console.error("Error creating course:", error);
+      res.status(500).json({ message: "Failed to create course" });
+    }
+  });
+
+  app.put('/api/admin/courses/:courseId', isAuthenticated, async (req: any, res) => {
+    try {
+      const user = await storage.getUser(req.user.claims.sub);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const courseId = req.params.courseId;
+      const courseData = insertCourseSchema.partial().parse(req.body);
+      const updatedCourse = await storage.updateCourse(courseId, courseData);
+      res.json(updatedCourse);
+    } catch (error) {
+      console.error("Error updating course:", error);
+      res.status(500).json({ message: "Failed to update course" });
+    }
+  });
+
+  app.delete('/api/admin/courses/:courseId', isAuthenticated, async (req: any, res) => {
+    try {
+      const user = await storage.getUser(req.user.claims.sub);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const courseId = req.params.courseId;
+      await storage.deleteCourse(courseId);
+      res.json({ message: "Course deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting course:", error);
+      res.status(500).json({ message: "Failed to delete course" });
+    }
+  });
+
+  app.post('/api/admin/assignments', isAuthenticated, async (req: any, res) => {
+    try {
+      const user = await storage.getUser(req.user.claims.sub);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const assignmentData = insertAssignmentSchema.parse(req.body);
+      const newAssignment = await storage.createAssignment(assignmentData);
+      res.json(newAssignment);
+    } catch (error) {
+      console.error("Error creating assignment:", error);
+      res.status(500).json({ message: "Failed to create assignment" });
+    }
+  });
+
+  app.put('/api/admin/assignments/:assignmentId', isAuthenticated, async (req: any, res) => {
+    try {
+      const user = await storage.getUser(req.user.claims.sub);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const assignmentId = req.params.assignmentId;
+      const assignmentData = insertAssignmentSchema.partial().parse(req.body);
+      const updatedAssignment = await storage.updateAssignment(assignmentId, assignmentData);
+      res.json(updatedAssignment);
+    } catch (error) {
+      console.error("Error updating assignment:", error);
+      res.status(500).json({ message: "Failed to update assignment" });
+    }
+  });
+
+  app.delete('/api/admin/assignments/:assignmentId', isAuthenticated, async (req: any, res) => {
+    try {
+      const user = await storage.getUser(req.user.claims.sub);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const assignmentId = req.params.assignmentId;
+      await storage.deleteAssignment(assignmentId);
+      res.json({ message: "Assignment deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting assignment:", error);
+      res.status(500).json({ message: "Failed to delete assignment" });
+    }
+  });
+
+  app.post('/api/admin/chapters', isAuthenticated, async (req: any, res) => {
+    try {
+      const user = await storage.getUser(req.user.claims.sub);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const chapterData = insertChapterSchema.parse(req.body);
+      const newChapter = await storage.createChapter(chapterData);
+      res.json(newChapter);
+    } catch (error) {
+      console.error("Error creating chapter:", error);
+      res.status(500).json({ message: "Failed to create chapter" });
+    }
+  });
+
+  app.put('/api/admin/chapters/:chapterId', isAuthenticated, async (req: any, res) => {
+    try {
+      const user = await storage.getUser(req.user.claims.sub);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const chapterId = req.params.chapterId;
+      const chapterData = insertChapterSchema.partial().parse(req.body);
+      const updatedChapter = await storage.updateChapter(chapterId, chapterData);
+      res.json(updatedChapter);
+    } catch (error) {
+      console.error("Error updating chapter:", error);
+      res.status(500).json({ message: "Failed to update chapter" });
+    }
+  });
+
+  app.delete('/api/admin/chapters/:chapterId', isAuthenticated, async (req: any, res) => {
+    try {
+      const user = await storage.getUser(req.user.claims.sub);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const chapterId = req.params.chapterId;
+      await storage.deleteChapter(chapterId);
+      res.json({ message: "Chapter deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting chapter:", error);
+      res.status(500).json({ message: "Failed to delete chapter" });
+    }
+  });
+
+  // Upload audio file for a specific chapter
+  app.post('/api/admin/upload-audio', isAuthenticated, upload.single('audio'), async (req: any, res) => {
+    try {
+      const user = await storage.getUser(req.user.claims.sub);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      if (!req.file) {
+        return res.status(400).json({ message: "No audio file provided" });
+      }
+
+      const { chapterId } = req.body;
+      if (!chapterId) {
+        // Clean up the uploaded file
+        if (fs.existsSync(req.file.path)) {
+          await fs.promises.unlink(req.file.path);
+        }
+        return res.status(400).json({ message: "Chapter ID is required" });
+      }
+
+      // Get the chapter to update
+      const chapter = await storage.getChapter(chapterId);
+      if (!chapter) {
+        // Clean up the uploaded file
+        if (fs.existsSync(req.file.path)) {
+          await fs.promises.unlink(req.file.path);
+        }
+        return res.status(404).json({ message: "Chapter not found" });
+      }
+
+      // Upload the file to object storage
+      const fileName = `${chapterId}-${Date.now()}.mp3`;
+      const audioUrl = await objectStorageService.uploadAudioFile(req.file, fileName);
+
+      // Update the chapter with the new audio URL
+      const updatedChapter = await storage.updateChapter(chapterId, {
+        audioUrl,
+      });
+
+      res.json({ 
+        message: "Audio file uploaded successfully",
+        audioUrl,
+        chapter: updatedChapter
+      });
+    } catch (error) {
+      console.error("Error uploading audio file:", error);
+      // Clean up the uploaded file on error
+      if (req.file && fs.existsSync(req.file.path)) {
+        await fs.promises.unlink(req.file.path);
+      }
+      res.status(500).json({ message: "Failed to upload audio file" });
+    }
+  });
+
+  // Get all assignments across all courses for admin dropdown
+  app.get('/api/admin/all-assignments', isAuthenticated, async (req: any, res) => {
+    try {
+      const user = await storage.getUser(req.user.claims.sub);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const courses = await storage.getCourses();
+      const assignmentsWithCourse = [];
+      
+      for (const course of courses) {
+        const assignments = await storage.getAssignmentsByCourse(course.id);
+        for (const assignment of assignments) {
+          assignmentsWithCourse.push({
+            ...assignment,
+            courseName: course.name,
+            courseCode: course.code,
+          });
+        }
+      }
+
+      res.json(assignmentsWithCourse);
+    } catch (error) {
+      console.error("Error fetching all assignments:", error);
+      res.status(500).json({ message: "Failed to fetch assignments" });
     }
   });
 
