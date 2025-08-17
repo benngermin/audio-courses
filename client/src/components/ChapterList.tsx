@@ -22,8 +22,7 @@ export function ChapterList({ assignment, onBack, onChapterSelect, currentlyPlay
     queryKey: ["/api/assignments", assignment.id, "chapters"],
   });
   
-  // Debug log to check chapter data structure
-  console.log("Chapters data:", chapters);
+  // Debug log removed - no longer needed
 
   const downloadMutation = useMutation({
     mutationFn: async (chapterId: string) => {
@@ -149,26 +148,34 @@ function ChapterCard({ chapter, isCurrentlyPlaying, onPlay, onDownload, isDownlo
                 {chapter.title}
               </h3>
               <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs sm:text-sm text-slate-500">
-                {/* Show duration as initial time for unplayed chapters */}
-                {(!progress || (progress.currentTime === 0 && !progress.isCompleted)) && (
-                  <span className="whitespace-nowrap">{formatDuration(chapter.duration)}</span>
-                )}
-                {/* Show progress for played chapters */}
-                {progress && progress.currentTime > 0 && !progress.isCompleted && (
-                  <>
-                    <span className="whitespace-nowrap">{formatDuration(progress.currentTime)}</span>
-                    <span className="hidden sm:inline">•</span>
-                    <span className="whitespace-nowrap">{remainingTime} remaining</span>
-                  </>
-                )}
-                {/* Show completed status */}
-                {progress?.isCompleted && (
-                  <>
-                    <span className="whitespace-nowrap">{formatDuration(chapter.duration)}</span>
-                    <span className="hidden sm:inline">•</span>
-                    <span className="text-green-600">Completed</span>
-                  </>
-                )}
+                {(() => {
+                  // Completed chapters
+                  if (progress?.isCompleted) {
+                    return (
+                      <>
+                        <span className="whitespace-nowrap">{formatDuration(chapter.duration)}</span>
+                        <span className="hidden sm:inline">•</span>
+                        <span className="text-green-600">Completed</span>
+                      </>
+                    );
+                  }
+                  // Playing/Paused chapters with progress
+                  if (progress && progress.currentTime && progress.currentTime > 0) {
+                    return (
+                      <>
+                        <span className="whitespace-nowrap">{formatDuration(Math.floor(progress.currentTime))}</span>
+                        <span className="hidden sm:inline">•</span>
+                        <span className="whitespace-nowrap">{formatDuration(Math.floor(chapter.duration - progress.currentTime))} remaining</span>
+                      </>
+                    );
+                  }
+                  // Unplayed chapters - show only duration
+                  if (chapter.duration) {
+                    return <span className="whitespace-nowrap">{formatDuration(chapter.duration)}</span>;
+                  }
+                  // No duration info
+                  return <span className="whitespace-nowrap">Unknown duration</span>;
+                })()}
               </div>
             </div>
           </div>
