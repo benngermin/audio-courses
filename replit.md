@@ -4,7 +4,15 @@
 
 This is a mobile-first audio learning platform built for The Institutes educational content consumption. Users access the platform directly from Moodle LMS via SSO authentication, immediately landing on their course assignments page. The application allows users to consume course materials through audio playback, with features like offline downloads, progress tracking, and automatic authentication. The system is designed to support learning on-the-go scenarios such as commuting or exercising.
 
-## Recent Changes (January 18, 2025)
+## Recent Changes (January 19, 2025)
+
+### Audio Upload and UI Improvements
+- **Fixed Audio Upload**: Resolved Google Cloud Storage authentication issue by switching to local file storage
+- **Removed Chapter Descriptions**: Simplified content management by removing unnecessary description fields from chapters
+- **Fixed Duration Input**: Corrected the duration input field to allow typing without "0" prefix issue
+- **Increased Font Sizes**: Made all text more readable by increasing base font size from 14px to 16px and scaling all text utilities
+
+## Previous Changes (January 18, 2025)
 
 ### UI/UX Optimizations
 - **Improved Course Management Layout**: Enhanced the visual hierarchy and layout consistency across all content levels

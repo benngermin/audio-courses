@@ -66,7 +66,6 @@ export const chapters = pgTable("chapters", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   assignmentId: varchar("assignment_id").notNull().references(() => assignments.id, { onDelete: "cascade" }),
   title: varchar("title").notNull(),
-  description: text("description"),
   audioUrl: varchar("audio_url").notNull(),
   duration: integer("duration"), // in seconds
   orderIndex: integer("order_index").notNull(),

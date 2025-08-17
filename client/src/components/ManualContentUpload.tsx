@@ -85,7 +85,6 @@ const assignmentSchema = z.object({
 const chapterSchema = z.object({
   assignmentId: z.string().min(1, "Assignment is required"),
   title: z.string().min(1, "Chapter title is required"),
-  description: z.string().optional(),
   orderIndex: z.number().min(0),
   duration: z.number().optional(),
 });
@@ -727,19 +726,6 @@ export function ManualContentUpload() {
                               <FormLabel>Chapter Title</FormLabel>
                               <FormControl>
                                 <Input placeholder="e.g., Chapter 1.1: Introduction" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={chapterForm.control}
-                          name="description"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Description</FormLabel>
-                              <FormControl>
-                                <Textarea placeholder="Enter chapter description" {...field} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>

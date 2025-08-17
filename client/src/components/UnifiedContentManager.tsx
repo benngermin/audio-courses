@@ -98,7 +98,6 @@ const assignmentSchema = z.object({
 const chapterSchema = z.object({
   assignmentId: z.string().min(1, "Assignment is required"),
   title: z.string().min(1, "Chapter title is required"),
-  description: z.string().optional(),
   orderIndex: z.number().min(0),
   duration: z.number().optional(),
 });
@@ -918,19 +917,6 @@ export function UnifiedContentManager() {
                   </FormItem>
                 )}
               />
-              <FormField
-                control={chapterForm.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Description</FormLabel>
-                    <FormControl>
-                      <Textarea placeholder="Enter chapter description" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
               <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={chapterForm.control}
@@ -970,25 +956,24 @@ export function UnifiedContentManager() {
                         <FormControl>
                           <div className="flex items-center gap-2">
                             <Input
-                              type="number"
+                              type="text"
                               placeholder="0"
-                              min="0"
-                              value={minutes}
+                              value={minutes || ''}
                               onChange={(e) => {
-                                const newMinutes = parseInt(e.target.value) || 0;
+                                const val = e.target.value.replace(/\D/g, '');
+                                const newMinutes = val === '' ? 0 : parseInt(val);
                                 updateDuration(newMinutes, seconds);
                               }}
                               className="w-20"
                             />
                             <span className="text-sm text-muted-foreground">min</span>
                             <Input
-                              type="number"
+                              type="text"
                               placeholder="0"
-                              min="0"
-                              max="59"
-                              value={seconds}
+                              value={seconds || ''}
                               onChange={(e) => {
-                                const newSeconds = Math.min(parseInt(e.target.value) || 0, 59);
+                                const val = e.target.value.replace(/\D/g, '');
+                                const newSeconds = val === '' ? 0 : Math.min(parseInt(val), 59);
                                 updateDuration(minutes, newSeconds);
                               }}
                               className="w-20"
