@@ -920,21 +920,53 @@ export function UnifiedContentManager() {
                 <FormField
                   control={chapterForm.control}
                   name="duration"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Duration (seconds)</FormLabel>
-                      <FormControl>
-                        <Input 
-                          type="number" 
-                          placeholder="0" 
-                          {...field} 
-                          onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
-                        />
-                      </FormControl>
-                      <FormDescription>Audio duration in seconds</FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  render={({ field }) => {
+                    const totalSeconds = field.value || 0;
+                    const minutes = Math.floor(totalSeconds / 60);
+                    const seconds = totalSeconds % 60;
+
+                    const updateDuration = (newMinutes: number, newSeconds: number) => {
+                      const total = newMinutes * 60 + newSeconds;
+                      field.onChange(total);
+                    };
+
+                    return (
+                      <FormItem>
+                        <FormLabel>Duration</FormLabel>
+                        <FormControl>
+                          <div className="flex items-center gap-2">
+                            <Input
+                              type="number"
+                              placeholder="0"
+                              min="0"
+                              value={minutes}
+                              onChange={(e) => {
+                                const newMinutes = parseInt(e.target.value) || 0;
+                                updateDuration(newMinutes, seconds);
+                              }}
+                              className="w-20"
+                            />
+                            <span className="text-sm text-muted-foreground">min</span>
+                            <Input
+                              type="number"
+                              placeholder="0"
+                              min="0"
+                              max="59"
+                              value={seconds}
+                              onChange={(e) => {
+                                const newSeconds = Math.min(parseInt(e.target.value) || 0, 59);
+                                updateDuration(minutes, newSeconds);
+                              }}
+                              className="w-20"
+                            />
+                            <span className="text-sm text-muted-foreground">sec</span>
+                          </div>
+                        </FormControl>
+                        <FormDescription>Audio duration in minutes and seconds</FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
                 />
               </div>
               {!editingItem && (
