@@ -344,7 +344,7 @@ export function UnifiedContentManager() {
   });
 
   // File upload handler
-  const handleFileUpload = async () => {
+  const handleFileUpload = async (chapterData: z.infer<typeof chapterSchema>) => {
     if (!selectedFile) {
       toast({ title: "No file selected", description: "Please select an audio file to upload.", variant: "destructive" });
       return null;
@@ -353,19 +353,17 @@ export function UnifiedContentManager() {
     setIsUploading(true);
     setUploadProgress(0);
 
-    const formData = new FormData();
-    formData.append("audio", selectedFile);
-
     try {
       // First create the chapter with a placeholder URL
-      const chapterData = chapterForm.getValues();
       const newChapter = await apiRequest("POST", "/api/admin/chapters", {
         ...chapterData,
         audioUrl: "uploading...",
-      });
+      }) as Chapter;
 
       // Then upload the audio file
-      formData.append("chapterId", (newChapter as any).id);
+      const formData = new FormData();
+      formData.append("audio", selectedFile);
+      formData.append("chapterId", newChapter.id);
 
       const response = await fetch("/api/admin/upload-audio", {
         method: "POST",
@@ -374,17 +372,20 @@ export function UnifiedContentManager() {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to upload audio file");
+        const errorText = await response.text();
+        console.error("Upload error:", errorText);
+        throw new Error(`Failed to upload audio file: ${response.status}`);
       }
 
       const result = await response.json();
       setUploadProgress(100);
       setIsUploading(false);
 
-      return result.audioUrl;
+      return { chapterId: newChapter.id, audioUrl: result.audioUrl };
     } catch (error) {
       setIsUploading(false);
       setUploadProgress(0);
+      console.error("Upload error:", error);
       toast({ title: "Upload failed", description: "Failed to upload audio file. Please try again.", variant: "destructive" });
       throw error;
     }
@@ -417,10 +418,11 @@ export function UnifiedContentManager() {
       }
 
       try {
-        const audioUrl = await handleFileUpload();
-        if (audioUrl) {
+        const result = await handleFileUpload(data);
+        if (result) {
           toast({ title: "Chapter created", description: "The chapter and audio file have been uploaded successfully." });
-          queryClient.invalidateQueries({ queryKey: ["/api/assignments"] });
+          queryClient.invalidateQueries({ queryKey: ["/api/admin/all-chapters"] });
+          queryClient.invalidateQueries({ queryKey: [`/api/assignments/${data.assignmentId}/chapters`] });
           chapterForm.reset();
           setSelectedFile(null);
           setDialogType(null);
@@ -485,7 +487,7 @@ export function UnifiedContentManager() {
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <BookOpen className="h-5 w-5" />
-              Unified Content Management
+              Course Management
             </div>
             <div className="flex items-center gap-2">
               <Button
