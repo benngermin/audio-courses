@@ -126,7 +126,8 @@ function ChapterCard({ chapter, isCurrentlyPlaying, onPlay, onDownload, isDownlo
 
   const getRemainingTimeFormatted = () => {
     const remaining = getRemainingTime();
-    return remaining ? `${formatDuration(remaining)} remaining` : null;
+    // Ensure we pass a whole number to formatDuration to avoid floating point display issues
+    return remaining ? `${formatDuration(Math.floor(remaining))} remaining` : null;
   };
 
   return (
