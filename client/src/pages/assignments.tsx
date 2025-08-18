@@ -389,8 +389,11 @@ function ChapterCard({ chapter, onPlay }: ChapterCardProps) {
                 {progress?.currentTime && progress.currentTime > 0 && !progress.isCompleted && (
                   <>
                     <span>•</span>
-                    <span className="text-blue-600 font-bold">
-                      {formatDuration(Math.floor(progress.currentTime))} / {formatDuration(Math.floor(chapter.duration || 0))}
+                    <span>
+                      {(() => {
+                        const remaining = Math.floor((chapter.duration || 0) - progress.currentTime);
+                        return remaining > 0 ? `${formatDuration(remaining)} remaining` : null;
+                      })()}
                     </span>
                   </>
                 )}

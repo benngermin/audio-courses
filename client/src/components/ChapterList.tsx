@@ -154,13 +154,20 @@ function ChapterCard({ chapter, isCurrentlyPlaying, onPlay, onDownload, isDownlo
                       </>
                     );
                   }
-                  // Playing/Paused chapters with progress - show only current time position
+                  // Playing/Paused chapters with progress - show current time and remaining time
                   if (progress && progress.currentTime && progress.currentTime > 0) {
                     const currentTimeInt = Math.floor(progress.currentTime);
-                    const totalDuration = Math.floor(chapter.duration || 0);
+                    const remaining = Math.floor((chapter.duration || 0) - progress.currentTime);
+                    const remainingFormatted = remaining > 0 ? `${formatDuration(remaining)} remaining` : null;
                     return (
                       <>
-                        <span className="whitespace-nowrap text-blue-600 font-bold">{formatDuration(currentTimeInt)} / {formatDuration(totalDuration)}</span>
+                        <span className="whitespace-nowrap">{formatDuration(currentTimeInt)}</span>
+                        {remainingFormatted && (
+                          <>
+                            <span className="hidden sm:inline">•</span>
+                            <span className="whitespace-nowrap">{remainingFormatted}</span>
+                          </>
+                        )}
                       </>
                     );
                   }
