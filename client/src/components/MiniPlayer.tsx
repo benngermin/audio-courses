@@ -376,6 +376,16 @@ export function MiniPlayer() {
                       width: duration ? `${(currentTime / duration) * 100}%` : '0%' 
                     }}
                   />
+                  
+                  {/* White circle handle */}
+                  <div
+                    className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-sm transition-all duration-100 pointer-events-none"
+                    style={{ 
+                      left: duration ? `${(currentTime / duration) * 100}%` : '0%', 
+                      marginLeft: '-6px',
+                      border: '1px solid #FF6B35'
+                    }}
+                  />
                 </div>
               </div>
 
