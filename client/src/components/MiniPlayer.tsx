@@ -149,6 +149,7 @@ export function MiniPlayer() {
       hasAutoPlayedRef.current = true;
       console.log('Auto-playing chapter:', currentChapter.id);
       // Add small delay to ensure audio element is ready
+      // iOS needs a bit more time to prepare the audio element
       const autoPlayTimer = setTimeout(() => {
         play()
           .then(() => {
@@ -156,9 +157,11 @@ export function MiniPlayer() {
           })
           .catch((error) => {
             console.error('Auto-play failed:', error);
-            hasAutoPlayedRef.current = false; // Allow retry on failure
+            // On iOS, auto-play might fail initially but work on user interaction
+            // Set flag to false to allow manual play attempt
+            hasAutoPlayedRef.current = false; 
           });
-      }, 100);
+      }, 200); // Increased delay for iOS compatibility
       
       return () => clearTimeout(autoPlayTimer);
     }

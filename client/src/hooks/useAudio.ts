@@ -59,8 +59,12 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
 
     console.log('Creating new audio element for:', src);
     const audio = new Audio();
-    audio.preload = "metadata";
+    // Important for iOS: set preload to 'auto' for better compatibility
+    audio.preload = "auto";
     audio.crossOrigin = "anonymous"; // Add CORS support
+    // iOS specific: enable inline playback
+    audio.setAttribute('playsinline', 'true');
+    audio.setAttribute('webkit-playsinline', 'true');
     
     // Set the source after configuring the audio element
     audio.src = src;
@@ -175,8 +179,17 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
   }, [src]); // Only depend on src, callbacks are stable via useCallback in parent
 
   const play = useCallback(async () => {
-    if (audioRef.current && audioRef.current.readyState >= 2) {
+    if (audioRef.current) {
       try {
+        // For iOS Safari: ensure we have the audio loaded before trying to play
+        // Don't check readyState >= 2, as iOS may report lower states but still be able to play
+        if (audioRef.current.readyState === 0) {
+          // If not loaded at all, try loading first
+          audioRef.current.load();
+          // Wait a bit for loading to start
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
+        
         // Mobile Safari requires user interaction before playing
         const playPromise = audioRef.current.play();
         if (playPromise !== undefined) {
@@ -191,6 +204,10 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
             console.error('Error playing audio:', error.message, error.name);
             if (error.name === 'NotAllowedError') {
               console.log('Autoplay prevented - user interaction required');
+              // iOS specific: Try to play again after a small delay if it's a user interaction
+              setTimeout(() => {
+                audioRef.current?.play().catch(() => {});
+              }, 100);
             } else if (error.name === 'NotSupportedError') {
               console.error('Audio format not supported by browser');
             }

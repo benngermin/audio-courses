@@ -392,7 +392,7 @@ function ChapterCard({ chapter, onPlay }: ChapterCardProps) {
                     <span>
                       {(() => {
                         const remaining = Math.floor((chapter.duration || 0) - progress.currentTime);
-                        return remaining > 0 ? `${formatDuration(remaining)} remaining` : null;
+                        return remaining > 0 ? `${formatDuration(remaining)} remaining` : '';
                       })()}
                     </span>
                   </>
