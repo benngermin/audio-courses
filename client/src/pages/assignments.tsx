@@ -353,13 +353,7 @@ function ChapterCard({ chapter, onPlay }: ChapterCardProps) {
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
-  const getRemainingTime = () => {
-    if (!progress?.currentTime || !chapter.duration) return null;
-    const remaining = chapter.duration - progress.currentTime;
-    return remaining > 0 ? formatDuration(remaining) : null;
-  };
 
-  const remainingTime = getRemainingTime();
 
   return (
     <Card className="hover:shadow-md transition-shadow cursor-pointer relative" onClick={onPlay}>
@@ -395,7 +389,9 @@ function ChapterCard({ chapter, onPlay }: ChapterCardProps) {
                 {progress?.currentTime && progress.currentTime > 0 && !progress.isCompleted && (
                   <>
                     <span>•</span>
-                    <span>{remainingTime} remaining</span>
+                    <span className="text-blue-600 font-bold">
+                      {formatDuration(Math.floor(progress.currentTime))} / {formatDuration(Math.floor(chapter.duration || 0))}
+                    </span>
                   </>
                 )}
                 {progress?.isCompleted && !isDownloaded && (
