@@ -107,6 +107,9 @@ function ChapterCard({ chapter, isCurrentlyPlaying, onPlay, onDownload, isDownlo
     queryKey: ["/api/progress", chapter.id],
   });
 
+  // Debug log to verify this component is being used
+  console.log('ChapterCard rendered - NO REMAINING TIME VERSION', chapter.title, progress);
+
   const formatDuration = (seconds: number | null) => {
     if (seconds === null || seconds === undefined) return "Unknown duration";
     // Ensure we're working with whole seconds by flooring first
@@ -152,14 +155,13 @@ function ChapterCard({ chapter, isCurrentlyPlaying, onPlay, onDownload, isDownlo
                       </>
                     );
                   }
-                  // Playing/Paused chapters with progress - show current time position
+                  // Playing/Paused chapters with progress - show only current time position
                   if (progress && progress.currentTime && progress.currentTime > 0) {
                     const currentTimeInt = Math.floor(progress.currentTime);
+                    const totalDuration = Math.floor(chapter.duration || 0);
                     return (
                       <>
-                        <span className="whitespace-nowrap">{formatDuration(currentTimeInt)}</span>
-                        <span className="hidden sm:inline">•</span>
-                        <span className="whitespace-nowrap">{formatDuration(Math.floor(chapter.duration || 0))}</span>
+                        <span className="whitespace-nowrap text-blue-600 font-bold">{formatDuration(currentTimeInt)} / {formatDuration(totalDuration)}</span>
                       </>
                     );
                   }
