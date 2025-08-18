@@ -112,8 +112,8 @@ function ChapterCard({ chapter, isCurrentlyPlaying, onPlay, onDownload, isDownlo
     // Ensure we're working with whole seconds by flooring first
     const totalSeconds = Math.floor(Math.abs(seconds));
     const minutes = Math.floor(totalSeconds / 60);
-    const remainingSeconds = Math.floor(totalSeconds % 60);
-    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+    const secs = totalSeconds % 60; // This is already an integer since totalSeconds is floored
+    return `${minutes}:${secs.toString().padStart(2, '0')}`;
   };
 
   const getRemainingTime = () => {
@@ -154,7 +154,7 @@ function ChapterCard({ chapter, isCurrentlyPlaying, onPlay, onDownload, isDownlo
                   if (progress?.isCompleted) {
                     return (
                       <>
-                        <span className="whitespace-nowrap">{formatDuration(chapter.duration || 0)}</span>
+                        <span className="whitespace-nowrap">{formatDuration(Math.floor(chapter.duration || 0))}</span>
                         <span className="hidden sm:inline">•</span>
                         <span className="text-green-600">Completed</span>
                       </>
@@ -175,7 +175,7 @@ function ChapterCard({ chapter, isCurrentlyPlaying, onPlay, onDownload, isDownlo
                   }
                   // Unplayed chapters - show only duration
                   if (chapter.duration) {
-                    return <span className="whitespace-nowrap">{formatDuration(chapter.duration)}</span>;
+                    return <span className="whitespace-nowrap">{formatDuration(Math.floor(chapter.duration))}</span>;
                   }
                   // No duration info
                   return <span className="whitespace-nowrap">Unknown duration</span>;
