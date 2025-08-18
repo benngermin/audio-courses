@@ -107,8 +107,8 @@ function ChapterCard({ chapter, isCurrentlyPlaying, onPlay, onDownload, isDownlo
     queryKey: ["/api/progress", chapter.id],
   });
 
-  // Debug log to verify this component is being used
-  console.log('ChapterCard rendered - NO REMAINING TIME VERSION', chapter.title, progress);
+  // Debug log to verify this component is being used - CACHE CLEAR VERSION 2024-01-19
+  console.log('ChapterCard rendered - NO REMAINING TIME VERSION v2', chapter.title, progress);
 
   const formatDuration = (seconds: number | null) => {
     if (seconds === null || seconds === undefined) return "Unknown duration";
