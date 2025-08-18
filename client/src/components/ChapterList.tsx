@@ -121,10 +121,13 @@ function ChapterCard({ chapter, isCurrentlyPlaying, onPlay, onDownload, isDownlo
     const currentTime = Math.floor(progress.currentTime);
     const duration = Math.floor(chapter.duration);
     const remaining = Math.max(0, duration - currentTime);
-    return remaining > 0 ? formatDuration(remaining) : null;
+    return remaining > 0 ? remaining : null;
   };
 
-  const remainingTime = getRemainingTime();
+  const getRemainingTimeFormatted = () => {
+    const remaining = getRemainingTime();
+    return remaining ? `${formatDuration(remaining)} remaining` : null;
+  };
 
   return (
     <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={onPlay}>
@@ -165,13 +168,12 @@ function ChapterCard({ chapter, isCurrentlyPlaying, onPlay, onDownload, isDownlo
                   // Playing/Paused chapters with progress
                   if (progress && progress.currentTime && progress.currentTime > 0) {
                     const currentTimeInt = Math.floor(progress.currentTime);
-                    const durationInt = Math.floor(chapter.duration || 0);
-                    const remainingTime = Math.max(0, durationInt - currentTimeInt);
+                    const remainingTimeFormatted = getRemainingTimeFormatted();
                     return (
                       <>
                         <span className="whitespace-nowrap">{formatDuration(currentTimeInt)}</span>
                         <span className="hidden sm:inline">•</span>
-                        <span className="whitespace-nowrap">{formatDuration(remainingTime)} remaining</span>
+                        <span className="whitespace-nowrap">{remainingTimeFormatted}</span>
                       </>
                     );
                   }
