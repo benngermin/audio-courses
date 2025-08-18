@@ -116,20 +116,6 @@ function ChapterCard({ chapter, isCurrentlyPlaying, onPlay, onDownload, isDownlo
     return `${minutes}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const getRemainingTime = () => {
-    if (!progress?.currentTime || !chapter.duration) return null;
-    const currentTime = Math.floor(progress.currentTime);
-    const duration = Math.floor(chapter.duration);
-    const remaining = Math.max(0, duration - currentTime);
-    return remaining > 0 ? remaining : null;
-  };
-
-  const getRemainingTimeFormatted = () => {
-    const remaining = getRemainingTime();
-    // Ensure we pass a whole number to formatDuration to avoid floating point display issues
-    return remaining ? `${formatDuration(Math.floor(remaining))} remaining` : null;
-  };
-
   return (
     <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={onPlay}>
       <CardContent className="p-3 sm:p-4">
@@ -166,15 +152,14 @@ function ChapterCard({ chapter, isCurrentlyPlaying, onPlay, onDownload, isDownlo
                       </>
                     );
                   }
-                  // Playing/Paused chapters with progress
+                  // Playing/Paused chapters with progress - show current time position
                   if (progress && progress.currentTime && progress.currentTime > 0) {
                     const currentTimeInt = Math.floor(progress.currentTime);
-                    const remainingTimeFormatted = getRemainingTimeFormatted();
                     return (
                       <>
                         <span className="whitespace-nowrap">{formatDuration(currentTimeInt)}</span>
                         <span className="hidden sm:inline">•</span>
-                        <span className="whitespace-nowrap">{remainingTimeFormatted}</span>
+                        <span className="whitespace-nowrap">{formatDuration(Math.floor(chapter.duration || 0))}</span>
                       </>
                     );
                   }
