@@ -340,13 +340,13 @@ export function MiniPlayer() {
                 {formatTime(currentTime)}
               </span>
 
-              {/* Progress Bar */}
+              {/* Progress Bar - Increased clickable area */}
               <div 
                 className="flex-1 relative cursor-pointer"
                 style={{
-                  height: '3px',
-                  background: '#E0E0E0',
-                  borderRadius: '2px'
+                  height: '20px', // Increased from 3px to 20px for larger click target
+                  display: 'flex',
+                  alignItems: 'center'
                 }}
                 onClick={(e) => {
                   e.stopPropagation();
@@ -358,15 +358,25 @@ export function MiniPlayer() {
                   seek(newTime);
                 }}
               >
-                {/* Progress fill */}
-                <div
-                  className="absolute top-0 left-0 h-full transition-all duration-100"
-                  style={{ 
-                    background: '#FF6B35',
-                    borderRadius: '2px',
-                    width: duration ? `${(currentTime / duration) * 100}%` : '0%' 
+                {/* Actual visible progress bar */}
+                <div 
+                  className="w-full relative pointer-events-none"
+                  style={{
+                    height: '3px',
+                    background: '#E0E0E0',
+                    borderRadius: '2px'
                   }}
-                />
+                >
+                  {/* Progress fill */}
+                  <div
+                    className="absolute top-0 left-0 h-full transition-all duration-100"
+                    style={{ 
+                      background: '#FF6B35',
+                      borderRadius: '2px',
+                      width: duration ? `${(currentTime / duration) * 100}%` : '0%' 
+                    }}
+                  />
+                </div>
               </div>
 
               {/* Duration */}
