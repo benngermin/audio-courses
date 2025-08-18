@@ -118,7 +118,9 @@ function ChapterCard({ chapter, isCurrentlyPlaying, onPlay, onDownload, isDownlo
 
   const getRemainingTime = () => {
     if (!progress?.currentTime || !chapter.duration) return null;
-    const remaining = Math.floor(chapter.duration - progress.currentTime);
+    const currentTime = Math.floor(progress.currentTime);
+    const duration = Math.floor(chapter.duration);
+    const remaining = Math.max(0, duration - currentTime);
     return remaining > 0 ? formatDuration(remaining) : null;
   };
 
