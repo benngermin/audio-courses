@@ -144,20 +144,25 @@ export function MiniPlayer() {
   }, [currentChapter?.id]);
   
   useEffect(() => {
-    // Only auto-play once when audio is ready and we haven't played yet
-    if (currentChapter?.id && duration > 0 && !hasAutoPlayedRef.current && !isPlaying) {
+    // Auto-play immediately when a new chapter is selected, don't wait for duration
+    if (currentChapter?.id && !hasAutoPlayedRef.current && !isPlaying && play) {
       hasAutoPlayedRef.current = true;
       console.log('Auto-playing chapter:', currentChapter.id);
-      play()
-        .then(() => {
-          console.log('Auto-play successful');
-        })
-        .catch((error) => {
-          console.error('Auto-play failed:', error);
-          hasAutoPlayedRef.current = false; // Allow retry on failure
-        });
+      // Add small delay to ensure audio element is ready
+      const autoPlayTimer = setTimeout(() => {
+        play()
+          .then(() => {
+            console.log('Auto-play successful');
+          })
+          .catch((error) => {
+            console.error('Auto-play failed:', error);
+            hasAutoPlayedRef.current = false; // Allow retry on failure
+          });
+      }, 100);
+      
+      return () => clearTimeout(autoPlayTimer);
     }
-  }, [currentChapter?.id, duration, isPlaying, play]);
+  }, [currentChapter?.id, isPlaying, play]);
 
   // Update Media Session metadata
   useEffect(() => {
