@@ -187,10 +187,10 @@ export function ExpandedPlayer() {
             <div className="h-12 w-12 sm:h-16 sm:w-16 md:h-20 md:w-20"></div>
           </div>
 
-          {/* Main content area with adjusted padding for mobile */}
-          <div className="flex-1 flex flex-col justify-center px-4 sm:px-7 md:px-10 pt-2 sm:pt-6 pb-6 sm:pb-10 md:pb-12 overflow-y-auto">
-            {/* Audio Visualizer with responsive sizing */}
-            <div className="w-full mb-2 sm:mb-4 relative flex justify-center">
+          {/* Main content area with specific mobile spacing */}
+          <div className="flex-1 flex flex-col px-4 sm:px-7 md:px-10 pt-6 sm:pt-6 pb-6 sm:pb-10 md:pb-12 overflow-y-auto">
+            {/* Audio Visualizer - 24px from header */}
+            <div className="w-full mb-10 sm:mb-4 relative flex justify-center">
               <div className="w-[320px] h-[320px] sm:w-[340px] sm:h-[340px] md:w-full md:aspect-square bg-[#2c2d3e] rounded-[24px] flex items-center justify-center overflow-hidden">
                 <div className={`visualizer ${isPlaying ? 'playing' : 'paused'} w-full h-full flex items-center justify-center relative`}>
                   <div className="center-orb relative w-[100px] sm:w-[110px] md:w-[120px] h-[100px] sm:h-[110px] md:h-[120px] flex items-center justify-center">
@@ -202,9 +202,9 @@ export function ExpandedPlayer() {
               </div>
             </div>
 
-            {/* Track info with responsive spacing */}
-            <div className="text-center mt-2 sm:mt-4 mb-4 sm:mb-6 md:mb-9 px-2 sm:px-4">
-              <h1 className="text-[18px] sm:text-[20px] md:text-[22px] font-semibold text-[#333] mb-1 sm:mb-2 line-clamp-2 leading-[1.3]">
+            {/* Track info - 40px from visualizer */}
+            <div className="text-center mb-10 sm:mb-6 md:mb-9 px-2 sm:px-4">
+              <h1 className="text-[18px] sm:text-[20px] md:text-[22px] font-semibold text-[#333] mb-2 sm:mb-2 line-clamp-2 leading-[1.3]">
                 {currentChapter.title}
               </h1>
               <p className="text-sm sm:text-base font-normal text-[#999] line-clamp-1 leading-[1.4]">
@@ -212,8 +212,8 @@ export function ExpandedPlayer() {
               </p>
             </div>
 
-            {/* Progress bar with responsive bottom margin */}
-            <div className="mb-6 sm:mb-8 md:mb-10">
+            {/* Progress bar - 40px from track info */}
+            <div className="mb-0">
               <div className="relative group">
                 <div 
                   className="relative h-1 bg-[#d3d3d3] cursor-pointer"
@@ -288,8 +288,8 @@ export function ExpandedPlayer() {
                 </div>
               </div>
               
-              {/* Time display with increased top margin */}
-              <div className="flex justify-between mt-2">
+              {/* Time display - 12px from progress bar */}
+              <div className="flex justify-between mt-3 sm:mt-2">
                 <span className="text-sm text-gray-500 tabular-nums">
                   {formatTime(currentTime)}
                 </span>
@@ -299,8 +299,8 @@ export function ExpandedPlayer() {
               </div>
             </div>
 
-            {/* Main controls with responsive gap and margin */}
-            <div className="flex items-center justify-center gap-6 sm:gap-7 md:gap-9 mt-3 sm:mt-4 md:mt-5 mb-6 sm:mb-8 md:mb-10">
+            {/* Main controls - 40px from time labels */}
+            <div className="flex items-center justify-center gap-6 sm:gap-7 md:gap-9 mt-10 sm:mt-4 md:mt-5 mb-10 sm:mb-8 md:mb-10">
               {/* Rewind 15 seconds - Responsive circular design */}
               <div className="relative group">
                 <Button
@@ -348,8 +348,8 @@ export function ExpandedPlayer() {
               </div>
             </div>
 
-            {/* Bottom controls with responsive sizing */}
-            <div className="flex items-center w-full">
+            {/* Bottom controls - 40px from playback controls, flexible space to bottom */}
+            <div className="flex items-center w-full mt-10 sm:mt-0 md:mt-0">
               {/* Left side - Queue/Playlist button */}
               <div className="flex-1 flex justify-start">
                 <Button
