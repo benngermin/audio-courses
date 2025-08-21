@@ -190,13 +190,13 @@ export function ExpandedPlayer() {
           {/* Main content area with adjusted padding for mobile */}
           <div className="flex-1 flex flex-col justify-center px-4 sm:px-7 md:px-10 pt-2 sm:pt-6 pb-6 sm:pb-10 md:pb-12 overflow-y-auto">
             {/* Audio Visualizer with responsive sizing */}
-            <div className="w-full mb-2 sm:mb-4 relative">
-              <div className="w-full h-[200px] sm:h-[280px] md:aspect-square bg-[#2c2d3e] rounded-[20px] flex items-center justify-center overflow-hidden">
+            <div className="w-full mb-2 sm:mb-4 relative flex justify-center">
+              <div className="w-[320px] h-[320px] sm:w-[340px] sm:h-[340px] md:w-full md:aspect-square bg-[#2c2d3e] rounded-[24px] flex items-center justify-center overflow-hidden">
                 <div className={`visualizer ${isPlaying ? 'playing' : 'paused'} w-full h-full flex items-center justify-center relative`}>
-                  <div className="center-orb relative w-[80px] sm:w-[100px] md:w-[120px] h-[80px] sm:h-[100px] md:h-[120px] flex items-center justify-center">
-                    <div className="orb-inner absolute w-[40px] sm:w-[50px] md:w-[60px] h-[40px] sm:h-[50px] md:h-[60px] rounded-full"></div>
-                    <div className="orb-pulse absolute w-[65px] sm:w-[80px] md:w-[100px] h-[65px] sm:h-[80px] md:h-[100px] rounded-full"></div>
-                    <div className="orb-glow absolute w-[80px] sm:w-[100px] md:w-[120px] h-[80px] sm:h-[100px] md:h-[120px] rounded-full"></div>
+                  <div className="center-orb relative w-[100px] sm:w-[110px] md:w-[120px] h-[100px] sm:h-[110px] md:h-[120px] flex items-center justify-center">
+                    <div className="orb-inner absolute w-[50px] sm:w-[55px] md:w-[60px] h-[50px] sm:h-[55px] md:h-[60px] rounded-full"></div>
+                    <div className="orb-pulse absolute w-[80px] sm:w-[90px] md:w-[100px] h-[80px] sm:h-[90px] md:h-[100px] rounded-full"></div>
+                    <div className="orb-glow absolute w-[100px] sm:w-[110px] md:w-[120px] h-[100px] sm:h-[110px] md:h-[120px] rounded-full"></div>
                   </div>
                 </div>
               </div>
