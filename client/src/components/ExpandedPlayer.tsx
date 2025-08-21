@@ -191,7 +191,7 @@ export function ExpandedPlayer() {
           <div className="flex-1 flex flex-col px-4 sm:px-7 md:px-10 pt-6 sm:pt-6 pb-6 sm:pb-10 md:pb-12 overflow-y-auto">
             {/* Audio Visualizer - 24px from header */}
             <div className="w-full mb-10 sm:mb-4 relative flex justify-center">
-              <div className="w-[320px] h-[320px] sm:w-[340px] sm:h-[340px] md:w-full md:aspect-square bg-[#2c2d3e] rounded-[24px] flex items-center justify-center overflow-hidden">
+              <div className="w-[280px] h-[280px] sm:w-[340px] sm:h-[340px] md:w-full md:aspect-square bg-[#2c2d3e] rounded-[20px] flex items-center justify-center overflow-hidden">
                 <div className={`visualizer ${isPlaying ? 'playing' : 'paused'} w-full h-full flex items-center justify-center relative`}>
                   <div className="center-orb relative w-[100px] sm:w-[110px] md:w-[120px] h-[100px] sm:h-[110px] md:h-[120px] flex items-center justify-center">
                     <div className="orb-inner absolute w-[50px] sm:w-[55px] md:w-[60px] h-[50px] sm:h-[55px] md:h-[60px] rounded-full"></div>
