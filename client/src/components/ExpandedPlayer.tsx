@@ -168,15 +168,15 @@ export function ExpandedPlayer() {
           className="fixed inset-0 bg-background z-[60] flex flex-col"
           style={{ paddingTop: 'env(safe-area-inset-top)' }}
         >
-          {/* Header with minimal padding */}
-          <div className="flex items-center justify-between px-4 sm:px-6 pt-1 pb-1">
+          {/* Header with responsive padding */}
+          <div className="flex items-center justify-between px-3 sm:px-4 md:px-6 pt-1 pb-1">
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setIsExpanded(false)}
-              className="h-16 w-16 sm:h-20 sm:w-20"
+              className="h-12 w-12 sm:h-16 sm:w-16 md:h-20 md:w-20"
             >
-              <ChevronDown className="h-10 w-10 sm:h-12 sm:w-12" />
+              <ChevronDown className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12" />
             </Button>
             
             <div className="text-center flex-1">
@@ -184,36 +184,36 @@ export function ExpandedPlayer() {
             </div>
 
             {/* Empty div to maintain spacing balance */}
-            <div className="h-16 w-16 sm:h-20 sm:w-20"></div>
+            <div className="h-12 w-12 sm:h-16 sm:w-16 md:h-20 md:w-20"></div>
           </div>
 
-          {/* Main content area with increased padding */}
-          <div className="flex-1 flex flex-col justify-center px-7 sm:px-10 pt-6 pb-10 sm:pb-12 overflow-y-auto">
-            {/* Audio Visualizer with animated orb */}
-            <div className="w-full mb-4 relative">
-              <div className="w-full aspect-square bg-[#2c2d3e] rounded-[20px] flex items-center justify-center overflow-hidden">
+          {/* Main content area with adjusted padding for mobile */}
+          <div className="flex-1 flex flex-col justify-center px-4 sm:px-7 md:px-10 pt-2 sm:pt-6 pb-6 sm:pb-10 md:pb-12 overflow-y-auto">
+            {/* Audio Visualizer with responsive sizing */}
+            <div className="w-full mb-2 sm:mb-4 relative">
+              <div className="w-full h-[200px] sm:h-[280px] md:aspect-square bg-[#2c2d3e] rounded-[20px] flex items-center justify-center overflow-hidden">
                 <div className={`visualizer ${isPlaying ? 'playing' : 'paused'} w-full h-full flex items-center justify-center relative`}>
-                  <div className="center-orb relative w-[120px] h-[120px] flex items-center justify-center">
-                    <div className="orb-inner absolute w-[60px] h-[60px] rounded-full"></div>
-                    <div className="orb-pulse absolute w-[100px] h-[100px] rounded-full"></div>
-                    <div className="orb-glow absolute w-[120px] h-[120px] rounded-full"></div>
+                  <div className="center-orb relative w-[80px] sm:w-[100px] md:w-[120px] h-[80px] sm:h-[100px] md:h-[120px] flex items-center justify-center">
+                    <div className="orb-inner absolute w-[40px] sm:w-[50px] md:w-[60px] h-[40px] sm:h-[50px] md:h-[60px] rounded-full"></div>
+                    <div className="orb-pulse absolute w-[65px] sm:w-[80px] md:w-[100px] h-[65px] sm:h-[80px] md:h-[100px] rounded-full"></div>
+                    <div className="orb-glow absolute w-[80px] sm:w-[100px] md:w-[120px] h-[80px] sm:h-[100px] md:h-[120px] rounded-full"></div>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Track info with more spacing */}
-            <div className="text-center mt-4 mb-9 px-4">
-              <h1 className="text-[22px] font-semibold text-[#333] mb-2 line-clamp-2 leading-[1.3]">
+            {/* Track info with responsive spacing */}
+            <div className="text-center mt-2 sm:mt-4 mb-4 sm:mb-6 md:mb-9 px-2 sm:px-4">
+              <h1 className="text-[18px] sm:text-[20px] md:text-[22px] font-semibold text-[#333] mb-1 sm:mb-2 line-clamp-2 leading-[1.3]">
                 {currentChapter.title}
               </h1>
-              <p className="text-base font-normal text-[#999] line-clamp-1 leading-[1.4]">
+              <p className="text-sm sm:text-base font-normal text-[#999] line-clamp-1 leading-[1.4]">
                 {currentAssignment.title}
               </p>
             </div>
 
-            {/* Progress bar with increased bottom margin */}
-            <div className="mb-10">
+            {/* Progress bar with responsive bottom margin */}
+            <div className="mb-6 sm:mb-8 md:mb-10">
               <div className="relative group">
                 <div 
                   className="relative h-1 bg-[#d3d3d3] cursor-pointer"
@@ -299,56 +299,56 @@ export function ExpandedPlayer() {
               </div>
             </div>
 
-            {/* Main controls with increased gap and bottom margin */}
-            <div className="flex items-center justify-center gap-9 mt-5 mb-10">
-              {/* Rewind 15 seconds - Circular design */}
+            {/* Main controls with responsive gap and margin */}
+            <div className="flex items-center justify-center gap-6 sm:gap-7 md:gap-9 mt-3 sm:mt-4 md:mt-5 mb-6 sm:mb-8 md:mb-10">
+              {/* Rewind 15 seconds - Responsive circular design */}
               <div className="relative group">
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => skipBackward(15)}
-                  className="h-14 w-14 rounded-full bg-white border border-[#e0e0e0] hover:border-[#ff6b35] hover:bg-[#fff5f2] transition-all duration-200 hover:scale-105 active:scale-95 group ripple"
+                  className="h-12 w-12 sm:h-14 sm:w-14 rounded-full bg-white border border-[#e0e0e0] hover:border-[#ff6b35] hover:bg-[#fff5f2] transition-all duration-200 hover:scale-105 active:scale-95 group ripple"
                 >
-                  <RotateCcw className="h-6 w-6 text-gray-700 group-hover:text-[#ff6b35]" />
+                  <RotateCcw className="h-5 w-5 sm:h-6 sm:w-6 text-gray-700 group-hover:text-[#ff6b35]" />
                 </Button>
-                {/* Floating label badge */}
-                <span className="absolute -top-2 -right-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-[#ff6b35] text-white text-xs font-semibold rounded-full px-2 py-0.5 pointer-events-none">
+                {/* Floating label badge - hidden on mobile */}
+                <span className="hidden sm:block absolute -top-2 -right-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-[#ff6b35] text-white text-xs font-semibold rounded-full px-2 py-0.5 pointer-events-none">
                   15s
                 </span>
               </div>
 
-              {/* Play/Pause button - larger and centered */}
+              {/* Play/Pause button - responsive sizing */}
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={togglePlay}
-                className="h-[72px] w-[72px] bg-[#ff6b35] hover:bg-[#ff6b35]/90 text-white rounded-full shadow-lg hover:scale-105 transition-all hover:shadow-xl active:scale-95"
+                className="h-[60px] w-[60px] sm:h-[68px] sm:w-[68px] md:h-[72px] md:w-[72px] bg-[#ff6b35] hover:bg-[#ff6b35]/90 text-white rounded-full shadow-lg hover:scale-105 transition-all hover:shadow-xl active:scale-95"
               >
                 {isPlaying ? (
-                  <Pause className="h-8 w-8 fill-white" />
+                  <Pause className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 fill-white" />
                 ) : (
-                  <Play className="h-8 w-8 ml-1 fill-white" />
+                  <Play className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 ml-1 fill-white" />
                 )}
               </Button>
 
-              {/* Forward 30 seconds - Circular design */}
+              {/* Forward 30 seconds - Responsive circular design */}
               <div className="relative group">
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => skipForward(30)}
-                  className="h-14 w-14 rounded-full bg-white border border-[#e0e0e0] hover:border-[#ff6b35] hover:bg-[#fff5f2] transition-all duration-200 hover:scale-105 active:scale-95 group ripple"
+                  className="h-12 w-12 sm:h-14 sm:w-14 rounded-full bg-white border border-[#e0e0e0] hover:border-[#ff6b35] hover:bg-[#fff5f2] transition-all duration-200 hover:scale-105 active:scale-95 group ripple"
                 >
-                  <RotateCw className="h-6 w-6 text-gray-700 group-hover:text-[#ff6b35]" />
+                  <RotateCw className="h-5 w-5 sm:h-6 sm:w-6 text-gray-700 group-hover:text-[#ff6b35]" />
                 </Button>
-                {/* Floating label badge */}
-                <span className="absolute -top-2 -left-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-[#ff6b35] text-white text-xs font-semibold rounded-full px-2 py-0.5 pointer-events-none">
+                {/* Floating label badge - hidden on mobile */}
+                <span className="hidden sm:block absolute -top-2 -left-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-[#ff6b35] text-white text-xs font-semibold rounded-full px-2 py-0.5 pointer-events-none">
                   30s
                 </span>
               </div>
             </div>
 
-            {/* Bottom controls with added top padding */}
+            {/* Bottom controls with responsive sizing */}
             <div className="flex items-center w-full">
               {/* Left side - Queue/Playlist button */}
               <div className="flex-1 flex justify-start">
@@ -356,12 +356,12 @@ export function ExpandedPlayer() {
                   variant="ghost"
                   size="sm"
                   onClick={() => setIsPlayAllMode(!isPlayAllMode)}
-                  className={`p-3 min-h-[48px] transition-all ${isPlayAllMode ? 'bg-primary/10 hover:bg-primary/20 px-4' : 'hover:bg-gray-100'} flex items-center gap-2`}
+                  className={`p-2 sm:p-3 min-h-[40px] sm:min-h-[48px] transition-all ${isPlayAllMode ? 'bg-primary/10 hover:bg-primary/20 px-3 sm:px-4' : 'hover:bg-gray-100'} flex items-center gap-1 sm:gap-2`}
                   title={isPlayAllMode ? "Play All Mode: On" : "Play All Mode: Off"}
                 >
-                  <ListMusic className={`h-7 w-7 ${isPlayAllMode ? 'text-[#ff6b35]' : 'text-[#666]'}`} />
+                  <ListMusic className={`h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 ${isPlayAllMode ? 'text-[#ff6b35]' : 'text-[#666]'}`} />
                   {isPlayAllMode && (
-                    <span className="text-base font-medium text-[#ff6b35]">Play All</span>
+                    <span className="text-sm sm:text-base font-medium text-[#ff6b35]">Play All</span>
                   )}
                 </Button>
               </div>
@@ -377,9 +377,9 @@ export function ExpandedPlayer() {
                       description: "Casting feature coming soon",
                     });
                   }}
-                  className="p-3 hover:bg-gray-100 transition-colors"
+                  className="p-2 sm:p-3 hover:bg-gray-100 transition-colors"
                 >
-                  <Cast className="h-7 w-7 text-[#666]" />
+                  <Cast className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 text-[#666]" />
                 </Button>
               </div>
 
@@ -390,7 +390,7 @@ export function ExpandedPlayer() {
                   <Button 
                     variant="ghost" 
                     size="icon"
-                    className="min-h-[48px] min-w-[48px] p-3 hover:bg-gray-100 transition-colors text-[#ff6b35] font-semibold text-[20px] flex items-center justify-center"
+                    className="min-h-[40px] min-w-[40px] sm:min-h-[48px] sm:min-w-[48px] p-2 sm:p-3 hover:bg-gray-100 transition-colors text-[#ff6b35] font-semibold text-[16px] sm:text-[18px] md:text-[20px] flex items-center justify-center"
                   >
                     {playbackRate}x
                   </Button>
