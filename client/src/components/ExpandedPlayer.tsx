@@ -300,7 +300,7 @@ export function ExpandedPlayer() {
             </div>
 
             {/* Main controls with responsive gap and margin */}
-            <div className="flex items-center justify-center gap-6 sm:gap-7 md:gap-9 mt-3 sm:mt-4 md:mt-5 mb-6 sm:mb-8 md:mb-10">
+            <div className="flex items-center justify-center gap-6 sm:gap-7 md:gap-9 mt-3 sm:mt-4 md:mt-5 mb-3 sm:mb-4 md:mb-5">
               {/* Rewind 15 seconds - Responsive circular design */}
               <div className="relative group">
                 <Button
