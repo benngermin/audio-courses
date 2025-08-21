@@ -193,10 +193,10 @@ export function ExpandedPlayer() {
             <div className="w-full mb-6 sm:mb-4 relative flex justify-center">
               <div className="w-[280px] h-[280px] sm:w-[340px] sm:h-[340px] md:w-full md:aspect-square bg-[#2c2d3e] rounded-[20px] flex items-center justify-center overflow-hidden">
                 <div className={`visualizer ${isPlaying ? 'playing' : 'paused'} w-full h-full flex items-center justify-center relative`}>
-                  <div className="center-orb relative w-[100px] sm:w-[110px] md:w-[120px] h-[100px] sm:h-[110px] md:h-[120px] flex items-center justify-center">
-                    <div className="orb-inner absolute w-[50px] sm:w-[55px] md:w-[60px] h-[50px] sm:h-[55px] md:h-[60px] rounded-full"></div>
-                    <div className="orb-pulse absolute w-[80px] sm:w-[90px] md:w-[100px] h-[80px] sm:h-[90px] md:h-[100px] rounded-full"></div>
-                    <div className="orb-glow absolute w-[100px] sm:w-[110px] md:w-[120px] h-[100px] sm:h-[110px] md:h-[120px] rounded-full"></div>
+                  <div className="center-orb relative w-[200px] sm:w-[220px] md:w-[240px] h-[200px] sm:h-[220px] md:h-[240px] flex items-center justify-center">
+                    <div className="orb-inner absolute w-[100px] sm:w-[110px] md:w-[120px] h-[100px] sm:h-[110px] md:h-[120px] rounded-full"></div>
+                    <div className="orb-pulse absolute w-[160px] sm:w-[180px] md:w-[200px] h-[160px] sm:h-[180px] md:h-[200px] rounded-full"></div>
+                    <div className="orb-glow absolute w-[200px] sm:w-[220px] md:w-[240px] h-[200px] sm:h-[220px] md:h-[240px] rounded-full"></div>
                   </div>
                 </div>
               </div>
