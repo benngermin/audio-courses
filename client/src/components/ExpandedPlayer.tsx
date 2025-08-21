@@ -300,7 +300,7 @@ export function ExpandedPlayer() {
             </div>
 
             {/* Main controls - 28px from time labels */}
-            <div className="flex items-center justify-center gap-9 sm:gap-7 md:gap-9 mt-7 sm:mt-4 md:mt-5 mb-7 sm:mb-8 md:mb-10">
+            <div className="flex items-center justify-center gap-9 sm:gap-7 md:gap-9 mt-7 sm:mt-4 md:mt-5 mb-3.5 sm:mb-2 md:mb-2.5">
               {/* Rewind 15 seconds - Responsive circular design */}
               <div className="relative group">
                 <Button
@@ -349,7 +349,7 @@ export function ExpandedPlayer() {
             </div>
 
             {/* Bottom controls - 28px from playback controls, 16px to bottom */}
-            <div className="flex items-center w-full mt-7 sm:mt-0 md:mt-0 mb-4 sm:mb-0">
+            <div className="flex items-center w-full mt-3.5 sm:mt-2 md:mt-2.5 mb-4 sm:mb-0">
               {/* Left side - Queue/Playlist button */}
               <div className="flex-1 flex justify-start">
                 <Button
