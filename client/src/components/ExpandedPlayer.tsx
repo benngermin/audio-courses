@@ -204,10 +204,10 @@ export function ExpandedPlayer() {
 
             {/* Track info - 24px from visualizer */}
             <div className="text-center mb-6 sm:mb-6 md:mb-9 px-2 sm:px-4">
-              <h1 className="text-[18px] sm:text-[20px] md:text-[22px] font-semibold text-[#333] mb-1.5 sm:mb-2 line-clamp-2 leading-[1.3]">
+              <h1 className="text-[22px] sm:text-[20px] md:text-[22px] font-semibold text-[#333] mb-1.5 sm:mb-2 line-clamp-2 leading-[1.3]">
                 {currentChapter.title}
               </h1>
-              <p className="text-sm sm:text-base font-normal text-[#999] line-clamp-1 leading-[1.4]">
+              <p className="text-base sm:text-base font-normal text-[#999] line-clamp-1 leading-[1.4]">
                 {currentAssignment.title}
               </p>
             </div>
