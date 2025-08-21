@@ -188,10 +188,10 @@ export function ExpandedPlayer() {
           </div>
 
           {/* Main content area with compressed mobile spacing */}
-          <div className="flex-1 flex flex-col px-4 sm:px-7 md:px-10 pt-4 sm:pt-6 pb-4 sm:pb-10 md:pb-12 overflow-y-auto">
+          <div className="flex-1 flex flex-col px-4 sm:px-7 md:px-10 pt-2 sm:pt-3 pb-4 sm:pb-10 md:pb-12 overflow-y-auto">
             {/* Audio Visualizer - 16px from header */}
             <div className="w-full mb-6 sm:mb-4 relative flex justify-center">
-              <div className="w-[280px] h-[280px] sm:w-[340px] sm:h-[340px] md:w-full md:aspect-square bg-[#2c2d3e] rounded-[20px] flex items-center justify-center overflow-hidden">
+              <div className="w-[260px] h-[260px] sm:w-[320px] sm:h-[320px] md:w-full md:aspect-square bg-[#2c2d3e] rounded-[20px] flex items-center justify-center overflow-hidden">
                 <div className={`visualizer ${isPlaying ? 'playing' : 'paused'} w-full h-full flex items-center justify-center relative`}>
                   <div className="center-orb relative w-[200px] sm:w-[220px] md:w-[240px] h-[200px] sm:h-[220px] md:h-[240px] flex items-center justify-center">
                     <div className="orb-inner absolute w-[100px] sm:w-[110px] md:w-[120px] h-[100px] sm:h-[110px] md:h-[120px] rounded-full"></div>
