@@ -118,6 +118,7 @@ export function UnifiedContentManager() {
   const [dialogType, setDialogType] = useState<"course" | "assignment" | "chapter" | null>(null);
   const [deleteItem, setDeleteItem] = useState<any>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedJsonFile, setSelectedJsonFile] = useState<File | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const [selectedCourseForAssignment, setSelectedCourseForAssignment] = useState<string>("");
@@ -305,6 +306,7 @@ export function UnifiedContentManager() {
       queryClient.invalidateQueries({ queryKey: ["/api/assignments"] });
       setEditingItem(null);
       setDialogType(null);
+      setSelectedJsonFile(null);
     },
     onError: (error) => {
       toast({ title: "Error", description: error.message, variant: "destructive" });
@@ -408,7 +410,49 @@ export function UnifiedContentManager() {
 
   const handleChapterSubmit = async (data: z.infer<typeof chapterSchema>) => {
     if (editingItem) {
+      // When editing, handle JSON file upload if present
+      if (selectedJsonFile) {
+        try {
+          // Upload and process the JSON file
+          const jsonFormData = new FormData();
+          jsonFormData.append("readalong", selectedJsonFile);
+          
+          const jsonResponse = await fetch("/api/admin/upload-readalong-json", {
+            method: "POST",
+            body: jsonFormData,
+            credentials: "include",
+          });
+
+          if (jsonResponse.ok) {
+            const jsonResult = await jsonResponse.json();
+            
+            // Update the chapter with read-along data
+            await apiRequest("POST", `/api/admin/read-along/${editingItem.id}`, jsonResult.data);
+            
+            toast({
+              title: "Read-along data added",
+              description: "The read-along JSON file has been processed successfully.",
+            });
+          } else {
+            toast({
+              title: "Read-along upload warning",
+              description: "The chapter was updated but read-along data could not be added.",
+              variant: "destructive",
+            });
+          }
+        } catch (error) {
+          console.error("Error uploading read-along JSON:", error);
+          toast({
+            title: "Read-along upload failed",
+            description: "Failed to process the read-along file.",
+            variant: "destructive",
+          });
+        }
+      }
+      
+      // Update the chapter basic data
       updateChapterMutation.mutate({ id: editingItem.id, data });
+      setSelectedJsonFile(null);
     } else {
       if (!selectedFile) {
         toast({ title: "No audio file", description: "Please select an audio file for the chapter.", variant: "destructive" });
@@ -423,6 +467,7 @@ export function UnifiedContentManager() {
           queryClient.invalidateQueries({ queryKey: [`/api/assignments/${data.assignmentId}/chapters`] });
           chapterForm.reset();
           setSelectedFile(null);
+          setSelectedJsonFile(null);
           setDialogType(null);
         }
       } catch (error) {
@@ -452,9 +497,11 @@ export function UnifiedContentManager() {
     } else if (type === "chapter") {
       if (item) {
         chapterForm.reset(item);
+        setSelectedJsonFile(null);
       } else {
         chapterForm.reset({ assignmentId: parentId || "", title: "", orderIndex: 0, duration: 0 });
         setSelectedAssignmentForChapter(parentId || "");
+        setSelectedJsonFile(null);
       }
     }
   };
@@ -860,7 +907,13 @@ export function UnifiedContentManager() {
       </Dialog>
 
       {/* Chapter Dialog */}
-      <Dialog open={dialogType === "chapter"} onOpenChange={(open) => !open && setDialogType(null)}>
+      <Dialog open={dialogType === "chapter"} onOpenChange={(open) => {
+        if (!open) {
+          setDialogType(null);
+          setSelectedFile(null);
+          setSelectedJsonFile(null);
+        }
+      }}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>{editingItem ? "Edit Chapter" : "Upload Audio Chapter"}</DialogTitle>
@@ -1003,6 +1056,7 @@ export function UnifiedContentManager() {
                     />
                     {selectedFile && (
                       <Badge variant="secondary">
+                        <FileAudio className="h-3 w-3 mr-1" />
                         {selectedFile.name}
                       </Badge>
                     )}
@@ -1017,6 +1071,30 @@ export function UnifiedContentManager() {
                   )}
                 </div>
               )}
+              <div className="space-y-2">
+                <Label>Read-Along JSON File (Optional)</Label>
+                <div className="flex items-center gap-4">
+                  <Input
+                    type="file"
+                    accept="application/json,.json"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        setSelectedJsonFile(file);
+                      }
+                    }}
+                  />
+                  {selectedJsonFile && (
+                    <Badge variant="secondary">
+                      <BookOpen className="h-3 w-3 mr-1" />
+                      {selectedJsonFile.name}
+                    </Badge>
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Upload a JSON file containing text content and timing segments for read-along functionality
+                </p>
+              </div>
               <DialogFooter>
                 <Button type="submit" disabled={isUploading || createChapterMutation.isPending || updateChapterMutation.isPending}>
                   {isUploading || createChapterMutation.isPending || updateChapterMutation.isPending ? (
