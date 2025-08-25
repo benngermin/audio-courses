@@ -93,6 +93,7 @@ export function ManualContentUpload() {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("courses");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedJsonFile, setSelectedJsonFile] = useState<File | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const [editingItem, setEditingItem] = useState<any>(null);
@@ -277,8 +278,10 @@ export function ManualContentUpload() {
         audioUrl: "uploading...",
       });
 
+      const chapterId = (newChapter as any).id;
+
       // Then upload the audio file
-      formData.append("chapterId", (newChapter as any).id);
+      formData.append("chapterId", chapterId);
 
       const response = await fetch("/api/admin/upload-audio", {
         method: "POST",
@@ -291,6 +294,37 @@ export function ManualContentUpload() {
       }
 
       const result = await response.json();
+      
+      // If there's a JSON file selected, upload it for read-along data
+      if (selectedJsonFile) {
+        const jsonFormData = new FormData();
+        jsonFormData.append("readalong", selectedJsonFile);
+        
+        const jsonResponse = await fetch("/api/admin/upload-readalong-json", {
+          method: "POST",
+          body: jsonFormData,
+          credentials: "include",
+        });
+
+        if (jsonResponse.ok) {
+          const jsonResult = await jsonResponse.json();
+          
+          // Update the chapter with read-along data
+          await apiRequest("POST", `/api/admin/read-along/${chapterId}`, jsonResult.data);
+          
+          toast({
+            title: "Read-along data added",
+            description: "The read-along JSON file has been processed successfully.",
+          });
+        } else {
+          toast({
+            title: "Read-along upload warning",
+            description: "The chapter was created but read-along data could not be added.",
+            variant: "destructive",
+          });
+        }
+      }
+      
       setUploadProgress(100);
       setIsUploading(false);
 
@@ -338,8 +372,10 @@ export function ManualContentUpload() {
           description: "The chapter and audio file have been uploaded successfully.",
         });
         queryClient.invalidateQueries({ queryKey: ["/api/assignments"] });
+        queryClient.invalidateQueries({ queryKey: ["/api/admin/all-chapters"] });
         chapterForm.reset();
         setSelectedFile(null);
+        setSelectedJsonFile(null);
         setDialogOpen(false);
       }
     } catch (error) {
@@ -776,7 +812,7 @@ export function ManualContentUpload() {
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label>Audio File</Label>
+                          <Label>Audio File (Required)</Label>
                           <div className="flex items-center gap-4">
                             <Input
                               type="file"
@@ -790,19 +826,44 @@ export function ManualContentUpload() {
                             />
                             {selectedFile && (
                               <Badge variant="secondary">
+                                <FileAudio className="h-3 w-3 mr-1" />
                                 {selectedFile.name}
                               </Badge>
                             )}
                           </div>
-                          {isUploading && (
-                            <div className="space-y-2">
-                              <Progress value={uploadProgress} />
-                              <p className="text-sm text-muted-foreground">
-                                Uploading... {uploadProgress}%
-                              </p>
-                            </div>
-                          )}
                         </div>
+                        <div className="space-y-2">
+                          <Label>Read-Along JSON File (Optional)</Label>
+                          <div className="flex items-center gap-4">
+                            <Input
+                              type="file"
+                              accept="application/json,.json"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) {
+                                  setSelectedJsonFile(file);
+                                }
+                              }}
+                            />
+                            {selectedJsonFile && (
+                              <Badge variant="secondary">
+                                <BookOpen className="h-3 w-3 mr-1" />
+                                {selectedJsonFile.name}
+                              </Badge>
+                            )}
+                          </div>
+                          <p className="text-xs text-muted-foreground">
+                            Upload a JSON file containing text content and timing segments for read-along functionality
+                          </p>
+                        </div>
+                        {isUploading && (
+                          <div className="space-y-2">
+                            <Progress value={uploadProgress} />
+                            <p className="text-sm text-muted-foreground">
+                              Uploading... {uploadProgress}%
+                            </p>
+                          </div>
+                        )}
                         <DialogFooter>
                           <Button type="submit" disabled={isUploading || createChapterMutation.isPending}>
                             {isUploading || createChapterMutation.isPending ? (
@@ -825,11 +886,28 @@ export function ManualContentUpload() {
                 <h4 className="font-medium mb-2">Instructions</h4>
                 <ol className="list-decimal list-inside space-y-1 text-sm text-muted-foreground">
                   <li>Select an assignment from the dropdown</li>
-                  <li>Enter the chapter title and description</li>
+                  <li>Enter the chapter title</li>
                   <li>Set the order index (lower numbers appear first)</li>
                   <li>Select an audio file (MP3, WAV, OGG, or WebM)</li>
+                  <li>Optionally, upload a JSON file for read-along functionality</li>
                   <li>Click "Upload Chapter" to save</li>
                 </ol>
+                <div className="mt-3 p-2 bg-blue-50 dark:bg-blue-950 rounded">
+                  <p className="text-xs font-medium text-blue-700 dark:text-blue-300 mb-1">JSON File Format:</p>
+                  <pre className="text-xs bg-white dark:bg-gray-900 p-2 rounded overflow-x-auto">
+{`{
+  "textContent": "Full chapter text...",
+  "segments": [
+    {
+      "text": "Sentence text",
+      "startTime": 0,
+      "endTime": 5.2,
+      "segmentType": "sentence"
+    }
+  ]
+}`}
+                  </pre>
+                </div>
               </div>
             </TabsContent>
           </Tabs>

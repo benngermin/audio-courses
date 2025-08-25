@@ -718,6 +718,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin endpoint to upload read-along JSON file
+  app.post('/api/admin/upload-readalong-json', isAuthenticated, upload.single('readalong'), async (req: any, res) => {
+    try {
+      const user = await storage.getUser(req.user.claims.sub);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      if (!req.file) {
+        return res.status(400).json({ message: "No JSON file provided" });
+      }
+
+      // SECURITY: Validate file type
+      if (!req.file.mimetype.includes('json')) {
+        await fs.promises.unlink(req.file.path).catch(() => {});
+        return res.status(400).json({ message: "Invalid file type. Please upload a JSON file." });
+      }
+
+      // Read and parse the JSON file
+      const fileContent = await fs.promises.readFile(req.file.path, 'utf-8');
+      let readAlongData;
+      
+      try {
+        readAlongData = JSON.parse(fileContent);
+      } catch (parseError) {
+        await fs.promises.unlink(req.file.path).catch(() => {});
+        return res.status(400).json({ message: "Invalid JSON format" });
+      }
+
+      // Clean up the uploaded file
+      await fs.promises.unlink(req.file.path).catch(() => {});
+
+      // Validate the JSON structure
+      try {
+        const validated = readAlongUpdateSchema.parse(readAlongData);
+        res.json({ 
+          message: "Read-along JSON file uploaded successfully",
+          data: validated
+        });
+      } catch (validationError) {
+        console.error("Validation error:", validationError);
+        return res.status(400).json({ 
+          message: "Invalid JSON structure. Please ensure the file contains 'textContent' and 'segments' fields." 
+        });
+      }
+    } catch (error) {
+      logError('upload-readalong-json', error);
+      if (req.file && fs.existsSync(req.file.path)) {
+        await fs.promises.unlink(req.file.path).catch(() => {});
+      }
+      res.status(500).json({ message: "Failed to upload read-along JSON file" });
+    }
+  });
+
   // Get all chapters across all assignments for admin interface
   app.get('/api/admin/all-chapters', isAuthenticated, async (req: any, res) => {
     try {
