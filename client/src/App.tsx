@@ -13,6 +13,7 @@ import Assignments from "@/pages/assignments";
 import Chapters from "@/pages/chapters";
 import Player from "@/pages/player";
 import Admin from "@/pages/admin";
+import AudioTest from "@/pages/audio-test";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -43,6 +44,7 @@ function Router() {
       <Route path="/chapters" component={Chapters} />
       <Route path="/player" component={Player} />
       <Route path="/admin" component={Admin} />
+      <Route path="/audio-test" component={AudioTest} />
       <Route component={NotFound} />
     </Switch>
   );
