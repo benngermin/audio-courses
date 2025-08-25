@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { AppHeader } from "@/components/AppHeader";
-import { useCurrentTrack, usePlaybackState } from "@/contexts/OptimizedAudioContext";
+import { useCurrentTrack } from "@/contexts/OptimizedAudioContext";
 import { useAuth } from "@/hooks/useAuth";
 import { useLocation } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
@@ -15,7 +15,6 @@ export default function Assignments() {
   const { user } = useAuth();
   const [location, navigate] = useLocation();
   const { setCurrentTrack, currentChapter } = useCurrentTrack();
-  const { setIsPlayAllMode } = usePlaybackState();
   const [currentAssignment, setCurrentAssignment] = useState<Assignment | undefined>(undefined);
 
   const { data: courses = [], isLoading: coursesLoading } = useQuery<Course[]>({
@@ -45,6 +44,7 @@ export default function Assignments() {
   const handleChapterSelect = (chapter: Chapter) => {
     if (currentAssignment && chapter) {
       setCurrentTrack(chapter, currentAssignment);
+      // Audio will auto-play in OptimizedMiniPlayer when chapter changes
     }
   };
 
@@ -112,7 +112,6 @@ function AssignmentHeader({
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { currentChapter } = useCurrentTrack();
-  const { setIsPlayAllMode, isPlayAllMode } = usePlaybackState();
   
   const { data: chapters = [] } = useQuery<Chapter[]>({
     queryKey: ["/api/assignments", assignment.id, "chapters"],
@@ -191,21 +190,6 @@ function AssignmentHeader({
   
   const isDownloading = downloadAllMutation.isPending || downloadingChapters.length > 0;
   
-  const handlePlayAll = () => {
-    if (isPlayAllMode) {
-      // Toggle off Play All mode (but keep playing current chapter)
-      setIsPlayAllMode(false);
-    } else {
-      // Toggle on Play All mode
-      if (chapters.length > 0 && chapters[0]) {
-        setIsPlayAllMode(true);
-        // Only start playing if nothing is currently playing
-        if (!currentChapter) {
-          onChapterSelect(chapters[0]);
-        }
-      }
-    }
-  };
 
   return (
     <div className="mb-4 sm:mb-6">
@@ -244,22 +228,6 @@ function AssignmentHeader({
               <span className="hidden sm:inline">All Downloaded</span>
             </button>
           )}
-          <Button
-            onClick={handlePlayAll}
-            className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center p-0 shadow-lg hover:shadow-xl transition-all duration-200 ${
-              isPlayAllMode 
-                ? "bg-green-600 hover:bg-green-700 ring-2 ring-green-400 ring-offset-2" 
-                : "bg-[#ed7738] hover:bg-[#d96429]"
-            }`}
-            disabled={chapters.length === 0}
-            title={isPlayAllMode ? "Stop Play All Mode" : "Play All Chapters"}
-          >
-            {isPlayAllMode ? (
-              <ListMusic className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
-            ) : (
-              <Play className="h-5 w-5 sm:h-6 sm:w-6 text-white ml-0.5" fill="currentColor" />
-            )}
-          </Button>
         </div>
       </div>
       

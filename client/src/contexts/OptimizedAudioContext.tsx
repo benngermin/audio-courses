@@ -29,7 +29,6 @@ interface AudioContextType {
   // Playback state (changes frequently)
   isPlaying: boolean;
   isExpanded: boolean;
-  isPlayAllMode: boolean;
   isReadAlongVisible: boolean;
   
   // Actions (stable references)
@@ -37,7 +36,6 @@ interface AudioContextType {
   clearCurrentTrack: () => void;
   setIsPlaying: (playing: boolean) => void;
   setIsExpanded: (expanded: boolean) => void;
-  setIsPlayAllMode: (playAll: boolean) => void;
   setIsReadAlongVisible: (visible: boolean) => void;
   toggleExpanded: () => void;
   toggleReadAlong: () => void;
@@ -61,7 +59,6 @@ export function OptimizedAudioProvider({ children }: { children: ReactNode }) {
   // UI state (changes infrequently)
   const [isPlaying, setIsPlaying] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
-  const [isPlayAllMode, setIsPlayAllMode] = useState(false);
   const [isReadAlongVisible, setIsReadAlongVisible] = useState(false);
   
   // Audio controls (stable reference)
@@ -93,7 +90,6 @@ export function OptimizedAudioProvider({ children }: { children: ReactNode }) {
     setCurrentAssignment(null);
     setIsPlaying(false);
     setIsExpanded(false);
-    setIsPlayAllMode(false);
   }, []);
 
   const toggleExpanded = useCallback(() => {
@@ -113,13 +109,11 @@ export function OptimizedAudioProvider({ children }: { children: ReactNode }) {
     currentAssignment,
     isPlaying,
     isExpanded,
-    isPlayAllMode,
     isReadAlongVisible,
     setCurrentTrack,
     clearCurrentTrack,
     setIsPlaying,
     setIsExpanded,
-    setIsPlayAllMode,
     setIsReadAlongVisible,
     toggleExpanded,
     toggleReadAlong,
@@ -132,7 +126,6 @@ export function OptimizedAudioProvider({ children }: { children: ReactNode }) {
     currentAssignment,
     isPlaying,
     isExpanded,
-    isPlayAllMode,
     isReadAlongVisible,
     setCurrentTrack,
     clearCurrentTrack,
@@ -182,22 +175,18 @@ export function usePlaybackState() {
   return useMemo(() => ({
     isPlaying: context.isPlaying,
     isExpanded: context.isExpanded,
-    isPlayAllMode: context.isPlayAllMode,
     isReadAlongVisible: context.isReadAlongVisible,
     setIsPlaying: context.setIsPlaying,
     setIsExpanded: context.setIsExpanded,
-    setIsPlayAllMode: context.setIsPlayAllMode,
     setIsReadAlongVisible: context.setIsReadAlongVisible,
     toggleExpanded: context.toggleExpanded,
     toggleReadAlong: context.toggleReadAlong,
   }), [
     context.isPlaying,
     context.isExpanded,
-    context.isPlayAllMode,
     context.isReadAlongVisible,
     context.setIsPlaying,
     context.setIsExpanded,
-    context.setIsPlayAllMode,
     context.setIsReadAlongVisible,
     context.toggleExpanded,
     context.toggleReadAlong,

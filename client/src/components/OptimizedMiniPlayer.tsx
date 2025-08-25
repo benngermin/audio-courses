@@ -10,14 +10,14 @@ import type { Chapter } from "@shared/schema";
 
 export function OptimizedMiniPlayer() {
   const { currentChapter, currentAssignment, setCurrentTrack } = useCurrentTrack();
-  const { isExpanded, setIsExpanded, isPlayAllMode, setIsPlayAllMode, setIsPlaying, isReadAlongVisible, toggleReadAlong } = usePlaybackState();
+  const { isExpanded, setIsExpanded, setIsPlaying, isReadAlongVisible, toggleReadAlong } = usePlaybackState();
   const { setAudioControls } = useAudioControls();
   const { setAudioState } = useAudioState();
 
-  // Get chapters for Play All mode and preloading
+  // Get chapters for preloading
   const { data: chapters = [] } = useQuery<Chapter[]>({
     queryKey: ["/api/assignments", currentAssignment?.id, "chapters"],
-    enabled: !!currentAssignment?.id && isPlayAllMode,
+    enabled: !!currentAssignment?.id,
   });
 
   // Calculate next chapters for preloading
@@ -48,20 +48,7 @@ export function OptimizedMiniPlayer() {
     
     // Mark as completed
     updateProgress(currentChapter.duration || 0, true);
-    
-    // Play All mode logic
-    if (isPlayAllMode && chapters.length > 0) {
-      const currentIndex = chapters.findIndex(ch => ch.id === currentChapter.id);
-      if (currentIndex !== -1 && currentIndex < chapters.length - 1) {
-        const nextChapter = chapters[currentIndex + 1];
-        console.log('Play All: Advancing to next chapter:', nextChapter.title);
-        setCurrentTrack(nextChapter, currentAssignment);
-      } else {
-        console.log('Play All: Finished all chapters');
-        setIsPlayAllMode(false);
-      }
-    }
-  }, [currentChapter, currentAssignment, isPlayAllMode, chapters, setCurrentTrack, setIsPlayAllMode, updateProgress]);
+  }, [currentChapter, currentAssignment, updateProgress]);
 
   // Use optimized audio hook with preloading
   const {
@@ -117,9 +104,32 @@ export function OptimizedMiniPlayer() {
     setIsPlaying(isPlaying);
   }, [isPlaying, setIsPlaying]);
 
-  // Removed auto-play logic to comply with browser autoplay policies
-  // Audio will now only play when user explicitly clicks play button
-  // This ensures reliable playback across all browsers and devices
+  // Track if this is the first interaction with a chapter
+  const isFirstPlayRef = useRef(true);
+  const prevChapterIdRef = useRef<string | null>(null);
+  
+  useEffect(() => {
+    const currentId = currentChapter?.id;
+    
+    // When chapter changes, try to auto-play
+    if (currentId && currentId !== prevChapterIdRef.current && play) {
+      prevChapterIdRef.current = currentId;
+      
+      // Only auto-play after user has interacted with play button at least once
+      // This ensures we comply with browser autoplay policies
+      if (!isFirstPlayRef.current) {
+        play().catch((error) => {
+          console.log('Chapter change auto-play blocked, user needs to click play');
+        });
+      }
+    }
+  }, [currentChapter?.id, play]);
+  
+  // Track when user first clicks play
+  const handlePlayClick = useCallback(() => {
+    isFirstPlayRef.current = false;
+    togglePlay();
+  }, [togglePlay]);
 
   // Media Session metadata
   useEffect(() => {
@@ -222,7 +232,7 @@ export function OptimizedMiniPlayer() {
                   size="icon"
                   onClick={(e) => {
                     e.stopPropagation();
-                    togglePlay();
+                    handlePlayClick();
                   }}
                   className="hover:bg-black/5"
                   style={{

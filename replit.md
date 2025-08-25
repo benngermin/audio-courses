@@ -14,6 +14,13 @@ This is a mobile-first audio learning platform built for The Institutes educatio
 
 ## Recent Changes
 
+### Play All Feature Removal and Audio Fixes (January 27, 2025)
+- **Removed Play All Mode**: Eliminated the play all functionality and large play button per user request
+- **Simplified Chapter Selection**: Users now click directly on chapter cards to select and load audio
+- **Fixed Audio Playback**: Resolved browser autoplay policy issues with proper state synchronization
+- **Improved User Flow**: Click chapter → Mini player appears → Click play to start (first time only)
+- **Smart Auto-play**: After first play interaction, subsequent chapter selections will auto-play
+
 ### Major UX Transformation - Read-Along Panel System (January 25, 2025)
 - **Replaced Full-Screen Player**: Removed the full-screen ExpandedPlayer in favor of a cleaner, more intuitive UX
 - **New ReadAlongPanel Component**: Created bottom-anchored sliding panel that expands upward from mini player
