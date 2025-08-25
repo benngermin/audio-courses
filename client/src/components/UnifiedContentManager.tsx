@@ -121,6 +121,8 @@ export function UnifiedContentManager() {
   const [selectedJsonFile, setSelectedJsonFile] = useState<File | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
+  const [showJsonContent, setShowJsonContent] = useState(false);
+  const [jsonContent, setJsonContent] = useState<any>(null);
   const [selectedCourseForAssignment, setSelectedCourseForAssignment] = useState<string>("");
   const [selectedAssignmentForChapter, setSelectedAssignmentForChapter] = useState<string>("");
 
@@ -1040,6 +1042,87 @@ export function UnifiedContentManager() {
                   }}
                 />
               </div>
+              {/* Show current content status when editing */}
+              {editingItem && dialogType === "chapter" && (
+                <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
+                  <h4 className="font-medium text-sm">Current Content</h4>
+                  
+                  {/* Audio Status */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <FileAudio className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm">Audio File:</span>
+                    </div>
+                    {editingItem.audioUrl ? (
+                      <div className="flex items-center gap-2">
+                        <Badge variant="secondary" className="text-xs">
+                          <Check className="h-3 w-3 mr-1" />
+                          Uploaded
+                        </Badge>
+                        <audio controls className="h-8" preload="none">
+                          <source src={editingItem.audioUrl} type="audio/mpeg" />
+                        </audio>
+                      </div>
+                    ) : (
+                      <Badge variant="outline" className="text-xs">
+                        <X className="h-3 w-3 mr-1" />
+                        No audio
+                      </Badge>
+                    )}
+                  </div>
+
+                  {/* Read-Along Status */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <BookOpen className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm">Read-Along Data:</span>
+                    </div>
+                    {editingItem.hasReadAlong ? (
+                      <div className="flex items-center gap-2">
+                        <Badge variant="secondary" className="text-xs">
+                          <Check className="h-3 w-3 mr-1" />
+                          Available
+                        </Badge>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={async () => {
+                            try {
+                              const response = await fetch(`/api/read-along/${editingItem.id}`);
+                              if (response.ok) {
+                                const data = await response.json();
+                                setJsonContent(data);
+                                setShowJsonContent(true);
+                              }
+                            } catch (error) {
+                              console.error("Error fetching read-along data:", error);
+                            }
+                          }}
+                        >
+                          View JSON
+                        </Button>
+                      </div>
+                    ) : (
+                      <Badge variant="outline" className="text-xs">
+                        <X className="h-3 w-3 mr-1" />
+                        Not available
+                      </Badge>
+                    )}
+                  </div>
+
+                  {/* Show text content preview if available */}
+                  {editingItem.textContent && (
+                    <div className="space-y-2">
+                      <Label className="text-sm">Text Content Preview</Label>
+                      <div className="p-3 bg-background rounded border max-h-32 overflow-y-auto">
+                        <p className="text-xs text-muted-foreground line-clamp-4">
+                          {editingItem.textContent}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
               {!editingItem && (
                 <div className="space-y-2">
                   <Label>Audio File</Label>
@@ -1072,7 +1155,14 @@ export function UnifiedContentManager() {
                 </div>
               )}
               <div className="space-y-2">
-                <Label>Read-Along JSON File (Optional)</Label>
+                <Label>
+                  Read-Along JSON File (Optional)
+                  {editingItem?.hasReadAlong && (
+                    <span className="ml-2 text-xs text-muted-foreground">
+                      - Will replace existing data
+                    </span>
+                  )}
+                </Label>
                 <div className="flex items-center gap-4">
                   <Input
                     type="file"
@@ -1092,7 +1182,9 @@ export function UnifiedContentManager() {
                   )}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Upload a JSON file containing text content and timing segments for read-along functionality
+                  {editingItem?.hasReadAlong 
+                    ? "Upload a new JSON file to replace the existing read-along data"
+                    : "Upload a JSON file containing text content and timing segments for read-along functionality"}
                 </p>
               </div>
               <DialogFooter>
@@ -1143,6 +1235,60 @@ export function UnifiedContentManager() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* JSON Content Viewer Dialog */}
+      <Dialog open={showJsonContent} onOpenChange={setShowJsonContent}>
+        <DialogContent className="max-w-4xl max-h-[80vh]">
+          <DialogHeader>
+            <DialogTitle>Read-Along Data</DialogTitle>
+            <DialogDescription>
+              JSON content for {editingItem?.title || "this chapter"}
+            </DialogDescription>
+          </DialogHeader>
+          <ScrollArea className="h-[500px] w-full rounded-md border p-4">
+            {jsonContent && (
+              <div className="space-y-4">
+                <div>
+                  <h4 className="font-medium text-sm mb-2">Text Content</h4>
+                  <p className="text-sm text-muted-foreground bg-muted p-3 rounded">
+                    {jsonContent.textContent ? 
+                      (jsonContent.textContent.length > 500 
+                        ? jsonContent.textContent.substring(0, 500) + "..."
+                        : jsonContent.textContent)
+                      : "No text content"}
+                  </p>
+                </div>
+                <div>
+                  <h4 className="font-medium text-sm mb-2">Segments ({jsonContent.segments?.length || 0} total)</h4>
+                  <div className="space-y-2 max-h-96 overflow-y-auto">
+                    {jsonContent.segments?.slice(0, 10).map((segment: any, index: number) => (
+                      <div key={index} className="p-3 bg-muted rounded text-xs space-y-1">
+                        <div className="flex justify-between">
+                          <Badge variant="outline" className="text-xs">
+                            Segment {segment.segmentIndex}
+                          </Badge>
+                          <span className="text-muted-foreground">
+                            {segment.startTime}s - {segment.endTime}s
+                          </span>
+                        </div>
+                        <p className="text-muted-foreground">{segment.text}</p>
+                      </div>
+                    ))}
+                    {jsonContent.segments?.length > 10 && (
+                      <p className="text-center text-muted-foreground text-sm">
+                        ... and {jsonContent.segments.length - 10} more segments
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+          </ScrollArea>
+          <DialogFooter>
+            <Button onClick={() => setShowJsonContent(false)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
