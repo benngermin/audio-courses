@@ -245,6 +245,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  app.get('/api/admin/test-connection', isAuthenticated, async (req: any, res) => {
+    try {
+      const user = await storage.getUser(req.user.claims.sub);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const isConnected = await bubbleApiService.testConnection();
+      res.json({ 
+        connected: isConnected,
+        message: isConnected ? "Successfully connected to TI Content Repository API" : "Failed to connect to TI Content Repository API"
+      });
+    } catch (error) {
+      console.error("Error testing connection:", error);
+      res.status(500).json({ message: "Failed to test connection" });
+    }
+  });
+
   app.post('/api/admin/sync', isAuthenticated, async (req: any, res) => {
     try {
       const user = await storage.getUser(req.user.claims.sub);

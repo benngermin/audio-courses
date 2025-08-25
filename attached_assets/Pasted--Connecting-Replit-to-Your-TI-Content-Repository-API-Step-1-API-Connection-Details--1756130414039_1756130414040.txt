@@ -1,0 +1,191 @@
+### **Connecting Replit to Your TI Content Repository API**
+
+### **Step 1: API Connection Details**
+Here are the connection details for the TI Content Repository API:
+1.  **Data API Root URL:** This is the base URL for all Data API requests.
+    * `https://ti-content-repository.bubbleapps.io/version-test/api/1.1/obj`
+2.  **Private API Key:** This is the secret token used for authentication.
+    * `f3c17ebbeac064ee7d622172e95092d7`
+3.  **Available Data Types:** These are the names of the database tables you can query.
+    * `course`
+    * `assignment`
+    * `learningobject` (Updated with new audio field)
+    * `questionset`
+
+### **Data Type Field Reference**
+
+#### **learningObject Fields:**
+* **assignment**: Reference to an assignment object
+* **audio**: File field containing audio content (NEW)
+* **case sensitive loid**: Unique numeric identifier
+* **content**: Text content of the learning object
+* **course**: Reference to a course object
+* **loid**: Text-based learning object ID
+* **title**: Title of the learning object
+
+### **Step 2: Construct the Full API Endpoint**
+To get data from a specific table, append the formatted data type name to the Data API Root URL.
+
+**Formatting Rule:** The data type name must be **lowercase** and have **no spaces**.
+
+**Example Construction:**
+* **Root URL:** `https://ti-content-repository.bubbleapps.io/version-test/api/1.1/obj`
+* **Data Type:** `learningobject`
+* **Full Endpoint URL:** `https://ti-content-repository.bubbleapps.io/version-test/api/1.1/obj/learningobject`
+
+To query the "Question Set" table, the endpoint would be:
+`https://ti-content-repository.bubbleapps.io/version-test/api/1.1/obj/questionset`
+
+### **Step 3: Implement the GET Request in Replit**
+You will make an HTTP GET request to the endpoint you just constructed. The request **must** include an `Authorization` header containing your Private API Key.
+
+Below is an enhanced Python example that handles the new audio field:
+
+```python
+import requests
+import json
+
+# 1. Your TI Content Repository API credentials
+api_token = "f3c17ebbeac064ee7d622172e95092d7"
+api_root_url = "https://ti-content-repository.bubbleapps.io/version-test/api/1.1/obj"
+data_type = "learningobject"  # Query the learning objects with audio field
+
+# 2. Construct the full URL
+url = f"{api_root_url}/{data_type}"
+
+# 3. Set up the required authentication header
+headers = {
+    "Authorization": f"Bearer {api_token}"
+}
+
+# 4. Make the API request
+try:
+    response = requests.get(url, headers=headers)
+    
+    # Raise an exception if the request was unsuccessful
+    response.raise_for_status() 
+    
+    # 5. Process the successful response
+    # The data is in the 'response' -> 'results' part of the JSON
+    data = response.json()
+    results = data.get('response', {}).get('results', [])
+    
+    print(f"Successfully retrieved {len(results)} learning objects.")
+    
+    # Process learning objects with audio field
+    for obj in results:
+        print(f"\n--- Learning Object: {obj.get('title', 'Untitled')} ---")
+        print(f"LOID: {obj.get('loid', 'N/A')}")
+        print(f"Content: {obj.get('content', 'No content')[:100]}...")  # First 100 chars
+        
+        # Handle the audio field (file type)
+        audio_file = obj.get('audio')
+        if audio_file:
+            # File fields typically contain a URL or file reference
+            print(f"Audio File: {audio_file}")
+        else:
+            print("Audio File: None")
+        
+        # Handle reference fields
+        if obj.get('course'):
+            print(f"Course ID: {obj.get('course')}")
+        if obj.get('assignment'):
+            print(f"Assignment ID: {obj.get('assignment')}")
+    
+except requests.exceptions.HTTPError as http_err:
+    print(f"HTTP Error: {http_err}")
+    print(f"Response Body: {response.text}")
+except Exception as err:
+    print(f"An error occurred: {err}")
+```
+
+### **Working with File Fields (Audio)**
+
+The `audio` field is a file type, which means it will typically return:
+* **If a file is present:** A URL string pointing to the uploaded audio file
+* **If no file is present:** `null` or an empty value
+
+**Example: Downloading Audio Files**
+```python
+import requests
+import os
+
+def download_audio_file(audio_url, filename):
+    """Download an audio file from the provided URL"""
+    if audio_url:
+        try:
+            response = requests.get(audio_url)
+            response.raise_for_status()
+            
+            # Save the audio file
+            with open(filename, 'wb') as f:
+                f.write(response.content)
+            print(f"Audio file saved as: {filename}")
+            return True
+        except Exception as e:
+            print(f"Error downloading audio: {e}")
+            return False
+    else:
+        print("No audio URL provided")
+        return False
+
+# Example usage with a learning object
+for obj in results:
+    audio_url = obj.get('audio')
+    if audio_url:
+        # Create filename based on the learning object title or ID
+        safe_title = obj.get('title', 'untitled').replace(' ', '_')
+        filename = f"{safe_title}.mp3"  # Adjust extension as needed
+        download_audio_file(audio_url, filename)
+```
+
+### **Filtering for Learning Objects with Audio**
+
+To query only learning objects that have audio files:
+
+```python
+import requests
+import json
+
+# API setup
+api_token = "f3c17ebbeac064ee7d622172e95092d7"
+api_root_url = "https://ti-content-repository.bubbleapps.io/version-test/api/1.1/obj"
+data_type = "learningobject"
+
+url = f"{api_root_url}/{data_type}"
+headers = {
+    "Authorization": f"Bearer {api_token}"
+}
+
+# Add constraints to only get learning objects with audio
+params = {
+    "constraints": json.dumps([{
+        "key": "audio",
+        "constraint_type": "is_not_empty"
+    }])
+}
+
+try:
+    response = requests.get(url, headers=headers, params=params)
+    response.raise_for_status()
+    
+    data = response.json()
+    results = data.get('response', {}).get('results', [])
+    
+    print(f"Found {len(results)} learning objects with audio files")
+    
+    for obj in results:
+        print(f"\nTitle: {obj.get('title')}")
+        print(f"Audio URL: {obj.get('audio')}")
+        
+except Exception as err:
+    print(f"Error: {err}")
+```
+
+### **How to Use and Adapt the Code in Replit**
+
+1.  **To query a different data table:** Simply change the value of the `data_type` variable in the script (e.g., from `"learningobject"` to `"assignment"`).
+2.  **To connect to a different Bubble app:** Update the `api_token` and `api_root_url` variables with the new app's credentials.
+3.  **Authentication is key:** The `Authorization: Bearer YOUR_KEY` header is mandatory for every request. Without it, your request will be denied.
+4.  **Handle file fields properly:** Remember that file fields like `audio` return URLs, not the actual file content. You'll need to make a separate request to download the actual audio file if needed.
+5.  **Working with audio files:** The new `audio` field in `learningobject` returns a URL when a file is present. You can use this URL to stream or download the audio content for playback or processing.

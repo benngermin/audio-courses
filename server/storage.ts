@@ -30,6 +30,7 @@ export interface IStorage {
   // Course operations
   getCourses(): Promise<Course[]>;
   getCourse(id: string): Promise<Course | undefined>;
+  getCourseByBubbleId(bubbleId: string): Promise<Course | undefined>;
   createCourse(course: InsertCourse): Promise<Course>;
   updateCourse(id: string, course: Partial<InsertCourse>): Promise<Course>;
   deleteCourse(id: string): Promise<void>;
@@ -37,6 +38,7 @@ export interface IStorage {
   // Assignment operations
   getAssignmentsByCourse(courseId: string): Promise<Assignment[]>;
   getAssignment(id: string): Promise<Assignment | undefined>;
+  getAssignmentByBubbleId(bubbleId: string): Promise<Assignment | undefined>;
   createAssignment(assignment: InsertAssignment): Promise<Assignment>;
   updateAssignment(id: string, assignment: Partial<InsertAssignment>): Promise<Assignment>;
   deleteAssignment(id: string): Promise<void>;
@@ -44,6 +46,7 @@ export interface IStorage {
   // Chapter operations
   getChaptersByAssignment(assignmentId: string): Promise<Chapter[]>;
   getChapter(id: string): Promise<Chapter | undefined>;
+  getChapterByBubbleId(bubbleId: string): Promise<Chapter | undefined>;
   createChapter(chapter: InsertChapter): Promise<Chapter>;
   updateChapter(id: string, chapter: Partial<InsertChapter>): Promise<Chapter>;
   deleteChapter(id: string): Promise<void>;
@@ -95,6 +98,11 @@ export class DatabaseStorage implements IStorage {
     return course;
   }
 
+  async getCourseByBubbleId(bubbleId: string): Promise<Course | undefined> {
+    const [course] = await db.select().from(courses).where(eq(courses.bubbleId, bubbleId));
+    return course;
+  }
+
   async createCourse(course: InsertCourse): Promise<Course> {
     const [newCourse] = await db.insert(courses).values(course).returning();
     return newCourse;
@@ -124,6 +132,11 @@ export class DatabaseStorage implements IStorage {
 
   async getAssignment(id: string): Promise<Assignment | undefined> {
     const [assignment] = await db.select().from(assignments).where(eq(assignments.id, id));
+    return assignment;
+  }
+
+  async getAssignmentByBubbleId(bubbleId: string): Promise<Assignment | undefined> {
+    const [assignment] = await db.select().from(assignments).where(eq(assignments.bubbleId, bubbleId));
     return assignment;
   }
 
@@ -163,6 +176,11 @@ export class DatabaseStorage implements IStorage {
 
   async getChapter(id: string): Promise<Chapter | undefined> {
     const [chapter] = await db.select().from(chapters).where(eq(chapters.id, id));
+    return chapter;
+  }
+
+  async getChapterByBubbleId(bubbleId: string): Promise<Chapter | undefined> {
+    const [chapter] = await db.select().from(chapters).where(eq(chapters.bubbleId, bubbleId));
     return chapter;
   }
 
