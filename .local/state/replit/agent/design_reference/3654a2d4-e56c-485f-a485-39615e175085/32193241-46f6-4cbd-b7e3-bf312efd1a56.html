@@ -1,0 +1,534 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Learning - The Institutes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1E40AF',
+                        teal: '#0F766E',
+                        orange: '#F59E0B',
+                        purple: '#8B5CF6'
+                    }
+                }
+            }
+        };
+    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @keyframes waveform {
+            0%, 100% { height: 4px; }
+            50% { height: 20px; }
+        }
+        .wave-bar {
+            animation: waveform 1.5s ease-in-out infinite;
+        }
+        .wave-bar:nth-child(2) { animation-delay: 0.1s; }
+        .wave-bar:nth-child(3) { animation-delay: 0.2s; }
+        .wave-bar:nth-child(4) { animation-delay: 0.3s; }
+        .wave-bar:nth-child(5) { animation-delay: 0.4s; }
+        .wave-bar:nth-child(6) { animation-delay: 0.5s; }
+        .progress-bar {
+            transition: width 0.1s linear;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- @COMPONENT: AppHeader [course selection and branding] -->
+    <header class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo Section -->
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <div class="w-8 h-8 bg-gradient-to-r from-blue-600 to-teal-600 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-graduation-cap text-white text-sm"></i>
+                        </div>
+                        <span class="ml-2 text-lg font-semibold text-gray-900 hidden sm:block">The Institutes</span>
+                    </div>
+                </div>
+
+                <!-- Course Title (Center) -->
+                <div class="flex-1 text-center px-4">
+                    <h1 class="text-lg font-semibold text-gray-900 truncate" data-bind="course.title">
+                        AIC 300: Claims in an Evolving World
+                    </h1>
+                </div>
+
+                <!-- Assignment Dropdown -->
+                <div class="relative">
+                    <select class="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer" data-bind="selectedAssignment" data-event="change:handleAssignmentChange">
+                        <option value="1">1. The Evolving Role of the Claims Professional</option>
+                        <option value="2">2. Investigation and Documentation</option>
+                        <option value="3">3. Claims Settlement Strategies</option>
+                    </select>
+                    <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                        <i class="fas fa-chevron-down text-gray-400 text-xs"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- @END_COMPONENT: AppHeader -->
+
+    <!-- Main Container -->
+    <div class="max-w-md mx-auto bg-white min-h-screen">
+        
+        <!-- @COMPONENT: AssignmentListView [main landing screen] -->
+        <div id="assignmentView" class="p-6">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-gradient-to-r from-teal-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-headphones text-white text-2xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900 mb-2">Audio Learning</h2>
+                <p class="text-gray-600">Listen to your course material on the go</p>
+            </div>
+
+            <!-- Assignment Cards -->
+            <!-- @MAP: assignments.map(assignment => ( -->
+            <div class="space-y-4 mb-6">
+                <div class="bg-white rounded-xl border border-gray-200 p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer" data-event="click:navigateToChapters" data-assignment-id="1">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-12 h-12 bg-teal-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-play text-teal-600 text-lg"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-gray-900" data-bind="assignment.title">The Evolving Role of the Claims Professional</h3>
+                            <p class="text-sm text-gray-500" data-bind="assignment.chapterCount">5 chapters • 2h 15m</p>
+                            <div class="mt-2">
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-teal-600 h-2 rounded-full progress-bar" style="width: 65%" data-bind="assignment.progress"></div>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-1" data-bind="assignment.progressText">3 of 5 completed</p>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-400"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl border border-gray-200 p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer" data-event="click:navigateToChapters" data-assignment-id="2">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-search text-orange-600 text-lg"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-gray-900" data-bind="assignment.title">Investigation and Documentation</h3>
+                            <p class="text-sm text-gray-500" data-bind="assignment.chapterCount">4 chapters • 1h 45m</p>
+                            <div class="mt-2">
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-orange-600 h-2 rounded-full progress-bar" style="width: 25%" data-bind="assignment.progress"></div>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-1" data-bind="assignment.progressText">1 of 4 completed</p>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-400"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl border border-gray-200 p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer" data-event="click:navigateToChapters" data-assignment-id="3">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-handshake text-purple-600 text-lg"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-gray-900" data-bind="assignment.title">Claims Settlement Strategies</h3>
+                            <p class="text-sm text-gray-500" data-bind="assignment.chapterCount">6 chapters • 3h 20m</p>
+                            <div class="mt-2">
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-purple-600 h-2 rounded-full progress-bar" style="width: 0%" data-bind="assignment.progress"></div>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-1" data-bind="assignment.progressText">Not started</p>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-400"></i>
+                    </div>
+                </div>
+            </div>
+            <!-- @END_MAP )) -->
+
+            <!-- Download Options -->
+            <div class="bg-blue-50 rounded-xl p-4 border border-blue-200">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-download text-blue-600"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="font-medium text-blue-900">Download for Offline</h4>
+                        <p class="text-sm text-blue-700">Listen without internet connection</p>
+                    </div>
+                    <button class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors" data-event="click:downloadAll">
+                        Download All
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- @END_COMPONENT: AssignmentListView -->
+
+        <!-- @COMPONENT: ChapterListView [chapter selection within assignment] -->
+        <div id="chapterView" class="p-6 hidden">
+            <div class="flex items-center mb-6">
+                <button class="mr-4 w-10 h-10 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors" data-event="click:goBack">
+                    <i class="fas fa-arrow-left text-gray-600"></i>
+                </button>
+                <div class="flex-1">
+                    <h2 class="text-xl font-bold text-gray-900" data-bind="assignment.title">The Evolving Role of the Claims Professional</h2>
+                    <p class="text-sm text-gray-500" data-bind="assignment.chapterCount">5 chapters</p>
+                </div>
+            </div>
+
+            <!-- Chapter List -->
+            <!-- @MAP: chapters.map(chapter => ( -->
+            <div class="space-y-3 mb-6">
+                <div class="bg-white rounded-xl border border-gray-200 p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer" data-event="click:playChapter" data-chapter-id="1">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-10 h-10 bg-teal-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-play text-teal-600"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-medium text-gray-900" data-bind="chapter.title">Introduction to Modern Claims</h3>
+                            <p class="text-sm text-gray-500" data-bind="chapter.duration">12 min</p>
+                            <div class="mt-2 w-full bg-gray-200 rounded-full h-1">
+                                <div class="bg-teal-600 h-1 rounded-full" style="width: 100%" data-bind="chapter.progress"></div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <i class="fas fa-check-circle text-teal-600"></i>
+                            <p class="text-xs text-gray-500 mt-1">Completed</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl border border-gray-200 p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer" data-event="click:playChapter" data-chapter-id="2">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-10 h-10 bg-teal-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-play text-teal-600"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-medium text-gray-900" data-bind="chapter.title">Technology and Digital Transformation</h3>
+                            <p class="text-sm text-gray-500" data-bind="chapter.duration">18 min</p>
+                            <div class="mt-2 w-full bg-gray-200 rounded-full h-1">
+                                <div class="bg-teal-600 h-1 rounded-full" style="width: 75%" data-bind="chapter.progress"></div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <i class="fas fa-pause-circle text-orange-500"></i>
+                            <p class="text-xs text-gray-500 mt-1">In Progress</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl border border-gray-200 p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer" data-event="click:playChapter" data-chapter-id="3">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-play text-gray-400"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-medium text-gray-900" data-bind="chapter.title">Customer Experience Evolution</h3>
+                            <p class="text-sm text-gray-500" data-bind="chapter.duration">22 min</p>
+                            <div class="mt-2 w-full bg-gray-200 rounded-full h-1">
+                                <div class="bg-gray-300 h-1 rounded-full" style="width: 0%" data-bind="chapter.progress"></div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <i class="fas fa-lock text-gray-400"></i>
+                            <p class="text-xs text-gray-500 mt-1">Locked</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- @END_MAP )) -->
+        </div>
+        <!-- @END_COMPONENT: ChapterListView -->
+
+        <!-- @COMPONENT: AudioPlayerView [main audio playback interface] -->
+        <div id="audioPlayerView" class="p-6 hidden">
+            <!-- Player Header -->
+            <div class="flex items-center mb-8">
+                <button class="mr-4 w-10 h-10 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors" data-event="click:goBackToChapters">
+                    <i class="fas fa-chevron-down text-gray-600"></i>
+                </button>
+                <div class="flex-1 text-center">
+                    <p class="text-sm text-gray-500" data-bind="assignment.title">Assignment 1</p>
+                    <h2 class="font-semibold text-gray-900" data-bind="chapter.title">Technology and Digital Transformation</h2>
+                </div>
+                <button class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors" data-event="click:showOptions">
+                    <i class="fas fa-ellipsis-h text-gray-600"></i>
+                </button>
+            </div>
+
+            <!-- Audio Visualization -->
+            <div class="bg-gradient-to-br from-teal-500 to-blue-600 rounded-2xl p-8 mb-8 text-center">
+                <div class="mb-6">
+                    <div class="w-24 h-24 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-volume-up text-white text-3xl"></i>
+                    </div>
+                    <!-- @FUNCTIONALITY: Animated waveform visualization -->
+                    <div class="flex justify-center items-end space-x-1 h-16 mb-4">
+                        <div class="w-1 bg-white bg-opacity-60 rounded-full wave-bar"></div>
+                        <div class="w-1 bg-white bg-opacity-80 rounded-full wave-bar"></div>
+                        <div class="w-1 bg-white rounded-full wave-bar"></div>
+                        <div class="w-1 bg-white bg-opacity-80 rounded-full wave-bar"></div>
+                        <div class="w-1 bg-white bg-opacity-60 rounded-full wave-bar"></div>
+                        <div class="w-1 bg-white bg-opacity-40 rounded-full wave-bar"></div>
+                        <div class="w-1 bg-white bg-opacity-60 rounded-full wave-bar"></div>
+                        <div class="w-1 bg-white bg-opacity-80 rounded-full wave-bar"></div>
+                        <div class="w-1 bg-white rounded-full wave-bar"></div>
+                        <div class="w-1 bg-white bg-opacity-60 rounded-full wave-bar"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress -->
+            <div class="mb-6">
+                <div class="w-full bg-gray-200 rounded-full h-2 mb-2">
+                    <div class="bg-teal-600 h-2 rounded-full progress-bar" style="width: 45%" data-bind="playbackProgress"></div>
+                </div>
+                <div class="flex justify-between text-sm text-gray-500">
+                    <span data-bind="currentTime">8:15</span>
+                    <span data-bind="totalTime">18:30</span>
+                </div>
+            </div>
+
+            <!-- Main Controls -->
+            <div class="flex items-center justify-center space-x-6 mb-8">
+                <button class="w-12 h-12 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors" data-event="click:previousChapter">
+                    <i class="fas fa-step-backward text-gray-600 text-lg"></i>
+                </button>
+                <button class="w-12 h-12 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors" data-event="click:rewind">
+                    <i class="fas fa-undo text-gray-600 text-lg"></i>
+                </button>
+                <button class="w-16 h-16 bg-teal-600 hover:bg-teal-700 flex items-center justify-center rounded-full transition-colors" data-event="click:togglePlay" data-state="playing">
+                    <i class="fas fa-pause text-white text-xl"></i>
+                </button>
+                <button class="w-12 h-12 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors" data-event="click:fastForward">
+                    <i class="fas fa-redo text-gray-600 text-lg"></i>
+                </button>
+                <button class="w-12 h-12 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors" data-event="click:nextChapter">
+                    <i class="fas fa-step-forward text-gray-600 text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Secondary Controls -->
+            <div class="flex items-center justify-between px-4">
+                <button class="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors" data-event="click:toggleSpeed">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span class="text-sm font-medium" data-bind="playbackSpeed">1.0x</span>
+                </button>
+                
+                <button class="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors" data-event="click:toggleSleepTimer">
+                    <i class="fas fa-clock"></i>
+                    <span class="text-sm font-medium">Timer</span>
+                </button>
+                
+                <button class="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors" data-event="click:downloadChapter">
+                    <i class="fas fa-download"></i>
+                    <span class="text-sm font-medium">Download</span>
+                </button>
+            </div>
+
+            <!-- Speed Control Popup -->
+            <!-- @STATE: showSpeedControl:boolean = false -->
+            <div id="speedControlPopup" class="fixed inset-0 bg-black bg-opacity-50 flex items-end justify-center z-50 hidden">
+                <div class="bg-white rounded-t-2xl w-full max-w-md p-6 pb-8">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-lg font-semibold text-gray-900">Playback Speed</h3>
+                        <button class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100" data-event="click:closeSpeedControl">
+                            <i class="fas fa-times text-gray-500"></i>
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-3 gap-3">
+                        <button class="bg-gray-100 hover:bg-teal-100 border-2 border-transparent hover:border-teal-600 rounded-lg py-3 text-center transition-colors" data-speed="0.75">
+                            <span class="block text-lg font-semibold text-gray-900">0.75x</span>
+                        </button>
+                        <button class="bg-teal-100 border-2 border-teal-600 rounded-lg py-3 text-center" data-speed="1.0">
+                            <span class="block text-lg font-semibold text-teal-900">1.0x</span>
+                        </button>
+                        <button class="bg-gray-100 hover:bg-teal-100 border-2 border-transparent hover:border-teal-600 rounded-lg py-3 text-center transition-colors" data-speed="1.25">
+                            <span class="block text-lg font-semibold text-gray-900">1.25x</span>
+                        </button>
+                        <button class="bg-gray-100 hover:bg-teal-100 border-2 border-transparent hover:border-teal-600 rounded-lg py-3 text-center transition-colors" data-speed="1.5">
+                            <span class="block text-lg font-semibold text-gray-900">1.5x</span>
+                        </button>
+                        <button class="bg-gray-100 hover:bg-teal-100 border-2 border-transparent hover:border-teal-600 rounded-lg py-3 text-center transition-colors" data-speed="1.75">
+                            <span class="block text-lg font-semibold text-gray-900">1.75x</span>
+                        </button>
+                        <button class="bg-gray-100 hover:bg-teal-100 border-2 border-transparent hover:border-teal-600 rounded-lg py-3 text-center transition-colors" data-speed="2.0">
+                            <span class="block text-lg font-semibold text-gray-900">2.0x</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- @END_COMPONENT: AudioPlayerView -->
+
+        <!-- @COMPONENT: AdminView [course management interface] -->
+        <div id="adminView" class="p-6 hidden">
+            <div class="flex items-center mb-6">
+                <button class="mr-4 w-10 h-10 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors" data-event="click:exitAdmin">
+                    <i class="fas fa-arrow-left text-gray-600"></i>
+                </button>
+                <h2 class="text-xl font-bold text-gray-900">Course Management</h2>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div class="bg-white rounded-xl border border-gray-200 p-4 text-center">
+                    <div class="text-2xl font-bold text-teal-600" data-bind="stats.totalCourses">12</div>
+                    <div class="text-sm text-gray-500">Total Courses</div>
+                </div>
+                <div class="bg-white rounded-xl border border-gray-200 p-4 text-center">
+                    <div class="text-2xl font-bold text-orange-600" data-bind="stats.totalAudioFiles">148</div>
+                    <div class="text-sm text-gray-500">Audio Files</div>
+                </div>
+            </div>
+
+            <!-- Admin Actions -->
+            <div class="space-y-4 mb-6">
+                <button class="w-full bg-teal-600 hover:bg-teal-700 text-white rounded-xl p-4 flex items-center space-x-3 transition-colors" data-event="click:syncContent">
+                    <i class="fas fa-sync-alt text-xl"></i>
+                    <div class="text-left">
+                        <div class="font-semibold">Sync Content</div>
+                        <div class="text-sm opacity-90">Check for updates from Bubble repo</div>
+                    </div>
+                </button>
+
+                <button class="w-full bg-orange-600 hover:bg-orange-700 text-white rounded-xl p-4 flex items-center space-x-3 transition-colors" data-event="click:addCourse">
+                    <i class="fas fa-plus text-xl"></i>
+                    <div class="text-left">
+                        <div class="font-semibold">Add New Course</div>
+                        <div class="text-sm opacity-90">Create a new course structure</div>
+                    </div>
+                </button>
+
+                <button class="w-full bg-purple-600 hover:bg-purple-700 text-white rounded-xl p-4 flex items-center space-x-3 transition-colors" data-event="click:manageUsers">
+                    <i class="fas fa-users text-xl"></i>
+                    <div class="text-left">
+                        <div class="font-semibold">Manage Users</div>
+                        <div class="text-sm opacity-90">User access and permissions</div>
+                    </div>
+                </button>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="bg-white rounded-xl border border-gray-200 p-4">
+                <h3 class="font-semibold text-gray-900 mb-3">Recent Activity</h3>
+                <div class="space-y-3">
+                    <div class="flex items-center space-x-3 text-sm">
+                        <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span class="text-gray-600">Content sync completed</span>
+                        <span class="text-gray-400 ml-auto">2 min ago</span>
+                    </div>
+                    <div class="flex items-center space-x-3 text-sm">
+                        <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                        <span class="text-gray-600">New course "AIC 400" added</span>
+                        <span class="text-gray-400 ml-auto">1 hour ago</span>
+                    </div>
+                    <div class="flex items-center space-x-3 text-sm">
+                        <div class="w-2 h-2 bg-orange-500 rounded-full"></div>
+                        <span class="text-gray-600">5 audio files updated</span>
+                        <span class="text-gray-400 ml-auto">3 hours ago</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- @END_COMPONENT: AdminView -->
+
+        <!-- Admin Access Button (Fixed) -->
+        <button id="adminAccess" class="fixed bottom-4 right-4 w-12 h-12 bg-gray-800 hover:bg-gray-700 text-white rounded-full flex items-center justify-center shadow-lg transition-colors" data-event="click:toggleAdmin" style="z-index: 40;">
+            <i class="fas fa-cog"></i>
+        </button>
+    </div>
+
+    <script>
+        // TODO: Implement React components with proper state management, API integration, and audio controls
+        // This is a visual mockup - actual implementation would use React, audio APIs, and backend integration
+        
+        (function() {
+            // Mock view switching for demonstration
+            const views = {
+                assignment: document.getElementById('assignmentView'),
+                chapter: document.getElementById('chapterView'),
+                player: document.getElementById('audioPlayerView'),
+                admin: document.getElementById('adminView')
+            };
+
+            let currentView = 'assignment';
+
+            function showView(viewName) {
+                Object.values(views).forEach(view => view.classList.add('hidden'));
+                if (views[viewName]) {
+                    views[viewName].classList.remove('hidden');
+                    currentView = viewName;
+                }
+            }
+
+            // Mock navigation handlers
+            document.addEventListener('click', function(e) {
+                const target = e.target.closest('[data-event]');
+                if (!target) return;
+
+                const event = target.getAttribute('data-event');
+                
+                switch(event) {
+                    case 'click:navigateToChapters':
+                        showView('chapter');
+                        break;
+                    case 'click:goBack':
+                        showView('assignment');
+                        break;
+                    case 'click:playChapter':
+                        showView('player');
+                        break;
+                    case 'click:goBackToChapters':
+                        showView('chapter');
+                        break;
+                    case 'click:toggleAdmin':
+                        showView(currentView === 'admin' ? 'assignment' : 'admin');
+                        break;
+                    case 'click:exitAdmin':
+                        showView('assignment');
+                        break;
+                    case 'click:toggleSpeed':
+                        document.getElementById('speedControlPopup').classList.toggle('hidden');
+                        break;
+                    case 'click:closeSpeedControl':
+                        document.getElementById('speedControlPopup').classList.add('hidden');
+                        break;
+                    case 'click:togglePlay':
+                        const playButton = target.querySelector('i');
+                        if (playButton.classList.contains('fa-pause')) {
+                            playButton.classList.remove('fa-pause');
+                            playButton.classList.add('fa-play');
+                        } else {
+                            playButton.classList.remove('fa-play');
+                            playButton.classList.add('fa-pause');
+                        }
+                        break;
+                }
+            });
+
+            // Mock speed selection
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('[data-speed]')) {
+                    const speed = e.target.closest('[data-speed]').getAttribute('data-speed');
+                    document.querySelector('[data-bind="playbackSpeed"]').textContent = speed + 'x';
+                    
+                    // Update active state
+                    document.querySelectorAll('[data-speed]').forEach(btn => {
+                        btn.classList.remove('bg-teal-100', 'border-teal-600');
+                        btn.classList.add('bg-gray-100', 'border-transparent');
+                    });
+                    e.target.closest('[data-speed]').classList.add('bg-teal-100', 'border-teal-600');
+                    e.target.closest('[data-speed]').classList.remove('bg-gray-100', 'border-transparent');
+                    
+                    document.getElementById('speedControlPopup').classList.add('hidden');
+                }
+            });
+        })();
+    </script>
+</body>
+</html>

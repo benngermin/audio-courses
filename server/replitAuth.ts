@@ -39,6 +39,7 @@ export function getSession() {
     cookie: {
       httpOnly: true,
       secure: true,
+      sameSite: 'lax', // SECURITY: Add SameSite protection against CSRF
       maxAge: sessionTtl,
     },
   });
@@ -137,8 +138,12 @@ export async function setupAuth(app: Express) {
   });
 }
 
-// Track ongoing refresh operations to prevent race conditions
-const refreshPromises = new Map<string, Promise<any>>();
+// SECURITY: Improved token refresh with better race condition handling
+interface RefreshState {
+  promise: Promise<void>;
+  timestamp: number;
+}
+const refreshStates = new Map<string, RefreshState>();
 
 export const isAuthenticated: RequestHandler = async (req, res, next) => {
   const user = req.user as any;
@@ -148,51 +153,70 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
   }
 
   const now = Math.floor(Date.now() / 1000);
-  if (now <= user.expires_at) {
+  const buffer = 60; // 60 second buffer before token expiry
+  
+  if (now <= (user.expires_at - buffer)) {
     return next();
   }
 
   const refreshToken = user.refresh_token;
   if (!refreshToken) {
-    res.status(401).json({ message: "Unauthorized" });
-    return;
+    return res.status(401).json({ message: "Unauthorized" });
   }
 
-  // Check if a refresh is already in progress for this user
-  const userId = user.id || user.claims?.sub;
-  if (!userId) {
+  // SECURITY: More robust user ID extraction and validation
+  const userId = user.claims?.sub || user.id;
+  if (!userId || typeof userId !== 'string') {
     return res.status(401).json({ message: "Unauthorized" });
   }
   
-  if (refreshPromises.has(userId)) {
+  const currentTime = Date.now();
+  const existingState = refreshStates.get(userId);
+  
+  // If there's an ongoing refresh that's not too old, wait for it
+  if (existingState && (currentTime - existingState.timestamp) < 30000) {
     try {
-      await refreshPromises.get(userId);
+      await existingState.promise;
       return next();
     } catch (error) {
-      res.status(401).json({ message: "Unauthorized" });
-      return;
+      // Clean up failed refresh
+      refreshStates.delete(userId);
+      return res.status(401).json({ message: "Unauthorized" });
     }
   }
 
-  // Create new refresh promise
-  const refreshPromise = (async () => {
+  // SECURITY: Create new refresh with timeout and proper error handling
+  const refreshPromise = new Promise<void>(async (resolve, reject) => {
+    const timeoutId = setTimeout(() => {
+      reject(new Error('Token refresh timeout'));
+    }, 10000); // 10 second timeout
+
     try {
       const config = await getOidcConfig();
       const tokenResponse = await client.refreshTokenGrant(config, refreshToken);
       updateUserSession(user, tokenResponse);
-    } finally {
-      // Clean up the promise after completion
-      refreshPromises.delete(userId);
+      clearTimeout(timeoutId);
+      resolve();
+    } catch (error) {
+      clearTimeout(timeoutId);
+      reject(error);
     }
-  })();
+  });
 
-  refreshPromises.set(userId, refreshPromise);
+  // Clean up the promise after completion (success or failure)
+  refreshPromise.finally(() => {
+    refreshStates.delete(userId);
+  });
+
+  refreshStates.set(userId, {
+    promise: refreshPromise,
+    timestamp: currentTime
+  });
 
   try {
     await refreshPromise;
     return next();
   } catch (error) {
-    res.status(401).json({ message: "Unauthorized" });
-    return;
+    return res.status(401).json({ message: "Unauthorized" });
   }
 };

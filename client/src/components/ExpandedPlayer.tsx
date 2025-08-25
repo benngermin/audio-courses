@@ -25,29 +25,27 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useAudioContext } from "@/contexts/AudioContext";
-import { useAudio } from "@/hooks/useAudio";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useCurrentTrack, usePlaybackState, useAudioControls, useAudioState } from "@/contexts/OptimizedAudioContext";
+import { useProgressTracker } from "@/hooks/useProgressTracker";
+import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
+import { ReadAlongViewer } from "@/components/ReadAlongViewer";
+import { ReadAlongToggle } from "@/components/ReadAlongToggle";
+import { cn } from "@/lib/utils";
 import type { Chapter } from "@shared/schema";
 
 const playbackSpeeds = [0.5, 0.75, 1, 1.25, 1.5, 2];
 
 export function ExpandedPlayer() {
   const { toast } = useToast();
-  const { 
-    currentChapter, 
-    currentAssignment, 
-    isExpanded, 
-    setIsExpanded,
-    setCurrentTrack,
-    isPlayAllMode,
-    setIsPlayAllMode 
-  } = useAudioContext();
+  const { currentChapter, currentAssignment, setCurrentTrack } = useCurrentTrack();
+  const { isExpanded, setIsExpanded, isPlayAllMode, setIsPlayAllMode, isPlaying } = usePlaybackState();
   
   const [showVolume, setShowVolume] = useState(false);
+  const [isReadAlongEnabled, setIsReadAlongEnabled] = useState(false);
+  const [readAlongLayout, setReadAlongLayout] = useState<'side' | 'overlay'>('side');
 
   // Get all chapters for navigation
   const { data: chapters = [] } = useQuery<Chapter[]>({
@@ -55,25 +53,11 @@ export function ExpandedPlayer() {
     enabled: !!currentAssignment?.id,
   });
 
-  const progressMutation = useMutation({
-    mutationFn: async (data: { chapterId: string; currentTime: number; isCompleted: boolean }) => {
-      return await apiRequest("POST", "/api/progress", data);
-    },
-  });
-
-  const downloadMutation = useMutation({
-    mutationFn: async (chapterId: string) => {
-      return await apiRequest("POST", `/api/download/${chapterId}`);
-    },
-    onSuccess: () => {
-      toast({
-        title: "Download started",
-        description: "Chapter is being downloaded for offline listening",
-      });
-    },
+  const { updateProgress } = useProgressTracker({
+    chapterId: currentChapter?.id || '',
     onError: (error) => {
       toast({
-        title: "Download failed",
+        title: "Progress sync failed",
         description: error.message,
         variant: "destructive",
       });
@@ -81,10 +65,8 @@ export function ExpandedPlayer() {
   });
 
   // Use shared audio controls and state from MiniPlayer via context
-  const { audioControls, audioState, isPlaying: contextIsPlaying } = useAudioContext();
-  
-  // Use audio state from context
-  const isPlaying = contextIsPlaying;
+  const { audioControls } = useAudioControls();
+  const { audioState } = useAudioState();
   
 
   const currentTime = audioState.currentTime;
@@ -131,6 +113,10 @@ export function ExpandedPlayer() {
 
   const handleSeek = (value: number[]) => {
     seek(value[0]);
+  };
+
+  const handleReadAlongSeek = (time: number) => {
+    seek(time);
   };
 
   const handleShare = async () => {
@@ -187,10 +173,31 @@ export function ExpandedPlayer() {
             <div className="h-12 w-12 sm:h-16 sm:w-16 md:h-20 md:w-20"></div>
           </div>
 
-          {/* Main content area with compressed mobile spacing */}
-          <div className="flex-1 flex flex-col px-4 sm:px-7 md:px-10 pt-2 sm:pt-3 pb-4 sm:pb-10 md:pb-12 overflow-y-auto">
-            {/* Audio Visualizer - 16px from header */}
-            <div className="w-full mb-6 sm:mb-4 relative flex justify-center">
+          {/* Main content area with read-along support */}
+          <div className={cn(
+            "flex-1 px-4 sm:px-7 md:px-10 pt-2 sm:pt-3 pb-4 sm:pb-10 md:pb-12 overflow-hidden",
+            isReadAlongEnabled && readAlongLayout === 'side' 
+              ? "flex gap-6" 
+              : "flex flex-col"
+          )}>
+            {/* Audio Player Section */}
+            <div className={cn(
+              "flex flex-col",
+              isReadAlongEnabled && readAlongLayout === 'side' 
+                ? "w-1/2 min-w-0" 
+                : "w-full"
+            )}>
+              {/* Read-Along Toggle */}
+              <div className="mb-4 flex justify-center">
+                <ReadAlongToggle
+                  hasReadAlong={currentChapter?.hasReadAlong || false}
+                  isReadAlongEnabled={isReadAlongEnabled}
+                  onToggle={setIsReadAlongEnabled}
+                />
+              </div>
+
+              {/* Audio Visualizer - 16px from header */}
+              <div className="w-full mb-6 sm:mb-4 relative flex justify-center">
               <div className="w-[260px] h-[260px] sm:w-[320px] sm:h-[320px] md:w-full md:aspect-square bg-[#2c2d3e] rounded-[20px] flex items-center justify-center overflow-hidden">
                 <div className={`visualizer ${isPlaying ? 'playing' : 'paused'} w-full h-full flex items-center justify-center relative`}>
                   <div className="center-orb relative w-[200px] sm:w-[220px] md:w-[240px] h-[200px] sm:h-[220px] md:h-[240px] flex items-center justify-center">
@@ -426,7 +433,24 @@ export function ExpandedPlayer() {
               </DropdownMenu>
               </div>
             </div>
+            </div> {/* End of Audio Player Section */}
 
+            {/* Read-Along Viewer Section */}
+            {isReadAlongEnabled && currentChapter && (
+              <div className={cn(
+                readAlongLayout === 'side' 
+                  ? "w-1/2 min-w-0" 
+                  : "w-full mt-6"
+              )}>
+                <ReadAlongViewer
+                  chapterId={currentChapter.id}
+                  currentTime={currentTime}
+                  isPlaying={isPlaying}
+                  onSeek={handleReadAlongSeek}
+                  className="h-full"
+                />
+              </div>
+            )}
 
           </div>
         </motion.div>

@@ -70,6 +70,9 @@ export const chapters = pgTable("chapters", {
   duration: integer("duration"), // in seconds
   orderIndex: integer("order_index").notNull(),
   bubbleId: varchar("bubble_id").unique(),
+  // Read-along text content
+  textContent: text("text_content"), // Full chapter text
+  hasReadAlong: boolean("has_read_along").default(false), // Whether read-along is available
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -93,6 +96,24 @@ export const downloadedContent = pgTable("downloaded_content", {
   chapterId: varchar("chapter_id").notNull().references(() => chapters.id, { onDelete: "cascade" }),
   localPath: varchar("local_path").notNull(),
   downloadedAt: timestamp("downloaded_at").defaultNow(),
+});
+
+// Text synchronization data for read-along feature
+export const textSynchronization = pgTable("text_synchronization", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  chapterId: varchar("chapter_id").notNull().references(() => chapters.id, { onDelete: "cascade" }),
+  // Text segment data
+  segmentIndex: integer("segment_index").notNull(), // Order of this segment
+  segmentType: varchar("segment_type").notNull(), // 'sentence', 'paragraph', 'word'
+  text: text("text").notNull(), // The text content
+  // Timing data (in seconds)
+  startTime: real("start_time").notNull(),
+  endTime: real("end_time").notNull(),
+  // Positioning data for highlighting
+  wordIndex: integer("word_index"), // Word position within sentence
+  characterStart: integer("character_start"), // Start character position
+  characterEnd: integer("character_end"), // End character position
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
 // Sync log table
@@ -123,6 +144,7 @@ export const chaptersRelations = relations(chapters, ({ one, many }) => ({
   }),
   userProgress: many(userProgress),
   downloadedContent: many(downloadedContent),
+  textSynchronization: many(textSynchronization),
 }));
 
 export const userProgressRelations = relations(userProgress, ({ one }) => ({
@@ -143,6 +165,13 @@ export const downloadedContentRelations = relations(downloadedContent, ({ one })
   }),
   chapter: one(chapters, {
     fields: [downloadedContent.chapterId],
+    references: [chapters.id],
+  }),
+}));
+
+export const textSynchronizationRelations = relations(textSynchronization, ({ one }) => ({
+  chapter: one(chapters, {
+    fields: [textSynchronization.chapterId],
     references: [chapters.id],
   }),
 }));
@@ -181,7 +210,48 @@ export type Chapter = typeof chapters.$inferSelect;
 export type UserProgress = typeof userProgress.$inferSelect;
 export type DownloadedContent = typeof downloadedContent.$inferSelect;
 export type SyncLog = typeof syncLogs.$inferSelect;
+export type TextSynchronization = typeof textSynchronization.$inferSelect;
 export type InsertCourse = z.infer<typeof insertCourseSchema>;
 export type InsertAssignment = z.infer<typeof insertAssignmentSchema>;
 export type InsertChapter = z.infer<typeof insertChapterSchema>;
 export type InsertUserProgress = z.infer<typeof insertUserProgressSchema>;
+
+// Read-along specific types
+export interface ReadAlongSegment {
+  id: string;
+  segmentIndex: number;
+  segmentType: 'sentence' | 'paragraph' | 'word';
+  text: string;
+  startTime: number;
+  endTime: number;
+  wordIndex?: number;
+  characterStart?: number;
+  characterEnd?: number;
+}
+
+export interface ReadAlongData {
+  chapterId: string;
+  textContent: string;
+  segments: ReadAlongSegment[];
+  hasReadAlong: boolean;
+}
+
+// SECURITY: Additional validation schemas for API endpoints
+export const paramIdSchema = z.string().regex(/^[a-zA-Z0-9\-_]{1,50}$/, "Invalid ID format");
+
+export const batchProgressSchema = z.array(insertUserProgressSchema).max(100, "Too many progress updates");
+
+export const readAlongUpdateSchema = z.object({
+  textContent: z.string().max(50000, "Text content too long"),
+  segments: z.array(z.object({
+    id: z.string().optional(),
+    segmentIndex: z.number().min(0).max(10000),
+    segmentType: z.enum(['sentence', 'paragraph', 'word']),
+    text: z.string().max(1000, "Segment text too long"),
+    startTime: z.number().min(0),
+    endTime: z.number().min(0),
+    wordIndex: z.number().optional(),
+    characterStart: z.number().optional(),
+    characterEnd: z.number().optional(),
+  })).max(10000, "Too many segments")
+});

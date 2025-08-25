@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { AppHeader } from "@/components/AppHeader";
-import { useAudioContext } from "@/contexts/AudioContext";
+import { useCurrentTrack, usePlaybackState } from "@/contexts/OptimizedAudioContext";
 import { useAuth } from "@/hooks/useAuth";
 import { useLocation } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
@@ -14,7 +14,8 @@ import type { Course, Assignment, Chapter, UserProgress, DownloadedContent } fro
 export default function Assignments() {
   const { user } = useAuth();
   const [location, navigate] = useLocation();
-  const { setCurrentTrack, currentChapter, setIsPlayAllMode } = useAudioContext();
+  const { setCurrentTrack, currentChapter } = useCurrentTrack();
+  const { setIsPlayAllMode } = usePlaybackState();
   const [currentAssignment, setCurrentAssignment] = useState<Assignment | undefined>(undefined);
 
   const { data: courses = [], isLoading: coursesLoading } = useQuery<Course[]>({
@@ -110,7 +111,8 @@ function AssignmentHeader({
 }) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { setIsPlayAllMode, isPlayAllMode, currentChapter } = useAudioContext();
+  const { currentChapter } = useCurrentTrack();
+  const { setIsPlayAllMode, isPlayAllMode } = usePlaybackState();
   
   const { data: chapters = [] } = useQuery<Chapter[]>({
     queryKey: ["/api/assignments", assignment.id, "chapters"],

@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Learning Platform - The Institutes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        'primary': '#22D3EE',
+                        'primary-dark': '#0891B2',
+                        'surface': '#FFFFFF',
+                        'background': '#FAFAFA',
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'bounce-slow': 'bounce 3s infinite',
+                        'wave': 'wave 1.5s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        wave: {
+                            '0%, 100%': { transform: 'scaleY(1)' },
+                            '50%': { transform: 'scaleY(1.5)' },
+                        }
+                    }
+                }
+            }
+        };
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-background font-sans">
+    <!-- @COMPONENT: AppHeader [course, assignment dropdown] -->
+    <header class="bg-surface shadow-sm border-b border-gray-100 sticky top-0 z-50">
+        <div class="max-w-screen-xl mx-auto px-4 py-3">
+            <div class="flex items-center justify-between">
+                <!-- Course Name - Left -->
+                <div class="flex-1">
+                    <h1 class="text-lg font-semibold text-slate-800 truncate" data-bind="course.name">
+                        AIC 300: Claims in an Evolving World
+                    </h1>
+                </div>
+                
+                <!-- Logo - Center -->
+                <div class="flex-shrink-0 px-4">
+                    <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                        <i class="fas fa-headphones text-white text-sm"></i>
+                    </div>
+                </div>
+                
+                <!-- Assignment Dropdown - Right -->
+                <div class="flex-1 flex justify-end">
+                    <div class="relative">
+                        <button id="assignmentDropdown" class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-700 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors" data-implementation="Should show assignment selector">
+                            <span data-bind="currentAssignment.name">1. The Evolving Role of the Claims Professional</span>
+                            <i class="fas fa-chevron-down text-xs"></i>
+                        </button>
+                        <!-- Dropdown menu would be rendered here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- @END_COMPONENT: AppHeader -->
+
+    <!-- @COMPONENT: MainContent [activeView state management] -->
+    <main class="max-w-screen-xl mx-auto px-4 pb-20">
+        
+        <!-- @STATE: currentView:'assignments'|'chapters'|'player' = 'assignments' -->
+        <!-- @STATE: currentAssignment:object = null -->
+        <!-- @STATE: currentChapter:object = null -->
+        <!-- @STATE: isPlaying:boolean = false -->
+        
+        <!-- Assignment List View -->
+        <!-- @COMPONENT: AssignmentList [assignments array] -->
+        <div id="assignmentView" class="py-6">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-slate-800 mb-2">Course Assignments</h2>
+                <p class="text-slate-600">Select an assignment to view available chapters</p>
+            </div>
+            
+            <!-- @MAP: assignments.map(assignment => ( -->
+            <div class="space-y-4">
+                <div class="bg-surface rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow cursor-pointer" data-event="click:selectAssignment" data-mock="true">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-slate-800 mb-2" data-bind="assignment.title">
+                                1. The Evolving Role of the Claims Professional
+                            </h3>
+                            <p class="text-slate-600 text-sm mb-3" data-bind="assignment.description">
+                                Understanding the modern claims landscape and professional responsibilities
+                            </p>
+                            <div class="flex items-center gap-4 text-sm text-slate-500">
+                                <span><i class="fas fa-headphones mr-1"></i> <span data-bind="assignment.chapterCount">8</span> Chapters</span>
+                                <span><i class="fas fa-clock mr-1"></i> <span data-bind="assignment.duration">2h 45m</span></span>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-right text-slate-400 mt-2"></i>
+                    </div>
+                </div>
+
+                <div class="bg-surface rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow cursor-pointer" data-mock="true">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-slate-800 mb-2">
+                                2. Claim Investigation Fundamentals
+                            </h3>
+                            <p class="text-slate-600 text-sm mb-3">
+                                Core principles and methodologies for effective claim investigations
+                            </p>
+                            <div class="flex items-center gap-4 text-sm text-slate-500">
+                                <span><i class="fas fa-headphones mr-1"></i> 12 Chapters</span>
+                                <span><i class="fas fa-clock mr-1"></i> 3h 20m</span>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-right text-slate-400 mt-2"></i>
+                    </div>
+                </div>
+
+                <div class="bg-surface rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow cursor-pointer" data-mock="true">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-slate-800 mb-2">
+                                3. Legal and Regulatory Framework
+                            </h3>
+                            <p class="text-slate-600 text-sm mb-3">
+                                Current legal requirements and regulatory compliance in claims processing
+                            </p>
+                            <div class="flex items-center gap-4 text-sm text-slate-500">
+                                <span><i class="fas fa-headphones mr-1"></i> 6 Chapters</span>
+                                <span><i class="fas fa-clock mr-1"></i> 1h 55m</span>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-right text-slate-400 mt-2"></i>
+                    </div>
+                </div>
+            </div>
+            <!-- @END_MAP )) -->
+        </div>
+        <!-- @END_COMPONENT: AssignmentList -->
+
+        <!-- Chapter List View -->
+        <!-- @COMPONENT: ChapterList [chapters array, assignment] -->
+        <div id="chapterView" class="py-6 hidden">
+            <div class="mb-6">
+                <button class="flex items-center gap-2 text-primary font-medium mb-4 hover:text-primary-dark transition-colors" data-event="click:backToAssignments">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Back to Assignments</span>
+                </button>
+                <h2 class="text-2xl font-bold text-slate-800 mb-2" data-bind="currentAssignment.title">
+                    1. The Evolving Role of the Claims Professional
+                </h2>
+                <p class="text-slate-600">Choose a chapter to begin listening</p>
+            </div>
+            
+            <!-- @MAP: chapters.map(chapter => ( -->
+            <div class="space-y-3">
+                <div class="bg-surface rounded-lg p-4 shadow-sm border border-gray-100 hover:shadow-md transition-shadow cursor-pointer" data-event="click:playChapter" data-mock="true">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-play text-primary"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="font-semibold text-slate-800" data-bind="chapter.title">
+                                    Introduction to Modern Claims
+                                </h3>
+                                <p class="text-sm text-slate-500" data-bind="chapter.duration">
+                                    24 minutes
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button class="p-2 text-slate-400 hover:text-slate-600" data-implementation="Download for offline">
+                                <i class="fas fa-download"></i>
+                            </button>
+                            <i class="fas fa-chevron-right text-slate-400"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-surface rounded-lg p-4 shadow-sm border border-gray-100 hover:shadow-md transition-shadow cursor-pointer" data-mock="true">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-play text-primary"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="font-semibold text-slate-800">
+                                    Technology's Impact on Claims Processing
+                                </h3>
+                                <p class="text-sm text-slate-500">
+                                    18 minutes
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button class="p-2 text-slate-400 hover:text-slate-600">
+                                <i class="fas fa-download"></i>
+                            </button>
+                            <i class="fas fa-chevron-right text-slate-400"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-surface rounded-lg p-4 shadow-sm border border-gray-100 hover:shadow-md transition-shadow cursor-pointer" data-mock="true">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-pause text-amber-600"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="font-semibold text-slate-800">
+                                    Customer Service Excellence
+                                </h3>
+                                <p class="text-sm text-slate-500">
+                                    12 minutes • 8:34 remaining
+                                </p>
+                                <div class="w-full bg-gray-200 rounded-full h-1.5 mt-2">
+                                    <div class="bg-amber-500 h-1.5 rounded-full w-1/3"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs text-amber-600 font-medium">In Progress</span>
+                            <i class="fas fa-chevron-right text-slate-400"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- @END_MAP )) -->
+        </div>
+        <!-- @END_COMPONENT: ChapterList -->
+
+        <!-- Audio Player View -->
+        <!-- @COMPONENT: AudioPlayer [currentChapter, isPlaying, currentTime, duration] -->
+        <div id="playerView" class="py-6 hidden">
+            <div class="mb-6">
+                <button class="flex items-center gap-2 text-primary font-medium mb-4 hover:text-primary-dark transition-colors" data-event="click:backToChapters">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Back to Chapters</span>
+                </button>
+            </div>
+
+            <!-- Chapter Info -->
+            <div class="text-center mb-8">
+                <h1 class="text-2xl font-bold text-slate-800 mb-2" data-bind="currentChapter.title">
+                    Introduction to Modern Claims
+                </h1>
+                <p class="text-slate-600" data-bind="currentAssignment.title">
+                    1. The Evolving Role of the Claims Professional
+                </p>
+            </div>
+
+            <!-- Audio Visualization -->
+            <div class="bg-surface rounded-2xl p-8 shadow-lg border border-gray-100 mb-8">
+                <!-- @FUNCTIONALITY: This should implement real-time audio waveform visualization -->
+                <div class="flex items-center justify-center h-32 mb-6">
+                    <div class="flex items-end gap-1 h-full">
+                        <div class="bg-primary w-1 h-8 rounded-full animate-wave" style="animation-delay: 0s;"></div>
+                        <div class="bg-primary w-1 h-12 rounded-full animate-wave" style="animation-delay: 0.1s;"></div>
+                        <div class="bg-primary w-1 h-6 rounded-full animate-wave" style="animation-delay: 0.2s;"></div>
+                        <div class="bg-primary w-1 h-16 rounded-full animate-wave" style="animation-delay: 0.3s;"></div>
+                        <div class="bg-primary w-1 h-10 rounded-full animate-wave" style="animation-delay: 0.4s;"></div>
+                        <div class="bg-primary w-1 h-20 rounded-full animate-wave" style="animation-delay: 0.5s;"></div>
+                        <div class="bg-primary w-1 h-8 rounded-full animate-wave" style="animation-delay: 0.6s;"></div>
+                        <div class="bg-primary w-1 h-14 rounded-full animate-wave" style="animation-delay: 0.7s;"></div>
+                        <div class="bg-primary w-1 h-6 rounded-full animate-wave" style="animation-delay: 0.8s;"></div>
+                        <div class="bg-primary w-1 h-12 rounded-full animate-wave" style="animation-delay: 0.9s;"></div>
+                        <div class="bg-primary w-1 h-18 rounded-full animate-wave" style="animation-delay: 1s;"></div>
+                        <div class="bg-primary w-1 h-8 rounded-full animate-wave" style="animation-delay: 1.1s;"></div>
+                        <div class="bg-primary w-1 h-16 rounded-full animate-wave" style="animation-delay: 1.2s;"></div>
+                        <div class="bg-primary w-1 h-10 rounded-full animate-wave" style="animation-delay: 1.3s;"></div>
+                        <div class="bg-primary w-1 h-12 rounded-full animate-wave" style="animation-delay: 1.4s;"></div>
+                    </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="mb-6">
+                    <div class="flex justify-between text-sm text-slate-500 mb-2">
+                        <span data-bind="currentTime">8:34</span>
+                        <span data-bind="duration">24:00</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2 cursor-pointer" data-event="click:seekAudio">
+                        <div class="bg-primary h-2 rounded-full transition-all duration-300" style="width: 35.6%" data-bind="progressPercentage"></div>
+                    </div>
+                </div>
+
+                <!-- Main Controls -->
+                <div class="flex items-center justify-center gap-8 mb-6">
+                    <button class="p-3 text-slate-600 hover:text-slate-800 transition-colors" data-event="click:skipBackward" data-implementation="Skip back 15 seconds">
+                        <i class="fas fa-backward text-xl"></i>
+                    </button>
+                    <button class="w-16 h-16 bg-primary hover:bg-primary-dark text-white rounded-full flex items-center justify-center shadow-lg transition-all transform hover:scale-105" data-event="click:togglePlay">
+                        <i class="fas fa-pause text-2xl" data-bind="playIcon"></i>
+                    </button>
+                    <button class="p-3 text-slate-600 hover:text-slate-800 transition-colors" data-event="click:skipForward" data-implementation="Skip forward 15 seconds">
+                        <i class="fas fa-forward text-xl"></i>
+                    </button>
+                </div>
+
+                <!-- Secondary Controls -->
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <!-- Playback Speed -->
+                        <div class="relative">
+                            <button class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-700 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors" data-event="click:toggleSpeedMenu">
+                                <span data-bind="playbackSpeed">1.0x</span>
+                                <i class="fas fa-chevron-down text-xs"></i>
+                            </button>
+                        </div>
+                        
+                        <!-- Volume -->
+                        <button class="p-2 text-slate-600 hover:text-slate-800 transition-colors" data-event="click:toggleMute">
+                            <i class="fas fa-volume-up"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="flex items-center gap-4">
+                        <!-- Download -->
+                        <button class="p-2 text-slate-600 hover:text-slate-800 transition-colors" data-implementation="Download for offline listening">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        
+                        <!-- Share -->
+                        <button class="p-2 text-slate-600 hover:text-slate-800 transition-colors" data-implementation="Share current position">
+                            <i class="fas fa-share"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chapter Navigation -->
+            <div class="flex items-center justify-between">
+                <button class="flex items-center gap-2 px-4 py-2 text-slate-600 hover:text-slate-800 transition-colors" data-event="click:previousChapter" data-implementation="Navigate to previous chapter">
+                    <i class="fas fa-chevron-left"></i>
+                    <span class="text-sm">Previous</span>
+                </button>
+                <button class="flex items-center gap-2 px-4 py-2 text-slate-600 hover:text-slate-800 transition-colors" data-event="click:nextChapter" data-implementation="Navigate to next chapter">
+                    <span class="text-sm">Next</span>
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+        <!-- @END_COMPONENT: AudioPlayer -->
+
+        <!-- Admin Panel View -->
+        <!-- @COMPONENT: AdminPanel [courses, syncStatus] -->
+        <div id="adminView" class="py-6 hidden">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-slate-800 mb-2">Admin Panel</h2>
+                <p class="text-slate-600">Manage courses and sync content from Bubble repository</p>
+            </div>
+
+            <!-- Sync Status -->
+            <div class="bg-surface rounded-xl p-6 shadow-sm border border-gray-100 mb-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-slate-800">Content Sync</h3>
+                    <span class="text-sm text-green-600 bg-green-50 px-2 py-1 rounded" data-bind="lastSyncTime">
+                        Last synced: 2 hours ago
+                    </span>
+                </div>
+                <div class="flex gap-4">
+                    <button class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors" data-event="click:syncNow" data-implementation="Trigger immediate sync with Bubble API">
+                        <i class="fas fa-sync mr-2"></i>Sync Now
+                    </button>
+                    <button class="px-4 py-2 border border-gray-300 text-slate-700 rounded-lg hover:bg-gray-50 transition-colors" data-event="click:viewSyncLog">
+                        <i class="fas fa-history mr-2"></i>View Log
+                    </button>
+                </div>
+            </div>
+
+            <!-- Course Management -->
+            <div class="bg-surface rounded-xl p-6 shadow-sm border border-gray-100">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-slate-800">Course Management</h3>
+                    <button class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors" data-event="click:addCourse">
+                        <i class="fas fa-plus mr-2"></i>Add Course
+                    </button>
+                </div>
+                <div class="space-y-3" data-mock="true">
+                    <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                        <div>
+                            <h4 class="font-medium text-slate-800">AIC 300: Claims in an Evolving World</h4>
+                            <p class="text-sm text-slate-500">3 assignments • 26 chapters</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="p-2 text-slate-600 hover:text-slate-800" data-implementation="Edit course details">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="p-2 text-red-600 hover:text-red-800" data-implementation="Delete course">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- @END_COMPONENT: AdminPanel -->
+
+    </main>
+    <!-- @END_COMPONENT: MainContent -->
+
+    <!-- Floating Mini Player (shown when audio is playing and user navigates away) -->
+    <!-- @COMPONENT: MiniPlayer [currentChapter, isPlaying] -->
+    <div id="miniPlayer" class="fixed bottom-4 left-4 right-4 bg-surface rounded-xl shadow-lg border border-gray-200 p-4 hidden" data-implementation="Show when audio playing and not on player view">
+        <div class="flex items-center gap-4">
+            <button class="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center" data-event="click:togglePlay">
+                <i class="fas fa-pause" data-bind="playIcon"></i>
+            </button>
+            <div class="flex-1 min-w-0">
+                <h4 class="font-medium text-slate-800 truncate" data-bind="currentChapter.title">Introduction to Modern Claims</h4>
+                <p class="text-sm text-slate-500" data-bind="currentAssignment.title">1. The Evolving Role of the Claims Professional</p>
+            </div>
+            <button class="p-2 text-slate-600" data-event="click:openFullPlayer">
+                <i class="fas fa-expand"></i>
+            </button>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: MiniPlayer -->
+
+    <!-- Bottom Navigation (Mobile) -->
+    <!-- @COMPONENT: BottomNav [currentView] -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-surface border-t border-gray-200 px-4 py-2 lg:hidden">
+        <div class="flex items-center justify-around">
+            <button class="flex flex-col items-center gap-1 p-2 text-primary" data-event="click:showAssignments" data-implementation="Navigate to assignments view">
+                <i class="fas fa-list text-lg"></i>
+                <span class="text-xs">Assignments</span>
+            </button>
+            <button class="flex flex-col items-center gap-1 p-2 text-slate-400" data-event="click:showDownloads" data-implementation="Show downloaded content">
+                <i class="fas fa-download text-lg"></i>
+                <span class="text-xs">Downloads</span>
+            </button>
+            <button class="flex flex-col items-center gap-1 p-2 text-slate-400" data-event="click:showProfile" data-implementation="User profile and settings">
+                <i class="fas fa-user text-lg"></i>
+                <span class="text-xs">Profile</span>
+            </button>
+            <button class="flex flex-col items-center gap-1 p-2 text-slate-400" data-event="click:showAdmin" data-implementation="Admin panel access">
+                <i class="fas fa-cog text-lg"></i>
+                <span class="text-xs">Admin</span>
+            </button>
+        </div>
+    </nav>
+    <!-- @END_COMPONENT: BottomNav -->
+
+    <script>
+        // TODO: Implement view state management, audio controls, API integration, and offline functionality
+        (function() {
+            // Basic view switching for demo
+            let currentView = 'assignments';
+            
+            // Demo navigation functionality
+            function showView(viewName) {
+                document.querySelectorAll('[id$="View"]').forEach(view => {
+                    view.classList.add('hidden');
+                });
+                document.getElementById(viewName + 'View').classList.remove('hidden');
+                currentView = viewName;
+            }
+            
+            // Demo event listeners
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('[data-event]')) {
+                    const eventAttr = e.target.closest('[data-event]').getAttribute('data-event');
+                    const [event, handler] = eventAttr.split(':');
+                    
+                    if (event === 'click') {
+                        switch(handler) {
+                            case 'selectAssignment':
+                                showView('chapter');
+                                break;
+                            case 'backToAssignments':
+                                showView('assignment');
+                                break;
+                            case 'playChapter':
+                                showView('player');
+                                break;
+                            case 'backToChapters':
+                                showView('chapter');
+                                break;
+                            case 'showAssignments':
+                                showView('assignment');
+                                break;
+                            case 'showAdmin':
+                                showView('admin');
+                                break;
+                        }
+                    }
+                }
+            });
+
+            // Demo audio controls
+            let isPlaying = false;
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('[data-event*="togglePlay"]')) {
+                    isPlaying = !isPlaying;
+                    const icon = e.target.closest('button').querySelector('i');
+                    if (isPlaying) {
+                        icon.className = 'fas fa-pause text-2xl';
+                    } else {
+                        icon.className = 'fas fa-play text-2xl';
+                    }
+                }
+            });
+        })();
+    </script>
+</body>
+</html>

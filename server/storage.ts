@@ -6,6 +6,7 @@ import {
   userProgress,
   downloadedContent,
   syncLogs,
+  textSynchronization,
   type User,
   type UpsertUser,
   type Course,
@@ -14,6 +15,8 @@ import {
   type UserProgress,
   type DownloadedContent,
   type SyncLog,
+  type TextSynchronization,
+  type ReadAlongSegment,
   type InsertCourse,
   type InsertAssignment,
   type InsertChapter,
@@ -64,6 +67,10 @@ export interface IStorage {
   // Sync log operations
   createSyncLog(status: string, message?: string): Promise<SyncLog>;
   getLatestSyncLog(): Promise<SyncLog | undefined>;
+  
+  // Text synchronization operations for read-along
+  getTextSynchronization(chapterId: string): Promise<ReadAlongSegment[]>;
+  saveTextSynchronization(chapterId: string, segments: ReadAlongSegment[]): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -277,6 +284,51 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(syncLogs.syncedAt))
       .limit(1);
     return log;
+  }
+
+  // Text synchronization operations for read-along
+  async getTextSynchronization(chapterId: string): Promise<ReadAlongSegment[]> {
+    const segments = await db
+      .select()
+      .from(textSynchronization)
+      .where(eq(textSynchronization.chapterId, chapterId))
+      .orderBy(asc(textSynchronization.segmentIndex));
+
+    return segments.map(segment => ({
+      id: segment.id,
+      segmentIndex: segment.segmentIndex,
+      segmentType: segment.segmentType as 'sentence' | 'paragraph' | 'word',
+      text: segment.text,
+      startTime: segment.startTime,
+      endTime: segment.endTime,
+      wordIndex: segment.wordIndex || undefined,
+      characterStart: segment.characterStart || undefined,
+      characterEnd: segment.characterEnd || undefined,
+    }));
+  }
+
+  async saveTextSynchronization(chapterId: string, segments: ReadAlongSegment[]): Promise<void> {
+    // First, delete existing segments for this chapter
+    await db
+      .delete(textSynchronization)
+      .where(eq(textSynchronization.chapterId, chapterId));
+
+    // Insert new segments
+    if (segments.length > 0) {
+      await db
+        .insert(textSynchronization)
+        .values(segments.map(segment => ({
+          chapterId,
+          segmentIndex: segment.segmentIndex,
+          segmentType: segment.segmentType,
+          text: segment.text,
+          startTime: segment.startTime,
+          endTime: segment.endTime,
+          wordIndex: segment.wordIndex || null,
+          characterStart: segment.characterStart || null,
+          characterEnd: segment.characterEnd || null,
+        })));
+    }
   }
 }
 

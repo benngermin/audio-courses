@@ -11,28 +11,52 @@ import * as fs from 'fs';
 import * as os from 'os';
 import multer from 'multer';
 
+// SECURITY: Safe error logging utility
+function logError(context: string, error: any) {
+  // Only log safe error information, avoid sensitive data
+  const safeError = {
+    message: error.message || 'Unknown error',
+    stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+    context
+  };
+  console.error(`[${context}] Error:`, safeError);
+}
+
 const execAsync = promisify(exec);
 import * as path from "path";
 import { 
   insertCourseSchema, 
   insertAssignmentSchema, 
   insertChapterSchema,
-  insertUserProgressSchema 
+  insertUserProgressSchema,
+  paramIdSchema,
+  batchProgressSchema,
+  readAlongUpdateSchema
 } from "@shared/schema";
 
-// Configure multer for file uploads
+// SECURITY: Safe file upload configuration with additional validation
 const upload = multer({
   dest: '/tmp/',
   limits: {
-    fileSize: 100 * 1024 * 1024, // 100MB limit
+    fileSize: 50 * 1024 * 1024, // SECURITY: Reduced to 50MB limit
+    files: 1, // Only one file at a time
   },
   fileFilter: (req, file, cb) => {
-    // Accept audio files only
+    // SECURITY: Strict MIME type validation
     const allowedMimes = ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/mp4', 'audio/ogg', 'audio/webm'];
-    if (allowedMimes.includes(file.mimetype)) {
+    
+    // SECURITY: Validate file extension as well as MIME type
+    const allowedExtensions = ['.mp3', '.wav', '.mp4', '.ogg', '.webm', '.m4a'];
+    const fileExtension = path.extname(file.originalname).toLowerCase();
+    
+    // SECURITY: Sanitize filename to prevent path traversal
+    const sanitizedName = file.originalname.replace(/[^a-zA-Z0-9._-]/g, '');
+    file.originalname = sanitizedName;
+    
+    if (allowedMimes.includes(file.mimetype) && allowedExtensions.includes(fileExtension)) {
       cb(null, true);
     } else {
-      cb(new Error('Invalid file type. Only audio files are allowed.'));
+      cb(new Error('Invalid file type. Only audio files with valid extensions are allowed.'));
     }
   },
 });
@@ -48,7 +72,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const user = await storage.getUser(userId);
       res.json(user);
     } catch (error) {
-      console.error("Error fetching user:", error);
+      logError('fetch-user', error);
       res.status(500).json({ message: "Failed to fetch user" });
     }
   });
@@ -69,20 +93,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const courses = await storage.getCourses();
       res.json(courses);
     } catch (error) {
-      console.error("Error fetching courses:", error);
+      logError('fetch-courses', error);
       res.status(500).json({ message: "Failed to fetch courses" });
     }
   });
 
   app.get('/api/courses/:id', isAuthenticated, async (req, res) => {
     try {
-      const course = await storage.getCourse(req.params.id);
+      // SECURITY: Validate parameter format
+      const courseId = paramIdSchema.parse(req.params.id);
+      const course = await storage.getCourse(courseId);
       if (!course) {
         return res.status(404).json({ message: "Course not found" });
       }
       res.json(course);
     } catch (error) {
-      console.error("Error fetching course:", error);
+      logError('fetch-course', error);
       res.status(500).json({ message: "Failed to fetch course" });
     }
   });
@@ -98,7 +124,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const course = await storage.createCourse(courseData);
       res.json(course);
     } catch (error) {
-      console.error("Error creating course:", error);
+      logError('create-course', error);
       res.status(500).json({ message: "Failed to create course" });
     }
   });
@@ -106,10 +132,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Assignment routes
   app.get('/api/courses/:courseId/assignments', isAuthenticated, async (req, res) => {
     try {
-      const assignments = await storage.getAssignmentsByCourse(req.params.courseId);
+      // SECURITY: Validate parameter format
+      const courseId = paramIdSchema.parse(req.params.courseId);
+      const assignments = await storage.getAssignmentsByCourse(courseId);
       res.json(assignments);
     } catch (error) {
-      console.error("Error fetching assignments:", error);
+      logError('fetch-assignments', error);
       res.status(500).json({ message: "Failed to fetch assignments" });
     }
   });
@@ -130,7 +158,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Chapter routes
   app.get('/api/assignments/:assignmentId/chapters', isAuthenticated, async (req, res) => {
     try {
-      const chapters = await storage.getChaptersByAssignment(req.params.assignmentId);
+      // SECURITY: Validate parameter format
+      const assignmentId = paramIdSchema.parse(req.params.assignmentId);
+      const chapters = await storage.getChaptersByAssignment(assignmentId);
       console.log("API - Fetched chapters:", chapters.map(ch => ({ id: ch.id, title: ch.title, audioUrl: ch.audioUrl })));
       res.json(chapters);
     } catch (error) {
@@ -156,7 +186,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/progress/:chapterId', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
-      const progress = await storage.getUserProgress(userId, req.params.chapterId);
+      // SECURITY: Validate parameter format
+      const chapterId = paramIdSchema.parse(req.params.chapterId);
+      const progress = await storage.getUserProgress(userId, chapterId);
       res.json(progress || { currentTime: 0, isCompleted: false });
     } catch (error) {
       console.error("Error fetching progress:", error);
@@ -176,6 +208,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error updating progress:", error);
       res.status(500).json({ message: "Failed to update progress" });
+    }
+  });
+
+  // Batch progress update endpoint for improved performance
+  app.post('/api/progress/batch', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      // SECURITY: Validate batch update data
+      const updates = batchProgressSchema.parse(req.body);
+      
+      const results = await Promise.allSettled(
+        updates.map(async (update: any) => {
+          const progressData = insertUserProgressSchema.parse({
+            ...update,
+            userId,
+          });
+          return storage.updateUserProgress(progressData);
+        })
+      );
+
+      const successful = results.filter(r => r.status === 'fulfilled').length;
+      const failed = results.filter(r => r.status === 'rejected').length;
+
+      res.json({ 
+        message: `Batch update completed: ${successful} successful, ${failed} failed`,
+        successful,
+        failed,
+        results: results.map(r => r.status === 'fulfilled' ? r.value : null).filter(Boolean)
+      });
+    } catch (error) {
+      logError('batch-progress-update', error);
+      res.status(500).json({ message: "Failed to update progress batch" });
     }
   });
 
@@ -281,7 +345,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         throw syncError;
       }
     } catch (error) {
-      console.error("Error syncing content:", error);
+      logError('sync-content', error);
       res.status(500).json({ message: "Failed to sync content" });
     }
   });
@@ -313,7 +377,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const newCourse = await storage.createCourse(courseData);
       res.json(newCourse);
     } catch (error) {
-      console.error("Error creating course:", error);
+      logError('create-course', error);
       res.status(500).json({ message: "Failed to create course" });
     }
   });
@@ -461,8 +525,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "No audio file provided" });
       }
 
-      // Upload the file to object storage with a temporary name
-      const fileName = `temp-${Date.now()}-${req.file.originalname}`;
+      // SECURITY: Additional file validation beyond multer
+      if (!req.file.mimetype.startsWith('audio/')) {
+        await fs.promises.unlink(req.file.path).catch(() => {});
+        return res.status(400).json({ message: "Invalid file type" });
+      }
+
+      // SECURITY: Validate file size server-side as well
+      const stats = await fs.promises.stat(req.file.path);
+      if (stats.size > 50 * 1024 * 1024) {
+        await fs.promises.unlink(req.file.path).catch(() => {});
+        return res.status(400).json({ message: "File too large" });
+      }
+
+      // Upload the file to object storage with a secure temporary name
+      const fileName = `temp-${Date.now()}-${Math.random().toString(36).substring(2)}.mp3`;
       const audioUrl = await objectStorageService.uploadAudioFile(req.file, fileName);
 
       res.json({ 
@@ -470,7 +547,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         audioUrl
       });
     } catch (error) {
-      console.error("Error uploading temporary audio file:", error);
+      logError('upload-temp-audio', error);
       // Clean up the uploaded file on error
       if (req.file && fs.existsSync(req.file.path)) {
         await fs.promises.unlink(req.file.path);
@@ -492,12 +569,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const { chapterId } = req.body;
-      if (!chapterId) {
+      
+      // SECURITY: Validate chapter ID format
+      if (!chapterId || typeof chapterId !== 'string' || !/^[a-zA-Z0-9\-_]{1,50}$/.test(chapterId)) {
         // Clean up the uploaded file
         if (fs.existsSync(req.file.path)) {
           await fs.promises.unlink(req.file.path);
         }
-        return res.status(400).json({ message: "Chapter ID is required" });
+        return res.status(400).json({ message: "Invalid chapter ID format" });
+      }
+      
+      // SECURITY: Additional file validation
+      if (!req.file.mimetype.startsWith('audio/')) {
+        await fs.promises.unlink(req.file.path).catch(() => {});
+        return res.status(400).json({ message: "Invalid file type" });
+      }
+
+      // SECURITY: Validate file size server-side
+      const stats = await fs.promises.stat(req.file.path);
+      if (stats.size > 50 * 1024 * 1024) {
+        await fs.promises.unlink(req.file.path).catch(() => {});
+        return res.status(400).json({ message: "File too large" });
       }
 
       // Get the chapter to update
@@ -510,8 +602,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Chapter not found" });
       }
 
-      // Upload the file to object storage
-      const fileName = `${chapterId}-${Date.now()}.mp3`;
+      // Upload the file to object storage with secure filename
+      const fileName = `${chapterId}-${Date.now()}-${Math.random().toString(36).substring(2)}.mp3`;
       const audioUrl = await objectStorageService.uploadAudioFile(req.file, fileName);
 
       // Update the chapter with the new audio URL
@@ -525,7 +617,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         chapter: updatedChapter
       });
     } catch (error) {
-      console.error("Error uploading audio file:", error);
+      logError('upload-audio', error);
       // Clean up the uploaded file on error
       if (req.file && fs.existsSync(req.file.path)) {
         await fs.promises.unlink(req.file.path);
@@ -560,6 +652,69 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching all assignments:", error);
       res.status(500).json({ message: "Failed to fetch assignments" });
+    }
+  });
+
+  // Read-along routes
+  app.get('/api/read-along/:chapterId', isAuthenticated, async (req, res) => {
+    try {
+      const chapterId = req.params.chapterId;
+      
+      // Get chapter with text content
+      const chapter = await storage.getChapter(chapterId);
+      if (!chapter) {
+        return res.status(404).json({ message: "Chapter not found" });
+      }
+
+      // Get text synchronization data
+      const segments = await storage.getTextSynchronization(chapterId);
+      
+      const readAlongData = {
+        chapterId: chapter.id,
+        textContent: chapter.textContent || '',
+        hasReadAlong: chapter.hasReadAlong || false,
+        segments: segments || []
+      };
+
+      res.json(readAlongData);
+    } catch (error) {
+      console.error("Error fetching read-along data:", error);
+      res.status(500).json({ message: "Failed to fetch read-along data" });
+    }
+  });
+
+  // Update chapter text content (admin only)
+  app.post('/api/admin/read-along/:chapterId', isAuthenticated, async (req: any, res) => {
+    try {
+      const user = await storage.getUser(req.user.claims.sub);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      // SECURITY: Validate parameters and request body
+      const chapterId = paramIdSchema.parse(req.params.chapterId);
+      const { textContent, segments } = readAlongUpdateSchema.parse(req.body);
+      
+      // Update chapter with text content
+      await storage.updateChapter(chapterId, {
+        textContent,
+        hasReadAlong: true
+      });
+
+      // Save text synchronization segments
+      if (segments && segments.length > 0) {
+        // Convert validated segments to ReadAlongSegment format
+        const readAlongSegments = segments.map((segment, index) => ({
+          ...segment,
+          id: segment.id || `${chapterId}-segment-${index}`
+        }));
+        await storage.saveTextSynchronization(chapterId, readAlongSegments);
+      }
+
+      res.json({ message: "Read-along data updated successfully" });
+    } catch (error) {
+      console.error("Error updating read-along data:", error);
+      res.status(500).json({ message: "Failed to update read-along data" });
     }
   });
 
@@ -648,7 +803,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // This must be before the catch-all route so it's handled properly
   app.get('/api/audio/:chapterId.mp3', async (req, res) => {
     try {
-      const chapterId = req.params.chapterId.replace('.mp3', '');
+      const rawChapterId = req.params.chapterId.replace('.mp3', '');
+      
+      // SECURITY: Sanitize chapter ID to prevent path traversal and command injection
+      const chapterId = rawChapterId.replace(/[^a-zA-Z0-9\-_]/g, '');
+      if (!chapterId || chapterId !== rawChapterId) {
+        return res.status(400).json({ message: "Invalid chapter ID" });
+      }
       
       // Check if we have an actual audio file for this chapter
       // First try with the chapter ID as filename
@@ -663,10 +824,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       for (const audioPath of possiblePaths) {
         try {
-          await fs.promises.access(audioPath);
+          // SECURITY: Ensure path stays within audio-files directory
+          const normalizedPath = path.normalize(audioPath);
+          const audioFilesDir = path.join(process.cwd(), 'server', 'audio-files');
+          if (!normalizedPath.startsWith(audioFilesDir)) {
+            continue;
+          }
+          
+          await fs.promises.access(normalizedPath);
           
           // Get file stats for content-length
-          const stats = await fs.promises.stat(audioPath);
+          const stats = await fs.promises.stat(normalizedPath);
           
           // Set proper headers for audio streaming
           res.setHeader('Content-Type', 'audio/mpeg');
@@ -678,61 +846,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
           res.setHeader('Access-Control-Allow-Origin', '*');
           
           // Stream the file
-          const stream = fs.createReadStream(audioPath);
+          const stream = fs.createReadStream(normalizedPath);
           stream.pipe(res);
           
-          console.log(`Serving actual MP3 file for chapter: ${chapterId} from ${audioPath}`);
+          console.log(`Serving actual MP3 file for chapter: ${chapterId}`);
           return;
         } catch (err) {
           // File doesn't exist, try next path
-          console.log(`File not found at: ${audioPath}`);
           continue;
         }
       }
       
       console.log(`Audio file not found for ${chapterId}, generating mock audio`);
       
-      console.log(`Generating MP3 audio for chapter: ${chapterId}`);
-      
-      // Use chapter ID to create unique speech patterns
+      // SECURITY: Use safe parameterized approach for audio generation
+      // Validate and constrain frequency parameters
       const hash = chapterId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-      const baseFreq = 200 + (hash % 200); // Base frequency 200-400 Hz
-      const variation = hash % 100;
+      const baseFreq = Math.max(200, Math.min(400, 200 + (hash % 200))); // Constrain to 200-400 Hz
       
-      // Create temp files
+      // Create temp files with secure naming
       const tempDir = os.tmpdir();
-      const tempMp3 = path.join(tempDir, `audio_${chapterId}_${Date.now()}.mp3`);
+      const tempId = `audio_${Date.now()}_${Math.random().toString(36).substring(2)}`;
+      const tempMp3 = path.join(tempDir, `${tempId}.mp3`);
       
-      // Generate speech-like audio using ffmpeg's built-in synthesis
-      // Create multiple tones with speech-like patterns
-      const duration = 30; // 30 seconds
+      // SECURITY: Use spawn with array arguments instead of shell command
+      const duration = 30;
       const sampleRate = 44100;
       
-      // Build ffmpeg command to generate speech-like audio
-      // Use sine waves with envelopes to simulate speech
-      const ffmpegCommand = `ffmpeg -f lavfi -i "` +
-        `sine=frequency=${baseFreq}:duration=0.3,` +
-        `apad=pad_dur=0.1[s1];` +
-        `sine=frequency=${baseFreq * 1.5}:duration=0.2,` +
-        `apad=pad_dur=0.15[s2];` +
-        `sine=frequency=${baseFreq * 2}:duration=0.25,` +
-        `apad=pad_dur=0.1[s3];` +
-        `sine=frequency=${baseFreq * 0.8}:duration=0.35,` +
-        `apad=pad_dur=0.05[s4];` +
-        `[s1][s2][s3][s4]concat=n=4:v=0:a=1[mix];` +
-        `[mix]aloop=loop=25:size=${sampleRate}[loop];` +
-        `[loop]atrim=duration=${duration},` +
-        `volume=0.5,` +
-        `tremolo=f=4:d=0.3,` +
-        `aformat=sample_rates=44100:channel_layouts=mono" ` +
-        `-t ${duration} ` +
-        `-b:a 128k ` +
-        `-ar 44100 ` +
-        `-ac 1 ` +
-        `-y ${tempMp3}`;
+      // Use child_process.spawn for safe command execution
+      const { spawn } = require('child_process');
       
-      // Execute ffmpeg command
-      await execAsync(ffmpegCommand);
+      await new Promise((resolve, reject) => {
+        const ffmpeg = spawn('ffmpeg', [
+          '-f', 'lavfi',
+          '-i', `sine=frequency=${baseFreq}:duration=0.3,apad=pad_dur=0.1[s1];sine=frequency=${baseFreq * 1.5}:duration=0.2,apad=pad_dur=0.15[s2];sine=frequency=${baseFreq * 2}:duration=0.25,apad=pad_dur=0.1[s3];sine=frequency=${baseFreq * 0.8}:duration=0.35,apad=pad_dur=0.05[s4];[s1][s2][s3][s4]concat=n=4:v=0:a=1[mix];[mix]aloop=loop=25:size=${sampleRate}[loop];[loop]atrim=duration=${duration},volume=0.5,tremolo=f=4:d=0.3,aformat=sample_rates=44100:channel_layouts=mono`,
+          '-t', duration.toString(),
+          '-b:a', '128k',
+          '-ar', '44100',
+          '-ac', '1',
+          '-y', tempMp3
+        ]);
+        
+        ffmpeg.on('close', (code: number | null) => {
+          if (code === 0) {
+            resolve(null);
+          } else {
+            reject(new Error(`FFmpeg process exited with code ${code}`));
+          }
+        });
+        
+        ffmpeg.on('error', (error: Error) => {
+          reject(error);
+        });
+      });
       
       // Read the generated MP3 file
       const mp3Buffer = await fs.promises.readFile(tempMp3);
@@ -754,7 +920,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Send the MP3 file
       res.send(mp3Buffer);
     } catch (error) {
-      console.error("Error generating audio:", error);
+      console.log("Error generating audio - details hidden for security");
       res.status(500).json({ message: "Failed to generate audio" });
     }
   });

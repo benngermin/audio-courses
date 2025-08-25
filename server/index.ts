@@ -4,11 +4,46 @@ import { setupVite, serveStatic, log } from "./vite";
 import { seedTestData } from "./seedData";
 
 const app = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
 
-// Serve uploaded audio files
-app.use('/uploads', express.static('public/uploads'));
+// SECURITY: Add security headers middleware
+app.use((req, res, next) => {
+  // Prevent clickjacking
+  res.setHeader('X-Frame-Options', 'DENY');
+  
+  // Prevent MIME type sniffing
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  
+  // XSS Protection
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  
+  // Referrer Policy
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  
+  // Content Security Policy
+  if (process.env.NODE_ENV === 'production') {
+    res.setHeader('Content-Security-Policy', 
+      "default-src 'self'; " +
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval'; " +
+      "style-src 'self' 'unsafe-inline' fonts.googleapis.com; " +
+      "font-src 'self' fonts.gstatic.com; " +
+      "img-src 'self' data: https:; " +
+      "media-src 'self' blob: data:; " +
+      "connect-src 'self' https:; " +
+      "frame-ancestors 'none';"
+    );
+  }
+  
+  next();
+});
+
+app.use(express.json({ limit: '10mb' })); // SECURITY: Limit JSON payload size
+app.use(express.urlencoded({ extended: false, limit: '10mb' }));
+
+// Serve uploaded audio files with security headers
+app.use('/uploads', (req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  next();
+}, express.static('public/uploads'));
 
 app.use((req, res, next) => {
   const start = Date.now();

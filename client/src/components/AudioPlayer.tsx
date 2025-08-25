@@ -27,9 +27,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useAudio } from "@/hooks/useAudio";
+import { useOptimizedAudio } from "@/hooks/useOptimizedAudio";
+import { useProgressTracker } from "@/hooks/useProgressTracker";
 import { AudioVisualizer } from "@/components/ui/audio-visualizer";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import type { Assignment, Chapter } from "@shared/schema";
@@ -56,14 +57,18 @@ export function AudioPlayer({
   hasNext 
 }: AudioPlayerProps) {
   const { toast } = useToast();
-  const queryClient = useQueryClient();
-  const [lastProgressUpdate, setLastProgressUpdate] = useState(0);
   const [autoAdvance, setAutoAdvance] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
 
-  const progressMutation = useMutation({
-    mutationFn: async (data: { chapterId: string; currentTime: number; isCompleted: boolean }) => {
-      return await apiRequest("POST", "/api/progress", data);
+  // Use optimized progress tracking
+  const { updateProgress } = useProgressTracker({
+    chapterId: chapter.id,
+    onError: (error) => {
+      toast({
+        title: "Progress sync failed",
+        description: error.message,
+        variant: "destructive",
+      });
     },
   });
 
@@ -87,29 +92,17 @@ export function AudioPlayer({
   });
 
   const handleTimeUpdate = useCallback((currentTime: number) => {
-    // Update progress every 10 seconds to avoid too many API calls
-    if (currentTime - lastProgressUpdate >= 10) {
-      progressMutation.mutate({
-        chapterId: chapter.id,
-        currentTime,
-        isCompleted: false,
-      });
-      setLastProgressUpdate(currentTime);
-    }
-  }, [chapter.id, lastProgressUpdate, progressMutation]);
+    updateProgress(currentTime);
+  }, [updateProgress]);
 
   const handleEnded = useCallback(() => {
     // Mark chapter as completed
-    progressMutation.mutate({
-      chapterId: chapter.id,
-      currentTime: chapter.duration || 0,
-      isCompleted: true,
-    });
+    updateProgress(chapter.duration || 0, true);
     // Auto-advance to next chapter if enabled and available
     if (autoAdvance && hasNext && onNext) {
       onNext();
     }
-  }, [chapter.id, chapter.duration, progressMutation, autoAdvance, hasNext, onNext]);
+  }, [chapter.duration, updateProgress, autoAdvance, hasNext, onNext]);
 
   const handleLoadedMetadata = useCallback((audioDuration: number) => {
     // Update chapter duration if not set
@@ -139,7 +132,7 @@ export function AudioPlayer({
     changePlaybackRate,
     changeVolume,
     toggleMute,
-  } = useAudio({
+  } = useOptimizedAudio({
     src: chapter.audioUrl || "",
     onTimeUpdate: handleTimeUpdate,
     onEnded: handleEnded,

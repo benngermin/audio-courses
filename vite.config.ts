@@ -27,11 +27,41 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Core React libraries
+          'react-vendor': ['react', 'react-dom'],
+          // UI component library
+          'ui-vendor': ['@radix-ui/react-accordion', '@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu'],
+          // Query and routing
+          'query-vendor': ['@tanstack/react-query', 'wouter'],
+          // Utility libraries
+          'utils-vendor': ['clsx', 'tailwind-merge', 'date-fns'],
+          // Audio and media
+          'media-vendor': ['framer-motion'],
+        },
+      },
+    },
+    chunkSizeWarningLimit: 1000,
+    // Enable tree shaking
+    sourcemap: false,
+    minify: true,
   },
   server: {
     fs: {
       strict: true,
       deny: ["**/.*"],
     },
+  },
+  optimizeDeps: {
+    include: [
+      'react',
+      'react-dom',
+      '@tanstack/react-query',
+      'wouter',
+      'clsx',
+      'tailwind-merge',
+    ],
   },
 });

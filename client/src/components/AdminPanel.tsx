@@ -184,7 +184,7 @@ function AssignmentPreview({ assignment }: AssignmentPreviewProps) {
       >
         <div className="flex items-center gap-2">
           {expanded ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
-          <h5 className="font-medium text-sm">{assignment.name}</h5>
+          <h5 className="font-medium text-sm">{assignment.title}</h5>
         </div>
         <div className="flex items-center gap-2">
           {uploadedChapters > 0 && (

@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { AppHeader } from "@/components/AppHeader";
 import { ChapterList } from "@/components/ChapterList";
-import { useAudioContext } from "@/contexts/AudioContext";
+import { useCurrentTrack } from "@/contexts/OptimizedAudioContext";
 import { useAuth } from "@/hooks/useAuth";
 import { useLocation } from "wouter";
 import type { Assignment, Chapter } from "@shared/schema";
@@ -9,7 +9,7 @@ import type { Assignment, Chapter } from "@shared/schema";
 export default function Chapters() {
   const { user } = useAuth();
   const [location, navigate] = useLocation();
-  const { setCurrentTrack, currentChapter } = useAudioContext();
+  const { setCurrentTrack, currentChapter } = useCurrentTrack();
   
   // Get assignment ID from URL params
   const urlParams = new URLSearchParams(location.split('?')[1] || '');
