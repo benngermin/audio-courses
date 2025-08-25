@@ -914,9 +914,10 @@ export function UnifiedContentManager() {
           setDialogType(null);
           setSelectedFile(null);
           setSelectedJsonFile(null);
+          setShowJsonContent(false);
         }
       }}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{editingItem ? "Edit Chapter" : "Upload Audio Chapter"}</DialogTitle>
             <DialogDescription>
@@ -1110,17 +1111,6 @@ export function UnifiedContentManager() {
                     )}
                   </div>
 
-                  {/* Show text content preview if available */}
-                  {editingItem.textContent && (
-                    <div className="space-y-2">
-                      <Label className="text-sm">Text Content Preview</Label>
-                      <div className="p-3 bg-background rounded border max-h-32 overflow-y-auto">
-                        <p className="text-xs text-muted-foreground line-clamp-4">
-                          {editingItem.textContent}
-                        </p>
-                      </div>
-                    </div>
-                  )}
                 </div>
               )}
               {!editingItem && (
@@ -1236,8 +1226,14 @@ export function UnifiedContentManager() {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* JSON Content Viewer Dialog */}
-      <Dialog open={showJsonContent} onOpenChange={setShowJsonContent}>
+      {/* JSON Content Viewer Dialog - Nested to preserve parent dialog */}
+      <Dialog open={showJsonContent} onOpenChange={(open) => {
+        setShowJsonContent(open);
+        if (!open && dialogType === "chapter") {
+          // Keep the chapter dialog open when closing JSON viewer
+          // The parent dialog remains open
+        }
+      }}>
         <DialogContent className="max-w-4xl max-h-[80vh]">
           <DialogHeader>
             <DialogTitle>Read-Along Data</DialogTitle>
