@@ -1,0 +1,725 @@
+{
+  "textContent": "In this lesson, we'll assess how an insurer's underwriting function contributes to its financial health. By gaining a clear understanding of their insurer's underwriting results and how those results reflect the insurer's profitability, insurance professionals are better able to recognize opportunities to improve performance and respond to conditions that adversely affect their organizations. Let's begin. Insurers assume billions of dollars in financial risk through coverage decisions based on underwriters' analyses of data obtained from both traditional sources and technology-procured big data. The coordinated efforts of an insurer's underwriting team, which includes line underwriters and staff underwriters, can influence the organization's profitability more than any other single factor. Now, let's examine how underwriters influence profitability. Line underwriters evaluate new submissions and underwrite renewals, usually by working directly with insurance producers and applicants. Staff underwriters, meanwhile, manage risk selection by working with line underwriters and coordinating decisions about products, pricing, and guidelines. Collectively, these activities enable the insurer to avoid adverse selection, maintain adequate policyholders' surplus, and enforce underwriting guidelines—all of which contribute to the primary underwriting goal of sustaining profitable growth. Proper underwriting should produce an underwriting profit or perhaps a small underwriting loss that is offset by investment income. Typically, insurers use financial and nonfinancial measures in tandem to track their underwriting results. It's important to note that financial measures are not always reliable indicators of underwriting success in the short term. So insurers also use nonfinancial measures, allowing them to evaluate the actions of individual underwriters and underwriting departments rather than just their results. Let's start with financial measures. The most commonly used financial measure of underwriting results over a specific time period—typically one year—is the insurer's combined ratio. The combined ratio takes both the loss ratio and expense ratio and combines them to measure how much of each premium dollar received by an insurer is used to pay for losses and expenses. It's a more comprehensive measure of profitability than either the loss ratio or expense ratio alone. A lower combined ratio reflects a higher profitability. For example, a combined ratio of 95 percent means that an insurer spends 95 cents of every premium dollar it receives on losses and expenses, while a combined ratio of 115 percent means that the insurer spends one dollar and fifteen cents for every dollar it receives on losses and expenses. Now, while the combined ratio is a valuable tool, additional analysis is often needed. The combined ratio is a fantastic tool to measure underwriting success. But there are times when you may want to dig deeper and analyze it further. Are there factors that explain why the combined ratio is high for a year? The first thing you can do is break out the ratio into its three components: loss, LAE, and expense ratio, to see where the poor underwriting results are coming from. A high LAE ratio might mean a lot of claims are going to litigation, while a high expense ratio might mean the insurer is investing heavily in technology. You can even calculate the combined ratio by line of business or geographic region. There are a couple of reasons why the combined ratio might be distorted. For instance, did the insurer enter into a major reinsurance transaction? Are they rapidly growing or contracting? Was there a major catastrophic loss? Or do they write long tail lines of business? Let's say an insurer decides to write less business. While premium volume will drop soon after, the insurer will still incur losses from policies issued previously. This could lead to a temporary increase in the combined ratio. In addition, certain long tail lines of business, like liability insurance, often have long delays between when the loss is reported and when it is settled. For these lines of business, the combined ratio is based on estimates that could be incorrect. Finally, you may want to compare an insurer's combined ratio over several years, especially if they write lines exposed to catastrophic risk. For these companies, any one combined ratio may look very bad, but taken into context of a five- or ten-year period, it might tell a very different story. So, what does this all mean? Changes to underwriting guidelines and practices should only be executed after you do an in-depth analysis of the data included in the combined ratio. Next, let's turn our attention to nonfinancial measures. Nonfinancial measures link an organization's business strategy and outputs to the actions it takes. The idea behind these measures is that if underwriters adhere strictly to underwriting guidelines, underwriting should produce favorable financial results over the long term, barring uncontrollable variables. Some of these nonfinancial measures apply only to commercial lines underwriting departments, while others apply to both commercial and personal lines: First is account selection. Insurers often establish selection goals to ensure that the quality of an underwriter's book of business doesn't deteriorate. For example, an underwriter might be required to have specific percentages of \"highly desirable,\" \"average,\" and \"below average\" accounts in a book of business. Next is product or line of business mix. The mix of products in an underwriter's book of business is another way to determine that underwriter's contribution to profitability. Building a proper mix in a book of business requires underwriters to thoroughly understand the insurer's business goals, including the types of products it prefers to write. Third is pricing. Insurers can determine levels of premium adequacy by comparing premiums charged with their established pricing standards. In commercial insurance, for example, underwriters typically modify rates for each account being underwritten to reflect specific features of that account. Pricing standards indicate the extent to which these modifications depart from the insurer's regular, or standard, pricing. Fourth, accommodated accounts. Underwriting accommodation usually involves accepting substandard exposures in return for other, more profitable exposures. Insurers should evaluate accommodated risks to determine whether underwriters are making excessive accommodations. Fifth is service to producers. Because producers are more likely to work with insurers they feel are cooperative, insurers often establish minimum acceptable standards for certain types of service to producers. Sixth, premium to underwriter. The volume of premium an underwriter is able to handle is often used as a measure of performance to determine whether individual underwriters are assuming their share of work compared with other underwriters in the same company. Seventh is the retention ratio. The retention ratio is the percentage of expiring policies an insurer renews. Because most of the underwriting work has been completed for existing policies, retaining those policies is usually more profitable than acquiring new business. A low retention rate might indicate poor service to producers, noncompetitive pricing, or unfavorable claims service. Finally, the hit ratio. Underwriters are often not only responsible for underwriting a profitable book of business but also for meeting new business sales goals. The hit ratio, sometimes called the success ratio, is used to determine how well underwriters are meeting their sales goals. The hit ratio reveals how well the insurer is competing in the marketplace. It's worth noting what hit ratios can indicate. Low hit ratios could indicate that competition is tight, an insurer's rates are higher than its competitors', and underwriting criteria are too stringent, as well as other potential issues. Let me summarize the key points we've covered. Underwriters' actions can influence an insurer's profitability more than any other factor, and insurers often use financial and nonfinancial measures to analyze underwriting performance. The most commonly used financial measure is the combined ratio. Nonfinancial measures include account selection, product mix, pricing, accommodated accounts, service to producers, premium to underwriter, retention ratio, and hit ratio. Finally, let's review some key terms from this lesson. A line underwriter is an underwriter who is primarily responsible for implementing the steps in the underwriting process. A staff underwriter is an underwriter who assists underwriting management with making and implementing underwriting policy. The combined ratio is a profitability ratio that indicates whether an insurer has made an underwriting loss or gain. And the hit ratio is the ratio of insurance policies written to those that have been quoted to applicants for insurance.",
+  "segments": [
+    {
+      "segmentIndex": 0,
+      "segmentType": "sentence",
+      "text": "In this lesson, we'll assess how an insurer's underwriting function contributes to its financial health.",
+      "startTime": 0.0,
+      "endTime": 5.8,
+      "characterStart": 0,
+      "characterEnd": 103
+    },
+    {
+      "segmentIndex": 1,
+      "segmentType": "sentence",
+      "text": "By gaining a clear understanding of their insurer's underwriting results and how those results reflect the insurer's profitability, insurance professionals are better able to recognize opportunities to improve performance and respond to conditions that adversely affect their organizations.",
+      "startTime": 6.3,
+      "endTime": 18.5,
+      "characterStart": 104,
+      "characterEnd": 387
+    },
+    {
+      "segmentIndex": 2,
+      "segmentType": "sentence",
+      "text": "Let's begin.",
+      "startTime": 19.5,
+      "endTime": 20.3,
+      "characterStart": 388,
+      "characterEnd": 399
+    },
+    {
+      "segmentIndex": 3,
+      "segmentType": "sentence",
+      "text": "Insurers assume billions of dollars in financial risk through coverage decisions based on underwriters' analyses of data obtained from both traditional sources and technology-procured big data.",
+      "startTime": 21.3,
+      "endTime": 32.0,
+      "characterStart": 400,
+      "characterEnd": 593
+    },
+    {
+      "segmentIndex": 4,
+      "segmentType": "sentence",
+      "text": "The coordinated efforts of an insurer's underwriting team, which includes line underwriters and staff underwriters, can influence the organization's profitability more than any other single factor.",
+      "startTime": 32.5,
+      "endTime": 43.5,
+      "characterStart": 594,
+      "characterEnd": 792
+    },
+    {
+      "segmentIndex": 5,
+      "segmentType": "sentence",
+      "text": "Now, let's examine how underwriters influence profitability.",
+      "startTime": 44.5,
+      "endTime": 47.8,
+      "characterStart": 793,
+      "characterEnd": 853
+    },
+    {
+      "segmentIndex": 6,
+      "segmentType": "sentence",
+      "text": "Line underwriters evaluate new submissions and underwrite renewals, usually by working directly with insurance producers and applicants.",
+      "startTime": 48.8,
+      "endTime": 56.5,
+      "characterStart": 854,
+      "characterEnd": 990
+    },
+    {
+      "segmentIndex": 7,
+      "segmentType": "sentence",
+      "text": "Staff underwriters, meanwhile, manage risk selection by working with line underwriters and coordinating decisions about products, pricing, and guidelines.",
+      "startTime": 57.0,
+      "endTime": 65.8,
+      "characterStart": 991,
+      "characterEnd": 1146
+    },
+    {
+      "segmentIndex": 8,
+      "segmentType": "sentence",
+      "text": "Collectively, these activities enable the insurer to avoid adverse selection, maintain adequate policyholders' surplus, and enforce underwriting guidelines—all of which contribute to the primary underwriting goal of sustaining profitable growth.",
+      "startTime": 66.8,
+      "endTime": 79.5,
+      "characterStart": 1147,
+      "characterEnd": 1394
+    },
+    {
+      "segmentIndex": 9,
+      "segmentType": "sentence",
+      "text": "Proper underwriting should produce an underwriting profit or perhaps a small underwriting loss that is offset by investment income.",
+      "startTime": 80.0,
+      "endTime": 87.3,
+      "characterStart": 1395,
+      "characterEnd": 1527
+    },
+    {
+      "segmentIndex": 10,
+      "segmentType": "sentence",
+      "text": "Typically, insurers use financial and nonfinancial measures in tandem to track their underwriting results.",
+      "startTime": 87.8,
+      "endTime": 94.5,
+      "characterStart": 1528,
+      "characterEnd": 1635
+    },
+    {
+      "segmentIndex": 11,
+      "segmentType": "sentence",
+      "text": "It's important to note that financial measures are not always reliable indicators of underwriting success in the short term.",
+      "startTime": 95.0,
+      "endTime": 102.0,
+      "characterStart": 1636,
+      "characterEnd": 1760
+    },
+    {
+      "segmentIndex": 12,
+      "segmentType": "sentence",
+      "text": "So insurers also use nonfinancial measures, allowing them to evaluate the actions of individual underwriters and underwriting departments rather than just their results.",
+      "startTime": 102.5,
+      "endTime": 111.8,
+      "characterStart": 1761,
+      "characterEnd": 1930
+    },
+    {
+      "segmentIndex": 13,
+      "segmentType": "sentence",
+      "text": "Let's start with financial measures.",
+      "startTime": 112.8,
+      "endTime": 114.8,
+      "characterStart": 1931,
+      "characterEnd": 1967
+    },
+    {
+      "segmentIndex": 14,
+      "segmentType": "sentence",
+      "text": "The most commonly used financial measure of underwriting results over a specific time period—typically one year—is the insurer's combined ratio.",
+      "startTime": 115.8,
+      "endTime": 124.3,
+      "characterStart": 1968,
+      "characterEnd": 2115
+    },
+    {
+      "segmentIndex": 15,
+      "segmentType": "sentence",
+      "text": "The combined ratio takes both the loss ratio and expense ratio and combines them to measure how much of each premium dollar received by an insurer is used to pay for losses and expenses.",
+      "startTime": 124.8,
+      "endTime": 135.0,
+      "characterStart": 2116,
+      "characterEnd": 2303
+    },
+    {
+      "segmentIndex": 16,
+      "segmentType": "sentence",
+      "text": "It's a more comprehensive measure of profitability than either the loss ratio or expense ratio alone.",
+      "startTime": 135.5,
+      "endTime": 141.3,
+      "characterStart": 2304,
+      "characterEnd": 2406
+    },
+    {
+      "segmentIndex": 17,
+      "segmentType": "sentence",
+      "text": "A lower combined ratio reflects a higher profitability.",
+      "startTime": 141.8,
+      "endTime": 145.0,
+      "characterStart": 2407,
+      "characterEnd": 2463
+    },
+    {
+      "segmentIndex": 18,
+      "segmentType": "sentence",
+      "text": "For example, a combined ratio of 95 percent means that an insurer spends 95 cents of every premium dollar it receives on losses and expenses, while a combined ratio of 115 percent means that the insurer spends one dollar and fifteen cents for every dollar it receives on losses and expenses.",
+      "startTime": 145.5,
+      "endTime": 161.5,
+      "characterStart": 2464,
+      "characterEnd": 2757
+    },
+    {
+      "segmentIndex": 19,
+      "segmentType": "sentence",
+      "text": "Now, while the combined ratio is a valuable tool, additional analysis is often needed.",
+      "startTime": 162.5,
+      "endTime": 167.3,
+      "characterStart": 2758,
+      "characterEnd": 2844
+    },
+    {
+      "segmentIndex": 20,
+      "segmentType": "sentence",
+      "text": "The combined ratio is a fantastic tool to measure underwriting success.",
+      "startTime": 167.8,
+      "endTime": 172.0,
+      "characterStart": 2845,
+      "characterEnd": 2916
+    },
+    {
+      "segmentIndex": 21,
+      "segmentType": "sentence",
+      "text": "But there are times when you may want to dig deeper and analyze it further.",
+      "startTime": 172.5,
+      "endTime": 176.8,
+      "characterStart": 2917,
+      "characterEnd": 2993
+    },
+    {
+      "segmentIndex": 22,
+      "segmentType": "sentence",
+      "text": "Are there factors that explain why the combined ratio is high for a year?",
+      "startTime": 177.3,
+      "endTime": 181.5,
+      "characterStart": 2994,
+      "characterEnd": 3068
+    },
+    {
+      "segmentIndex": 23,
+      "segmentType": "sentence",
+      "text": "The first thing you can do is break out the ratio into its three components: loss, LAE, and expense ratio, to see where the poor underwriting results are coming from.",
+      "startTime": 182.0,
+      "endTime": 191.3,
+      "characterStart": 3069,
+      "characterEnd": 3237
+    },
+    {
+      "segmentIndex": 24,
+      "segmentType": "sentence",
+      "text": "A high LAE ratio might mean a lot of claims are going to litigation, while a high expense ratio might mean the insurer is investing heavily in technology.",
+      "startTime": 191.8,
+      "endTime": 200.3,
+      "characterStart": 3238,
+      "characterEnd": 3394
+    },
+    {
+      "segmentIndex": 25,
+      "segmentType": "sentence",
+      "text": "You can even calculate the combined ratio by line of business or geographic region.",
+      "startTime": 200.8,
+      "endTime": 205.5,
+      "characterStart": 3395,
+      "characterEnd": 3479
+    },
+    {
+      "segmentIndex": 26,
+      "segmentType": "sentence",
+      "text": "There are a couple of reasons why the combined ratio might be distorted.",
+      "startTime": 206.0,
+      "endTime": 210.0,
+      "characterStart": 3480,
+      "characterEnd": 3553
+    },
+    {
+      "segmentIndex": 27,
+      "segmentType": "sentence",
+      "text": "For instance, did the insurer enter into a major reinsurance transaction?",
+      "startTime": 210.5,
+      "endTime": 214.5,
+      "characterStart": 3554,
+      "characterEnd": 3628
+    },
+    {
+      "segmentIndex": 28,
+      "segmentType": "sentence",
+      "text": "Are they rapidly growing or contracting?",
+      "startTime": 215.0,
+      "endTime": 217.3,
+      "characterStart": 3629,
+      "characterEnd": 3669
+    },
+    {
+      "segmentIndex": 29,
+      "segmentType": "sentence",
+      "text": "Was there a major catastrophic loss?",
+      "startTime": 217.8,
+      "endTime": 219.8,
+      "characterStart": 3670,
+      "characterEnd": 3706
+    },
+    {
+      "segmentIndex": 30,
+      "segmentType": "sentence",
+      "text": "Or do they write long tail lines of business?",
+      "startTime": 220.3,
+      "endTime": 222.8,
+      "characterStart": 3707,
+      "characterEnd": 3753
+    },
+    {
+      "segmentIndex": 31,
+      "segmentType": "sentence",
+      "text": "Let's say an insurer decides to write less business.",
+      "startTime": 223.8,
+      "endTime": 226.8,
+      "characterStart": 3754,
+      "characterEnd": 3806
+    },
+    {
+      "segmentIndex": 32,
+      "segmentType": "sentence",
+      "text": "While premium volume will drop soon after, the insurer will still incur losses from policies issued previously.",
+      "startTime": 227.3,
+      "endTime": 233.8,
+      "characterStart": 3807,
+      "characterEnd": 3919
+    },
+    {
+      "segmentIndex": 33,
+      "segmentType": "sentence",
+      "text": "This could lead to a temporary increase in the combined ratio.",
+      "startTime": 234.3,
+      "endTime": 238.0,
+      "characterStart": 3920,
+      "characterEnd": 3983
+    },
+    {
+      "segmentIndex": 34,
+      "segmentType": "sentence",
+      "text": "In addition, certain long tail lines of business, like liability insurance, often have long delays between when the loss is reported and when it is settled.",
+      "startTime": 238.5,
+      "endTime": 247.3,
+      "characterStart": 3984,
+      "characterEnd": 4142
+    },
+    {
+      "segmentIndex": 35,
+      "segmentType": "sentence",
+      "text": "For these lines of business, the combined ratio is based on estimates that could be incorrect.",
+      "startTime": 247.8,
+      "endTime": 253.3,
+      "characterStart": 4143,
+      "characterEnd": 4237
+    },
+    {
+      "segmentIndex": 36,
+      "segmentType": "sentence",
+      "text": "Finally, you may want to compare an insurer's combined ratio over several years, especially if they write lines exposed to catastrophic risk.",
+      "startTime": 253.8,
+      "endTime": 261.8,
+      "characterStart": 4238,
+      "characterEnd": 4381
+    },
+    {
+      "segmentIndex": 37,
+      "segmentType": "sentence",
+      "text": "For these companies, any one combined ratio may look very bad, but taken into context of a five- or ten-year period, it might tell a very different story.",
+      "startTime": 262.3,
+      "endTime": 271.0,
+      "characterStart": 4382,
+      "characterEnd": 4539
+    },
+    {
+      "segmentIndex": 38,
+      "segmentType": "sentence",
+      "text": "So, what does this all mean?",
+      "startTime": 271.5,
+      "endTime": 273.3,
+      "characterStart": 4540,
+      "characterEnd": 4568
+    },
+    {
+      "segmentIndex": 39,
+      "segmentType": "sentence",
+      "text": "Changes to underwriting guidelines and practices should only be executed after you do an in-depth analysis of the data included in the combined ratio.",
+      "startTime": 273.8,
+      "endTime": 282.3,
+      "characterStart": 4569,
+      "characterEnd": 4721
+    },
+    {
+      "segmentIndex": 40,
+      "segmentType": "sentence",
+      "text": "Next, let's turn our attention to nonfinancial measures.",
+      "startTime": 283.3,
+      "endTime": 286.5,
+      "characterStart": 4722,
+      "characterEnd": 4779
+    },
+    {
+      "segmentIndex": 41,
+      "segmentType": "sentence",
+      "text": "Nonfinancial measures link an organization's business strategy and outputs to the actions it takes.",
+      "startTime": 287.5,
+      "endTime": 293.3,
+      "characterStart": 4780,
+      "characterEnd": 4880
+    },
+    {
+      "segmentIndex": 42,
+      "segmentType": "sentence",
+      "text": "The idea behind these measures is that if underwriters adhere strictly to underwriting guidelines, underwriting should produce favorable financial results over the long term, barring uncontrollable variables.",
+      "startTime": 293.8,
+      "endTime": 305.5,
+      "characterStart": 4881,
+      "characterEnd": 5089
+    },
+    {
+      "segmentIndex": 43,
+      "segmentType": "sentence",
+      "text": "Some of these nonfinancial measures apply only to commercial lines underwriting departments, while others apply to both commercial and personal lines:",
+      "startTime": 306.0,
+      "endTime": 314.3,
+      "characterStart": 5090,
+      "characterEnd": 5243
+    },
+    {
+      "segmentIndex": 44,
+      "segmentType": "sentence",
+      "text": "First is account selection.",
+      "startTime": 315.3,
+      "endTime": 317.0,
+      "characterStart": 5244,
+      "characterEnd": 5271
+    },
+    {
+      "segmentIndex": 45,
+      "segmentType": "sentence",
+      "text": "Insurers often establish selection goals to ensure that the quality of an underwriter's book of business doesn't deteriorate.",
+      "startTime": 317.5,
+      "endTime": 324.5,
+      "characterStart": 5272,
+      "characterEnd": 5398
+    },
+    {
+      "segmentIndex": 46,
+      "segmentType": "sentence",
+      "text": "For example, an underwriter might be required to have specific percentages of \"highly desirable,\" \"average,\" and \"below average\" accounts in a book of business.",
+      "startTime": 325.0,
+      "endTime": 334.0,
+      "characterStart": 5399,
+      "characterEnd": 5561
+    },
+    {
+      "segmentIndex": 47,
+      "segmentType": "sentence",
+      "text": "Next is product or line of business mix.",
+      "startTime": 334.5,
+      "endTime": 337.3,
+      "characterStart": 5562,
+      "characterEnd": 5603
+    },
+    {
+      "segmentIndex": 48,
+      "segmentType": "sentence",
+      "text": "The mix of products in an underwriter's book of business is another way to determine that underwriter's contribution to profitability.",
+      "startTime": 337.8,
+      "endTime": 345.3,
+      "characterStart": 5604,
+      "characterEnd": 5739
+    },
+    {
+      "segmentIndex": 49,
+      "segmentType": "sentence",
+      "text": "Building a proper mix in a book of business requires underwriters to thoroughly understand the insurer's business goals, including the types of products it prefers to write.",
+      "startTime": 345.8,
+      "endTime": 355.3,
+      "characterStart": 5740,
+      "characterEnd": 5914
+    },
+    {
+      "segmentIndex": 50,
+      "segmentType": "sentence",
+      "text": "Third is pricing.",
+      "startTime": 355.8,
+      "endTime": 357.0,
+      "characterStart": 5915,
+      "characterEnd": 5932
+    },
+    {
+      "segmentIndex": 51,
+      "segmentType": "sentence",
+      "text": "Insurers can determine levels of premium adequacy by comparing premiums charged with their established pricing standards.",
+      "startTime": 357.5,
+      "endTime": 364.5,
+      "characterStart": 5933,
+      "characterEnd": 6054
+    },
+    {
+      "segmentIndex": 52,
+      "segmentType": "sentence",
+      "text": "In commercial insurance, for example, underwriters typically modify rates for each account being underwritten to reflect specific features of that account.",
+      "startTime": 365.0,
+      "endTime": 373.8,
+      "characterStart": 6055,
+      "characterEnd": 6211
+    },
+    {
+      "segmentIndex": 53,
+      "segmentType": "sentence",
+      "text": "Pricing standards indicate the extent to which these modifications depart from the insurer's regular, or standard, pricing.",
+      "startTime": 374.3,
+      "endTime": 381.3,
+      "characterStart": 6212,
+      "characterEnd": 6335
+    },
+    {
+      "segmentIndex": 54,
+      "segmentType": "sentence",
+      "text": "Fourth, accommodated accounts.",
+      "startTime": 381.8,
+      "endTime": 383.8,
+      "characterStart": 6336,
+      "characterEnd": 6366
+    },
+    {
+      "segmentIndex": 55,
+      "segmentType": "sentence",
+      "text": "Underwriting accommodation usually involves accepting substandard exposures in return for other, more profitable exposures.",
+      "startTime": 384.3,
+      "endTime": 391.3,
+      "characterStart": 6367,
+      "characterEnd": 6490
+    },
+    {
+      "segmentIndex": 56,
+      "segmentType": "sentence",
+      "text": "Insurers should evaluate accommodated risks to determine whether underwriters are making excessive accommodations.",
+      "startTime": 391.8,
+      "endTime": 398.3,
+      "characterStart": 6491,
+      "characterEnd": 6605
+    },
+    {
+      "segmentIndex": 57,
+      "segmentType": "sentence",
+      "text": "Fifth is service to producers.",
+      "startTime": 398.8,
+      "endTime": 400.8,
+      "characterStart": 6606,
+      "characterEnd": 6636
+    },
+    {
+      "segmentIndex": 58,
+      "segmentType": "sentence",
+      "text": "Because producers are more likely to work with insurers they feel are cooperative, insurers often establish minimum acceptable standards for certain types of service to producers.",
+      "startTime": 401.3,
+      "endTime": 411.0,
+      "characterStart": 6637,
+      "characterEnd": 6816
+    },
+    {
+      "segmentIndex": 59,
+      "segmentType": "sentence",
+      "text": "Sixth, premium to underwriter.",
+      "startTime": 411.5,
+      "endTime": 413.5,
+      "characterStart": 6817,
+      "characterEnd": 6847
+    },
+    {
+      "segmentIndex": 60,
+      "segmentType": "sentence",
+      "text": "The volume of premium an underwriter is able to handle is often used as a measure of performance to determine whether individual underwriters are assuming their share of work compared with other underwriters in the same company.",
+      "startTime": 414.0,
+      "endTime": 426.8,
+      "characterStart": 6848,
+      "characterEnd": 7077
+    },
+    {
+      "segmentIndex": 61,
+      "segmentType": "sentence",
+      "text": "Seventh is the retention ratio.",
+      "startTime": 427.3,
+      "endTime": 429.3,
+      "characterStart": 7078,
+      "characterEnd": 7109
+    },
+    {
+      "segmentIndex": 62,
+      "segmentType": "sentence",
+      "text": "The retention ratio is the percentage of expiring policies an insurer renews.",
+      "startTime": 429.8,
+      "endTime": 434.3,
+      "characterStart": 7110,
+      "characterEnd": 7188
+    },
+    {
+      "segmentIndex": 63,
+      "segmentType": "sentence",
+      "text": "Because most of the underwriting work has been completed for existing policies, retaining those policies is usually more profitable than acquiring new business.",
+      "startTime": 434.8,
+      "endTime": 443.8,
+      "characterStart": 7189,
+      "characterEnd": 7350
+    },
+    {
+      "segmentIndex": 64,
+      "segmentType": "sentence",
+      "text": "A low retention rate might indicate poor service to producers, noncompetitive pricing, or unfavorable claims service.",
+      "startTime": 444.3,
+      "endTime": 451.0,
+      "characterStart": 7351,
+      "characterEnd": 7469
+    },
+    {
+      "segmentIndex": 65,
+      "segmentType": "sentence",
+      "text": "Finally, the hit ratio.",
+      "startTime": 451.5,
+      "endTime": 453.0,
+      "characterStart": 7470,
+      "characterEnd": 7493
+    },
+    {
+      "segmentIndex": 66,
+      "segmentType": "sentence",
+      "text": "Underwriters are often not only responsible for underwriting a profitable book of business but also for meeting new business sales goals.",
+      "startTime": 453.5,
+      "endTime": 461.3,
+      "characterStart": 7494,
+      "characterEnd": 7632
+    },
+    {
+      "segmentIndex": 67,
+      "segmentType": "sentence",
+      "text": "The hit ratio, sometimes called the success ratio, is used to determine how well underwriters are meeting their sales goals.",
+      "startTime": 461.8,
+      "endTime": 468.8,
+      "characterStart": 7633,
+      "characterEnd": 7757
+    },
+    {
+      "segmentIndex": 68,
+      "segmentType": "sentence",
+      "text": "The hit ratio reveals how well the insurer is competing in the marketplace.",
+      "startTime": 469.3,
+      "endTime": 473.5,
+      "characterStart": 7758,
+      "characterEnd": 7834
+    },
+    {
+      "segmentIndex": 69,
+      "segmentType": "sentence",
+      "text": "It's worth noting what hit ratios can indicate.",
+      "startTime": 474.0,
+      "endTime": 476.8,
+      "characterStart": 7835,
+      "characterEnd": 7883
+    },
+    {
+      "segmentIndex": 70,
+      "segmentType": "sentence",
+      "text": "Low hit ratios could indicate that competition is tight, an insurer's rates are higher than its competitors', and underwriting criteria are too stringent, as well as other potential issues.",
+      "startTime": 477.3,
+      "endTime": 487.8,
+      "characterStart": 7884,
+      "characterEnd": 8075
+    },
+    {
+      "segmentIndex": 71,
+      "segmentType": "sentence",
+      "text": "Let me summarize the key points we've covered.",
+      "startTime": 488.8,
+      "endTime": 491.5,
+      "characterStart": 8076,
+      "characterEnd": 8122
+    },
+    {
+      "segmentIndex": 72,
+      "segmentType": "sentence",
+      "text": "Underwriters' actions can influence an insurer's profitability more than any other factor, and insurers often use financial and nonfinancial measures to analyze underwriting performance.",
+      "startTime": 492.0,
+      "endTime": 502.8,
+      "characterStart": 8123,
+      "characterEnd": 8311
+    },
+    {
+      "segmentIndex": 73,
+      "segmentType": "sentence",
+      "text": "The most commonly used financial measure is the combined ratio.",
+      "startTime": 503.3,
+      "endTime": 507.0,
+      "characterStart": 8312,
+      "characterEnd": 8376
+    },
+    {
+      "segmentIndex": 74,
+      "segmentType": "sentence",
+      "text": "Nonfinancial measures include account selection, product mix, pricing, accommodated accounts, service to producers, premium to underwriter, retention ratio, and hit ratio.",
+      "startTime": 507.5,
+      "endTime": 517.3,
+      "characterStart": 8377,
+      "characterEnd": 8551
+    },
+    {
+      "segmentIndex": 75,
+      "segmentType": "sentence",
+      "text": "Finally, let's review some key terms from this lesson.",
+      "startTime": 518.3,
+      "endTime": 521.5,
+      "characterStart": 8552,
+      "characterEnd": 8606
+    },
+    {
+      "segmentIndex": 76,
+      "segmentType": "sentence",
+      "text": "A line underwriter is an underwriter who is primarily responsible for implementing the steps in the underwriting process.",
+      "startTime": 522.0,
+      "endTime": 529.0,
+      "characterStart": 8607,
+      "characterEnd": 8729
+    },
+    {
+      "segmentIndex": 77,
+      "segmentType": "sentence",
+      "text": "A staff underwriter is an underwriter who assists underwriting management with making and implementing underwriting policy.",
+      "startTime": 529.5,
+      "endTime": 536.5,
+      "characterStart": 8730,
+      "characterEnd": 8854
+    },
+    {
+      "segmentIndex": 78,
+      "segmentType": "sentence",
+      "text": "The combined ratio is a profitability ratio that indicates whether an insurer has made an underwriting loss or gain.",
+      "startTime": 537.0,
+      "endTime": 543.8,
+      "characterStart": 8855,
+      "characterEnd": 8973
+    },
+    {
+      "segmentIndex": 79,
+      "segmentType": "sentence",
+      "text": "And the hit ratio is the ratio of insurance policies written to those that have been quoted to applicants for insurance.",
+      "startTime": 544.3,
+      "endTime": 551.0,
+      "characterStart": 8974,
+      "characterEnd": 9095
+    }
+  ]
+}

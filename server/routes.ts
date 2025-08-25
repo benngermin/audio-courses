@@ -35,7 +35,7 @@ import {
 } from "@shared/schema";
 
 // SECURITY: Safe file upload configuration with additional validation
-const upload = multer({
+const uploadAudio = multer({
   dest: '/tmp/',
   limits: {
     fileSize: 50 * 1024 * 1024, // SECURITY: Reduced to 50MB limit
@@ -57,6 +57,30 @@ const upload = multer({
       cb(null, true);
     } else {
       cb(new Error('Invalid file type. Only audio files with valid extensions are allowed.'));
+    }
+  },
+});
+
+// SECURITY: JSON file upload configuration
+const uploadJson = multer({
+  dest: '/tmp/',
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB limit for JSON files
+    files: 1, // Only one file at a time
+  },
+  fileFilter: (req, file, cb) => {
+    // SECURITY: Validate JSON files
+    const allowedMimes = ['application/json', 'text/json'];
+    const fileExtension = path.extname(file.originalname).toLowerCase();
+    
+    // SECURITY: Sanitize filename to prevent path traversal
+    const sanitizedName = file.originalname.replace(/[^a-zA-Z0-9._-]/g, '');
+    file.originalname = sanitizedName;
+    
+    if ((allowedMimes.includes(file.mimetype) || file.mimetype === 'text/plain') && fileExtension === '.json') {
+      cb(null, true);
+    } else {
+      cb(new Error('Invalid file type. Only JSON files are allowed.'));
     }
   },
 });
@@ -514,7 +538,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Upload audio file temporarily (without chapter association)
-  app.post('/api/admin/upload-temp-audio', isAuthenticated, upload.single('audio'), async (req: any, res) => {
+  app.post('/api/admin/upload-temp-audio', isAuthenticated, uploadAudio.single('audio'), async (req: any, res) => {
     try {
       const user = await storage.getUser(req.user.claims.sub);
       if (!user?.isAdmin) {
@@ -557,7 +581,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Upload audio file for a specific chapter
-  app.post('/api/admin/upload-audio', isAuthenticated, upload.single('audio'), async (req: any, res) => {
+  app.post('/api/admin/upload-audio', isAuthenticated, uploadAudio.single('audio'), async (req: any, res) => {
     try {
       const user = await storage.getUser(req.user.claims.sub);
       if (!user?.isAdmin) {
@@ -719,7 +743,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Admin endpoint to upload read-along JSON file
-  app.post('/api/admin/upload-readalong-json', isAuthenticated, upload.single('readalong'), async (req: any, res) => {
+  app.post('/api/admin/upload-readalong-json', isAuthenticated, uploadJson.single('readalong'), async (req: any, res) => {
     try {
       const user = await storage.getUser(req.user.claims.sub);
       if (!user?.isAdmin) {
