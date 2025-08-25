@@ -37,11 +37,14 @@ class AudioPool {
     }
 
     const audio = new Audio();
-    audio.preload = "metadata";
-    audio.crossOrigin = "anonymous";
+    audio.preload = "auto";  // Changed from metadata to auto for better loading
+    // Remove crossOrigin to avoid CORS issues with local files
+    // audio.crossOrigin = "anonymous";
     audio.setAttribute('playsinline', 'true');
     audio.setAttribute('webkit-playsinline', 'true');
     audio.src = src;
+    
+    console.log('AudioPool: Creating new audio element for:', src);
     
     this.pool.set(normalized, audio);
     return audio;
@@ -57,8 +60,9 @@ class AudioPool {
         requestIdleCallback(() => {
           if (this.preloadQueue.has(normalized)) {
             const audio = new Audio();
-            audio.preload = "metadata";
-            audio.crossOrigin = "anonymous";
+            audio.preload = "auto";
+            // Remove crossOrigin to avoid CORS issues
+            // audio.crossOrigin = "anonymous";
             audio.src = url;
             
             const handleCanPlay = () => {
@@ -184,7 +188,21 @@ export function useOptimizedAudio({
     };
 
     const handleError = (e: Event) => {
-      console.error("Audio error:", e);
+      const error = e.target as HTMLAudioElement;
+      console.error("Audio playback error:", {
+        error: e,
+        src: error.src,
+        networkState: error.networkState,
+        readyState: error.readyState,
+        errorCode: error.error?.code,
+        errorMessage: error.error?.message
+      });
+      
+      // Network state codes: 0=NETWORK_EMPTY, 1=NETWORK_IDLE, 2=NETWORK_LOADING, 3=NETWORK_NO_SOURCE
+      if (error.networkState === 3) {
+        console.error('Audio source not found or format not supported:', src);
+      }
+      
       setIsLoading(false);
       setIsPlaying(false);
     };
@@ -237,25 +255,70 @@ export function useOptimizedAudio({
 
   const play = useCallback(async () => {
     const audio = currentAudioRef.current;
-    if (!audio) return;
+    if (!audio) {
+      console.error('No audio element available');
+      return;
+    }
 
     try {
+      console.log('Attempting to play audio:', {
+        src: audio.src,
+        readyState: audio.readyState,
+        networkState: audio.networkState,
+        paused: audio.paused
+      });
+      
+      // If audio is not loaded, load it first
       if (audio.readyState === 0) {
+        console.log('Audio not loaded, loading now...');
         audio.load();
-        await new Promise(resolve => {
+        
+        // Wait for audio to be ready with timeout
+        await new Promise((resolve, reject) => {
+          const timeout = setTimeout(() => {
+            reject(new Error('Audio load timeout'));
+          }, 10000); // 10 second timeout
+          
           const handleCanPlay = () => {
+            clearTimeout(timeout);
             audio.removeEventListener('canplay', handleCanPlay);
+            audio.removeEventListener('error', handleError);
             resolve(void 0);
           };
+          
+          const handleError = () => {
+            clearTimeout(timeout);
+            audio.removeEventListener('canplay', handleCanPlay);
+            audio.removeEventListener('error', handleError);
+            reject(new Error('Audio failed to load'));
+          };
+          
           audio.addEventListener('canplay', handleCanPlay);
+          audio.addEventListener('error', handleError);
         });
       }
       
-      await audio.play();
-      setIsPlaying(true);
+      // Try to play the audio
+      const playPromise = audio.play();
+      
+      if (playPromise !== undefined) {
+        await playPromise;
+        console.log('Audio playing successfully');
+        setIsPlaying(true);
+      }
     } catch (error) {
-      if (error instanceof Error && error.name !== 'AbortError') {
-        console.error('Error playing audio:', error);
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          console.log('Play request was interrupted');
+        } else if (error.name === 'NotAllowedError') {
+          console.error('Audio playback not allowed. User interaction may be required:', error);
+        } else if (error.name === 'NotSupportedError') {
+          console.error('Audio format not supported:', error);
+        } else {
+          console.error('Error playing audio:', error.name, error.message);
+        }
+      } else {
+        console.error('Unknown error playing audio:', error);
       }
       setIsPlaying(false);
     }

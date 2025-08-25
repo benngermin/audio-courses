@@ -61,7 +61,8 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
     const audio = new Audio();
     // Important for iOS: set preload to 'auto' for better compatibility
     audio.preload = "auto";
-    audio.crossOrigin = "anonymous"; // Add CORS support
+    // Remove crossOrigin to avoid CORS issues with local files
+    // audio.crossOrigin = "anonymous";
     // iOS specific: enable inline playback
     audio.setAttribute('playsinline', 'true');
     audio.setAttribute('webkit-playsinline', 'true');
@@ -179,45 +180,73 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
   }, [src]); // Only depend on src, callbacks are stable via useCallback in parent
 
   const play = useCallback(async () => {
-    if (audioRef.current) {
-      try {
-        // For iOS Safari: ensure we have the audio loaded before trying to play
-        // Don't check readyState >= 2, as iOS may report lower states but still be able to play
-        if (audioRef.current.readyState === 0) {
-          // If not loaded at all, try loading first
-          audioRef.current.load();
-          // Wait a bit for loading to start
-          await new Promise(resolve => setTimeout(resolve, 100));
-        }
+    const audio = audioRef.current;
+    if (!audio) {
+      console.error('No audio element available');
+      return;
+    }
+
+    try {
+      console.log('Attempting to play audio:', {
+        src: audio.src,
+        readyState: audio.readyState,
+        networkState: audio.networkState,
+        paused: audio.paused
+      });
+      
+      // For iOS Safari: ensure we have the audio loaded before trying to play
+      if (audio.readyState === 0) {
+        console.log('Audio not loaded, loading now...');
+        audio.load();
         
-        // Mobile Safari requires user interaction before playing
-        const playPromise = audioRef.current.play();
-        if (playPromise !== undefined) {
-          await playPromise;
-        }
-        setIsPlaying(true);
-      } catch (error) {
-        // Properly log the error
-        if (error instanceof Error) {
-          // Only log non-abort errors (AbortError happens when play is interrupted)
-          if (error.name !== 'AbortError') {
-            console.error('Error playing audio:', error.message, error.name);
-            if (error.name === 'NotAllowedError') {
-              console.log('Autoplay prevented - user interaction required');
-              // iOS specific: Try to play again after a small delay if it's a user interaction
-              setTimeout(() => {
-                audioRef.current?.play().catch(() => {});
-              }, 100);
-            } else if (error.name === 'NotSupportedError') {
-              console.error('Audio format not supported by browser');
-            }
-          }
-        } else {
-          console.error('Error playing audio:', String(error));
-        }
-        // Ensure state reflects that playback failed
-        setIsPlaying(false);
+        // Wait for audio to be ready with timeout
+        await new Promise((resolve, reject) => {
+          const timeout = setTimeout(() => {
+            reject(new Error('Audio load timeout'));
+          }, 10000); // 10 second timeout
+          
+          const handleCanPlay = () => {
+            clearTimeout(timeout);
+            audio.removeEventListener('canplay', handleCanPlay);
+            audio.removeEventListener('error', handleError);
+            resolve(void 0);
+          };
+          
+          const handleError = () => {
+            clearTimeout(timeout);
+            audio.removeEventListener('canplay', handleCanPlay);
+            audio.removeEventListener('error', handleError);
+            reject(new Error('Audio failed to load'));
+          };
+          
+          audio.addEventListener('canplay', handleCanPlay);
+          audio.addEventListener('error', handleError);
+        });
       }
+      
+      // Try to play the audio
+      const playPromise = audio.play();
+      
+      if (playPromise !== undefined) {
+        await playPromise;
+        console.log('Audio playing successfully');
+        setIsPlaying(true);
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          console.log('Play request was interrupted');
+        } else if (error.name === 'NotAllowedError') {
+          console.error('Audio playback not allowed. User interaction may be required:', error);
+        } else if (error.name === 'NotSupportedError') {
+          console.error('Audio format not supported:', error);
+        } else {
+          console.error('Error playing audio:', error.name, error.message);
+        }
+      } else {
+        console.error('Unknown error playing audio:', error);
+      }
+      setIsPlaying(false);
     }
   }, []);
 
