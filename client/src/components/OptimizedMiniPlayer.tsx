@@ -117,49 +117,9 @@ export function OptimizedMiniPlayer() {
     setIsPlaying(isPlaying);
   }, [isPlaying, setIsPlaying]);
 
-  // Auto-play logic with race condition protection
-  const prevChapterIdRef = useRef<string | null>(null);
-  const hasAutoPlayedRef = useRef(false);
-  const autoPlayTimerRef = useRef<NodeJS.Timeout | null>(null);
-  
-  useEffect(() => {
-    const currentId = currentChapter?.id;
-    
-    // Clear any existing timer first
-    if (autoPlayTimerRef.current) {
-      clearTimeout(autoPlayTimerRef.current);
-      autoPlayTimerRef.current = null;
-    }
-    
-    // Reset auto-play flag when chapter changes
-    if (currentId && currentId !== prevChapterIdRef.current) {
-      prevChapterIdRef.current = currentId;
-      hasAutoPlayedRef.current = false;
-      
-      // Only auto-play if not currently playing and we have a play function
-      if (!isPlaying && play && !hasAutoPlayedRef.current) {
-        hasAutoPlayedRef.current = true;
-        
-        autoPlayTimerRef.current = setTimeout(() => {
-          // Double-check conditions before playing to prevent race conditions
-          if (currentChapter?.id === currentId && !isPlaying) {
-            play().catch((error) => {
-              console.warn('Auto-play failed:', error);
-              hasAutoPlayedRef.current = false;
-            });
-          }
-        }, 200);
-      }
-    }
-    
-    // Cleanup timer on unmount or dependency change
-    return () => {
-      if (autoPlayTimerRef.current) {
-        clearTimeout(autoPlayTimerRef.current);
-        autoPlayTimerRef.current = null;
-      }
-    };
-  }, [currentChapter?.id, isPlaying, play]);
+  // Removed auto-play logic to comply with browser autoplay policies
+  // Audio will now only play when user explicitly clicks play button
+  // This ensures reliable playback across all browsers and devices
 
   // Media Session metadata
   useEffect(() => {

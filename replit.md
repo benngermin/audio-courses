@@ -43,6 +43,9 @@ This is a mobile-first audio learning platform built for The Institutes educatio
   - ARIA labels for screen readers
 
 ### Critical Bug Fixes & Stability Improvements
+- **Audio Playback Fix**: Fixed browser autoplay policy issues by properly syncing React state with HTML audio element state
+- **State Synchronization**: Added play/pause event listeners to track actual audio element state instead of relying on promises
+- **Autoplay Compliance**: Removed automatic playback on chapter selection to comply with browser autoplay policies
 - **Database Integration**: Fixed missing `getTextSynchronization()` and `saveTextSynchronization()` methods in storage layer
 - **Memory Leak Prevention**: Enhanced AudioPool cleanup with proper element reset and event listener removal
 - **Error Handling**: Implemented exponential backoff retry for failed progress updates (up to 3 retries)

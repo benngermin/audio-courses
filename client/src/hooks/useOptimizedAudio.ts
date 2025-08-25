@@ -175,6 +175,14 @@ export function useOptimizedAudio({
       onEnded?.();
     };
 
+    const handlePlay = () => {
+      setIsPlaying(true);
+    };
+
+    const handlePause = () => {
+      setIsPlaying(false);
+    };
+
     const handleCanPlay = () => {
       setIsLoading(false);
     };
@@ -211,6 +219,8 @@ export function useOptimizedAudio({
     audio.removeEventListener("timeupdate", handleTimeUpdate);
     audio.removeEventListener("loadedmetadata", handleLoadedMetadata);
     audio.removeEventListener("ended", handleEnded);
+    audio.removeEventListener("play", handlePlay);
+    audio.removeEventListener("pause", handlePause);
     audio.removeEventListener("canplay", handleCanPlay);
     audio.removeEventListener("waiting", handleWaiting);
     audio.removeEventListener("canplaythrough", handleCanPlayThrough);
@@ -220,6 +230,8 @@ export function useOptimizedAudio({
     audio.addEventListener("timeupdate", handleTimeUpdate);
     audio.addEventListener("loadedmetadata", handleLoadedMetadata);
     audio.addEventListener("ended", handleEnded);
+    audio.addEventListener("play", handlePlay);
+    audio.addEventListener("pause", handlePause);
     audio.addEventListener("canplay", handleCanPlay);
     audio.addEventListener("waiting", handleWaiting);
     audio.addEventListener("canplaythrough", handleCanPlayThrough);
@@ -233,6 +245,8 @@ export function useOptimizedAudio({
     if (audio.currentTime) {
       setCurrentTime(audio.currentTime);
     }
+    // Sync playing state with actual audio element state
+    setIsPlaying(!audio.paused);
 
     // Start smooth progress updates
     if (progressIntervalRef.current) {
@@ -303,15 +317,25 @@ export function useOptimizedAudio({
       
       if (playPromise !== undefined) {
         await playPromise;
-        console.log('Audio playing successfully');
-        setIsPlaying(true);
+        
+        // Check if audio is actually playing after promise resolves
+        // Browser autoplay policies may have prevented playback
+        if (!audio.paused) {
+          console.log('Audio playing successfully');
+          setIsPlaying(true);
+        } else {
+          console.warn('Audio play() succeeded but audio is still paused - likely blocked by browser autoplay policy');
+          setIsPlaying(false);
+        }
       }
     } catch (error) {
       if (error instanceof Error) {
         if (error.name === 'AbortError') {
           console.log('Play request was interrupted');
         } else if (error.name === 'NotAllowedError') {
-          console.error('Audio playback not allowed. User interaction may be required:', error);
+          console.error('Audio playback not allowed. User interaction may be required:', error.message);
+          console.error('This usually happens when trying to play audio without user interaction.');
+          console.error('Make sure the play button is clicked by the user, not triggered automatically.');
         } else if (error.name === 'NotSupportedError') {
           console.error('Audio format not supported:', error);
         } else {
@@ -320,7 +344,7 @@ export function useOptimizedAudio({
       } else {
         console.error('Unknown error playing audio:', error);
       }
-      setIsPlaying(false);
+      // The pause event listener will handle setting isPlaying to false
     }
   }, []);
 
@@ -328,7 +352,7 @@ export function useOptimizedAudio({
     const audio = currentAudioRef.current;
     if (audio) {
       audio.pause();
-      setIsPlaying(false);
+      // The pause event listener will handle setting isPlaying to false
     }
   }, []);
 
