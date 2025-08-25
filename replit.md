@@ -5,16 +5,44 @@
 This is a mobile-first audio learning platform built for The Institutes educational content consumption. Users access the platform directly from Moodle LMS via SSO authentication, immediately landing on their course assignments page. The application allows users to consume course materials through audio playback with synchronized text reading (Speechify-type functionality), offline downloads, progress tracking, and automatic authentication. The system is designed to support learning on-the-go scenarios such as commuting or exercising.
 
 ### Key Features
-- **Synchronized Read-Along**: Real-time text highlighting synchronized with audio playback
-- **Multiple Audio Players**: Optimized mini-player, expanded player, and standalone audio player  
+- **Synchronized Read-Along**: Real-time text highlighting synchronized with audio playback in collapsible panel
+- **Dual-Layer Audio Interface**: Persistent mini-player with expandable read-along panel above
 - **Performance Optimizations**: Audio pooling, batched progress tracking, and bundle optimization
 - **Offline Support**: Download chapters for offline listening
 - **Progress Tracking**: Automatic progress saving with intelligent batching
-- **Mobile-First Design**: Responsive interface optimized for mobile devices
+- **Mobile-First Design**: Responsive interface with gesture support and safe area handling
 
 ## Recent Changes
 
-### Critical Bug Fixes & Stability Improvements (Latest)
+### Major UX Transformation - Read-Along Panel System (January 25, 2025)
+- **Replaced Full-Screen Player**: Removed the full-screen ExpandedPlayer in favor of a cleaner, more intuitive UX
+- **New ReadAlongPanel Component**: Created bottom-anchored sliding panel that expands upward from mini player
+- **Persistent Mini Player**: Mini player now stays visible at bottom while read-along content displays above
+- **Improved User Flow**: 
+  - Select chapter → Mini player appears at bottom
+  - Tap read-along button → Panel slides up with spring animation
+  - Mini player remains functional and accessible
+  - Swipe down or tap close → Panel collapses revealing chapter list
+- **Mobile Optimizations**: 
+  - Gesture support with swipe-to-dismiss
+  - Safe area insets for notched devices
+  - Dynamic height calculation accounting for mini player
+  - Touch-optimized controls with proper hit targets
+- **Enhanced State Management**:
+  - Added `isReadAlongVisible` state to OptimizedAudioContext
+  - Separated read-along visibility from expanded player state
+  - Clean state transitions with no conflicts
+- **Z-Index Architecture**:
+  - Chapter List: z-10
+  - Background Overlay: z-30 (dims content when panel open)
+  - Read-Along Panel: z-40
+  - Mini Player: z-50 (always on top)
+- **Accessibility Features**:
+  - Keyboard shortcuts (Escape to close)
+  - Proper focus management
+  - ARIA labels for screen readers
+
+### Critical Bug Fixes & Stability Improvements
 - **Database Integration**: Fixed missing `getTextSynchronization()` and `saveTextSynchronization()` methods in storage layer
 - **Memory Leak Prevention**: Enhanced AudioPool cleanup with proper element reset and event listener removal
 - **Error Handling**: Implemented exponential backoff retry for failed progress updates (up to 3 retries)
@@ -78,15 +106,16 @@ This is a mobile-first audio learning platform built for The Institutes educatio
 ## Technical Architecture
 
 ### Frontend Components
-- **OptimizedMiniPlayer**: Performance-optimized compact audio player with pooled audio elements
-- **ExpandedPlayer**: Full-featured player with visualizer, read-along integration, and advanced controls
+- **OptimizedMiniPlayer**: Performance-optimized compact audio player with pooled audio elements and read-along toggle
+- **ReadAlongPanel**: Bottom-anchored sliding panel that replaces full-screen player, displays synchronized text above mini player
+- **AudioPlayerUI**: Orchestration component managing mini player and read-along panel interaction
 - **ReadAlongViewer**: Synchronized text display with click-to-seek and highlighting
 - **ReadAlongSettings**: Comprehensive customization panel for reading experience
 - **ReadAlongToggle**: Mode switching controls for audio-only vs read-along modes
 
 ### Performance Systems
 - **AudioPool**: Manages HTML Audio element reuse and intelligent preloading with proper memory cleanup
-- **Selective Context Hooks**: `useCurrentTrack`, `usePlaybackState`, `useAudioControls`, `useAudioState`
+- **Selective Context Hooks**: `useCurrentTrack`, `usePlaybackState` (includes `isReadAlongVisible`), `useAudioControls`, `useAudioState`
 - **Batched Progress Tracking**: `useProgressTracker` with debouncing, page unload handling, and exponential backoff retry
 - **Bundle Optimization**: Manual chunk splitting for vendor libraries (React: 141KB, Media: 114KB, UI: 87KB)
 - **Memory Management**: Comprehensive cleanup prevents memory leaks in long listening sessions

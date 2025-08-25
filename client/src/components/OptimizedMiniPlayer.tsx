@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Play, Pause, RotateCcw, RotateCw } from "lucide-react";
+import { Play, Pause, RotateCcw, RotateCw, BookOpen } from "lucide-react";
 import { useCurrentTrack, usePlaybackState, useAudioControls, useAudioState } from "@/contexts/OptimizedAudioContext";
 import { useOptimizedAudio } from "@/hooks/useOptimizedAudio";
 import { useProgressTracker } from "@/hooks/useProgressTracker";
@@ -10,7 +10,7 @@ import type { Chapter } from "@shared/schema";
 
 export function OptimizedMiniPlayer() {
   const { currentChapter, currentAssignment, setCurrentTrack } = useCurrentTrack();
-  const { isExpanded, setIsExpanded, isPlayAllMode, setIsPlayAllMode, setIsPlaying } = usePlaybackState();
+  const { isExpanded, setIsExpanded, isPlayAllMode, setIsPlayAllMode, setIsPlaying, isReadAlongVisible, toggleReadAlong } = usePlaybackState();
   const { setAudioControls } = useAudioControls();
   const { setAudioState } = useAudioState();
 
@@ -198,7 +198,6 @@ export function OptimizedMiniPlayer() {
           padding: '12px',
           paddingBottom: `calc(12px + env(safe-area-inset-bottom))` 
         }}
-        onClick={() => setIsExpanded(true)}
       >
         <div className="flex items-center" style={{ gap: '12px', height: '100%' }}>
           {/* Visualizer */}
@@ -315,6 +314,32 @@ export function OptimizedMiniPlayer() {
                 >
                   <RotateCw className="h-5 w-5" style={{ color: '#1A1A1A' }} />
                 </Button>
+
+                {/* Read Along Button */}
+                {currentChapter?.hasReadAlong && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleReadAlong();
+                    }}
+                    className="hover:bg-black/5"
+                    style={{
+                      width: '36px',
+                      height: '36px',
+                      background: isReadAlongVisible ? '#FF6B35' : 'transparent',
+                      borderRadius: '50%'
+                    }}
+                  >
+                    <BookOpen 
+                      className="h-5 w-5" 
+                      style={{ 
+                        color: isReadAlongVisible ? '#FFFFFF' : '#1A1A1A' 
+                      }} 
+                    />
+                  </Button>
+                )}
               </div>
             </div>
 

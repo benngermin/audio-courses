@@ -30,6 +30,7 @@ interface AudioContextType {
   isPlaying: boolean;
   isExpanded: boolean;
   isPlayAllMode: boolean;
+  isReadAlongVisible: boolean;
   
   // Actions (stable references)
   setCurrentTrack: (chapter: Chapter, assignment: Assignment) => void;
@@ -37,7 +38,9 @@ interface AudioContextType {
   setIsPlaying: (playing: boolean) => void;
   setIsExpanded: (expanded: boolean) => void;
   setIsPlayAllMode: (playAll: boolean) => void;
+  setIsReadAlongVisible: (visible: boolean) => void;
   toggleExpanded: () => void;
+  toggleReadAlong: () => void;
   
   // Audio controls (stable reference)
   audioControls: AudioControlsType | null;
@@ -59,6 +62,7 @@ export function OptimizedAudioProvider({ children }: { children: ReactNode }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isPlayAllMode, setIsPlayAllMode] = useState(false);
+  const [isReadAlongVisible, setIsReadAlongVisible] = useState(false);
   
   // Audio controls (stable reference)
   const [audioControls, setAudioControls] = useState<AudioControlsType | null>(null);
@@ -96,6 +100,10 @@ export function OptimizedAudioProvider({ children }: { children: ReactNode }) {
     setIsExpanded(prev => !prev);
   }, []);
 
+  const toggleReadAlong = useCallback(() => {
+    setIsReadAlongVisible(prev => !prev);
+  }, []);
+
   // Memoized context value to prevent unnecessary re-renders
   // Note: audioState is intentionally NOT in dependency array to prevent
   // excessive re-renders from currentTime updates. Components that need
@@ -106,12 +114,15 @@ export function OptimizedAudioProvider({ children }: { children: ReactNode }) {
     isPlaying,
     isExpanded,
     isPlayAllMode,
+    isReadAlongVisible,
     setCurrentTrack,
     clearCurrentTrack,
     setIsPlaying,
     setIsExpanded,
     setIsPlayAllMode,
+    setIsReadAlongVisible,
     toggleExpanded,
+    toggleReadAlong,
     audioControls,
     setAudioControls,
     audioState,
@@ -122,9 +133,11 @@ export function OptimizedAudioProvider({ children }: { children: ReactNode }) {
     isPlaying,
     isExpanded,
     isPlayAllMode,
+    isReadAlongVisible,
     setCurrentTrack,
     clearCurrentTrack,
     toggleExpanded,
+    toggleReadAlong,
     audioControls,
     // audioState deliberately excluded to prevent currentTime re-renders
   ]);
@@ -170,18 +183,24 @@ export function usePlaybackState() {
     isPlaying: context.isPlaying,
     isExpanded: context.isExpanded,
     isPlayAllMode: context.isPlayAllMode,
+    isReadAlongVisible: context.isReadAlongVisible,
     setIsPlaying: context.setIsPlaying,
     setIsExpanded: context.setIsExpanded,
     setIsPlayAllMode: context.setIsPlayAllMode,
+    setIsReadAlongVisible: context.setIsReadAlongVisible,
     toggleExpanded: context.toggleExpanded,
+    toggleReadAlong: context.toggleReadAlong,
   }), [
     context.isPlaying,
     context.isExpanded,
     context.isPlayAllMode,
+    context.isReadAlongVisible,
     context.setIsPlaying,
     context.setIsExpanded,
     context.setIsPlayAllMode,
+    context.setIsReadAlongVisible,
     context.toggleExpanded,
+    context.toggleReadAlong,
   ]);
 }
 

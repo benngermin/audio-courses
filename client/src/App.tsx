@@ -6,8 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import { OptimizedAudioProvider } from "@/contexts/OptimizedAudioContext";
-import { OptimizedMiniPlayer } from "@/components/OptimizedMiniPlayer";
-import { ExpandedPlayer } from "@/components/ExpandedPlayer";
+import { AudioPlayerUI } from "@/components/AudioPlayerUI";
 import NotFound from "@/pages/not-found";
 import Assignments from "@/pages/assignments";
 import Chapters from "@/pages/chapters";
@@ -57,8 +56,7 @@ function App() {
         <TooltipProvider>
           <Toaster />
           <Router />
-          <OptimizedMiniPlayer />
-          <ExpandedPlayer />
+          <AudioPlayerUI />
         </TooltipProvider>
       </OptimizedAudioProvider>
     </QueryClientProvider>
