@@ -74,6 +74,8 @@ import {
   Download,
   Clock,
   AlertCircle,
+  Pencil,
+  Eye,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -123,6 +125,8 @@ export function UnifiedContentManager() {
   const [isUploading, setIsUploading] = useState(false);
   const [showJsonContent, setShowJsonContent] = useState(false);
   const [jsonContent, setJsonContent] = useState<any>(null);
+  const [showAudioUpload, setShowAudioUpload] = useState(false);
+  const [showJsonUpload, setShowJsonUpload] = useState(false);
   const [selectedCourseForAssignment, setSelectedCourseForAssignment] = useState<string>("");
   const [selectedAssignmentForChapter, setSelectedAssignmentForChapter] = useState<string>("");
 
@@ -915,6 +919,8 @@ export function UnifiedContentManager() {
           setSelectedFile(null);
           setSelectedJsonFile(null);
           setShowJsonContent(false);
+          setShowAudioUpload(false);
+          setShowJsonUpload(false);
         }
       }}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -1063,12 +1069,32 @@ export function UnifiedContentManager() {
                         <audio controls className="h-8" preload="none">
                           <source src={editingItem.audioUrl} type="audio/mpeg" />
                         </audio>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setShowAudioUpload(!showAudioUpload)}
+                          title="Change audio file"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
                       </div>
                     ) : (
-                      <Badge variant="outline" className="text-xs">
-                        <X className="h-3 w-3 mr-1" />
-                        No audio
-                      </Badge>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline" className="text-xs">
+                          <X className="h-3 w-3 mr-1" />
+                          No audio
+                        </Badge>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setShowAudioUpload(!showAudioUpload)}
+                          title="Upload audio file"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                      </div>
                     )}
                   </div>
 
@@ -1085,6 +1111,7 @@ export function UnifiedContentManager() {
                           Available
                         </Badge>
                         <Button 
+                          type="button"
                           variant="outline" 
                           size="sm"
                           onClick={async () => {
@@ -1100,17 +1127,89 @@ export function UnifiedContentManager() {
                             }
                           }}
                         >
+                          <Eye className="h-3 w-3 mr-1" />
                           View JSON
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setShowJsonUpload(!showJsonUpload)}
+                          title="Change read-along data"
+                        >
+                          <Pencil className="h-4 w-4" />
                         </Button>
                       </div>
                     ) : (
-                      <Badge variant="outline" className="text-xs">
-                        <X className="h-3 w-3 mr-1" />
-                        Not available
-                      </Badge>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline" className="text-xs">
+                          <X className="h-3 w-3 mr-1" />
+                          Not available
+                        </Badge>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setShowJsonUpload(!showJsonUpload)}
+                          title="Upload read-along data"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                      </div>
                     )}
                   </div>
 
+                  {/* Show audio upload when edit icon clicked */}
+                  {showAudioUpload && (
+                    <div className="space-y-2 pt-2 border-t">
+                      <Label>Replace Audio File</Label>
+                      <div className="flex items-center gap-4">
+                        <Input
+                          type="file"
+                          accept="audio/*"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              setSelectedFile(file);
+                              setShowAudioUpload(false);
+                            }
+                          }}
+                        />
+                        {selectedFile && (
+                          <Badge variant="secondary">
+                            <FileAudio className="h-3 w-3 mr-1" />
+                            {selectedFile.name}
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Show JSON upload when edit icon clicked */}
+                  {showJsonUpload && (
+                    <div className="space-y-2 pt-2 border-t">
+                      <Label>Replace Read-Along JSON File</Label>
+                      <div className="flex items-center gap-4">
+                        <Input
+                          type="file"
+                          accept="application/json,.json"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              setSelectedJsonFile(file);
+                              setShowJsonUpload(false);
+                            }
+                          }}
+                        />
+                        {selectedJsonFile && (
+                          <Badge variant="secondary">
+                            <BookOpen className="h-3 w-3 mr-1" />
+                            {selectedJsonFile.name}
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
               {!editingItem && (
@@ -1144,39 +1243,32 @@ export function UnifiedContentManager() {
                   )}
                 </div>
               )}
-              <div className="space-y-2">
-                <Label>
-                  Read-Along JSON File (Optional)
-                  {editingItem?.hasReadAlong && (
-                    <span className="ml-2 text-xs text-muted-foreground">
-                      - Will replace existing data
-                    </span>
-                  )}
-                </Label>
-                <div className="flex items-center gap-4">
-                  <Input
-                    type="file"
-                    accept="application/json,.json"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        setSelectedJsonFile(file);
-                      }
-                    }}
-                  />
-                  {selectedJsonFile && (
-                    <Badge variant="secondary">
-                      <BookOpen className="h-3 w-3 mr-1" />
-                      {selectedJsonFile.name}
-                    </Badge>
-                  )}
+              {!editingItem && (
+                <div className="space-y-2">
+                  <Label>Read-Along JSON File (Optional)</Label>
+                  <div className="flex items-center gap-4">
+                    <Input
+                      type="file"
+                      accept="application/json,.json"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          setSelectedJsonFile(file);
+                        }
+                      }}
+                    />
+                    {selectedJsonFile && (
+                      <Badge variant="secondary">
+                        <BookOpen className="h-3 w-3 mr-1" />
+                        {selectedJsonFile.name}
+                      </Badge>
+                    )}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Upload a JSON file containing text content and timing segments for read-along functionality
+                  </p>
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  {editingItem?.hasReadAlong 
-                    ? "Upload a new JSON file to replace the existing read-along data"
-                    : "Upload a JSON file containing text content and timing segments for read-along functionality"}
-                </p>
-              </div>
+              )}
               <DialogFooter>
                 <Button type="submit" disabled={isUploading || createChapterMutation.isPending || updateChapterMutation.isPending}>
                   {isUploading || createChapterMutation.isPending || updateChapterMutation.isPending ? (
