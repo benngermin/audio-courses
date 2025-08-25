@@ -716,11 +716,11 @@ export function ManualContentUpload() {
                       Upload Chapter
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="max-w-2xl">
+                  <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
                       <DialogTitle>Upload Audio Chapter</DialogTitle>
                       <DialogDescription>
-                        Select an assignment and upload an audio file for the chapter
+                        Create a new chapter with audio
                       </DialogDescription>
                     </DialogHeader>
                     <Form {...chapterForm}>
@@ -792,23 +792,54 @@ export function ManualContentUpload() {
                           <FormField
                             control={chapterForm.control}
                             name="duration"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Duration (seconds)</FormLabel>
-                                <FormControl>
-                                  <Input 
-                                    type="number" 
-                                    placeholder="0" 
-                                    {...field} 
-                                    onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
-                                  />
-                                </FormControl>
-                                <FormDescription>
-                                  Audio duration in seconds
-                                </FormDescription>
-                                <FormMessage />
-                              </FormItem>
-                            )}
+                            render={({ field }) => {
+                              const totalSeconds = field.value || 0;
+                              const minutes = Math.floor(totalSeconds / 60);
+                              const seconds = totalSeconds % 60;
+
+                              const updateDuration = (newMinutes: number, newSeconds: number) => {
+                                const total = newMinutes * 60 + newSeconds;
+                                field.onChange(total);
+                              };
+
+                              return (
+                                <FormItem>
+                                  <FormLabel>Duration</FormLabel>
+                                  <FormControl>
+                                    <div className="flex items-center gap-2">
+                                      <Input
+                                        type="text"
+                                        placeholder="0"
+                                        value={minutes || ''}
+                                        onChange={(e) => {
+                                          const val = e.target.value.replace(/\D/g, '');
+                                          const newMinutes = val === '' ? 0 : parseInt(val);
+                                          updateDuration(newMinutes, seconds);
+                                        }}
+                                        className="w-20"
+                                      />
+                                      <span className="text-sm text-muted-foreground">min</span>
+                                      <Input
+                                        type="text"
+                                        placeholder="0"
+                                        value={seconds || ''}
+                                        onChange={(e) => {
+                                          const val = e.target.value.replace(/\D/g, '');
+                                          const newSeconds = val === '' ? 0 : Math.min(parseInt(val), 59);
+                                          updateDuration(minutes, newSeconds);
+                                        }}
+                                        className="w-20"
+                                      />
+                                      <span className="text-sm text-muted-foreground">sec</span>
+                                    </div>
+                                  </FormControl>
+                                  <FormDescription>
+                                    Audio duration in minutes and seconds
+                                  </FormDescription>
+                                  <FormMessage />
+                                </FormItem>
+                              );
+                            }}
                           />
                         </div>
                         <div className="space-y-2">
