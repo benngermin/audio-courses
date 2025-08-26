@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { AdminPanel } from "@/components/AdminPanel";
 import { AppHeader } from "@/components/AppHeader";
-
+import { usePlaybackState } from "@/contexts/OptimizedAudioContext";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
@@ -10,6 +10,7 @@ export default function Admin() {
   const { user, isLoading } = useAuth();
   const { toast } = useToast();
   const [location, navigate] = useLocation();
+  const { isReadAlongVisible } = usePlaybackState();
 
   // Redirect if not admin
   useEffect(() => {
@@ -30,7 +31,7 @@ export default function Admin() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background">
-        <AppHeader />
+        {!isReadAlongVisible && <AppHeader />}
         <main className="max-w-screen-xl mx-auto px-4 py-6">
           <div className="text-center">
             <p className="text-slate-600">Loading...</p>
@@ -47,7 +48,7 @@ export default function Admin() {
 
   return (
     <div className="min-h-screen bg-background">
-      <AppHeader />
+      {!isReadAlongVisible && <AppHeader />}
       
       <main className="max-w-screen-xl mx-auto px-4">
         <AdminPanel />

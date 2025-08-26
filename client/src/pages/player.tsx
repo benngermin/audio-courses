@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { AppHeader } from "@/components/AppHeader";
 import { AudioPlayer } from "@/components/AudioPlayer";
-
+import { usePlaybackState } from "@/contexts/OptimizedAudioContext";
 import { useAuth } from "@/hooks/useAuth";
 import { useLocation } from "wouter";
 import type { Assignment, Chapter } from "@shared/schema";
@@ -9,6 +9,7 @@ import type { Assignment, Chapter } from "@shared/schema";
 export default function Player() {
   const { user } = useAuth();
   const [location, navigate] = useLocation();
+  const { isReadAlongVisible } = usePlaybackState();
   
   // Get IDs from URL params
   const urlParams = new URLSearchParams(location.split('?')[1] || '');
@@ -77,7 +78,7 @@ export default function Player() {
   if (!assignment || !chapter) {
     return (
       <div className="min-h-screen bg-background">
-        <AppHeader />
+        {!isReadAlongVisible && <AppHeader />}
         <main className="max-w-screen-xl mx-auto px-4 py-6">
           <div className="text-center">
             <p className="text-slate-600">Content not found.</p>
@@ -90,7 +91,7 @@ export default function Player() {
 
   return (
     <div className="min-h-screen bg-background">
-      <AppHeader />
+      {!isReadAlongVisible && <AppHeader />}
       
       <main className="max-w-screen-xl mx-auto px-4">
         <AudioPlayer

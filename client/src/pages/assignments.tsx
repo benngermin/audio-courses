@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { AppHeader } from "@/components/AppHeader";
-import { useCurrentTrack } from "@/contexts/OptimizedAudioContext";
+import { useCurrentTrack, usePlaybackState } from "@/contexts/OptimizedAudioContext";
 import { useAuth } from "@/hooks/useAuth";
 import { useLocation } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
@@ -15,6 +15,7 @@ export default function Assignments() {
   const { user } = useAuth();
   const [location, navigate] = useLocation();
   const { setCurrentTrack, currentChapter } = useCurrentTrack();
+  const { isReadAlongVisible } = usePlaybackState();
   const [currentAssignment, setCurrentAssignment] = useState<Assignment | undefined>(undefined);
 
   const { data: courses = [], isLoading: coursesLoading } = useQuery<Course[]>({
@@ -53,11 +54,13 @@ export default function Assignments() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background">
-        <AppHeader 
-          currentCourse={currentCourse} 
-          currentAssignment={currentAssignment}
-          onAssignmentChange={handleAssignmentChange}
-        />
+        {!isReadAlongVisible && (
+          <AppHeader 
+            currentCourse={currentCourse} 
+            currentAssignment={currentAssignment}
+            onAssignmentChange={handleAssignmentChange}
+          />
+        )}
         <main className="max-w-screen-xl mx-auto px-4 py-6">
           <div className="text-center">
             <p className="text-slate-600">Loading...</p>
@@ -70,11 +73,13 @@ export default function Assignments() {
 
   return (
     <div className="min-h-screen bg-background pb-24">
-      <AppHeader 
-        currentCourse={currentCourse} 
-        currentAssignment={currentAssignment}
-        onAssignmentChange={handleAssignmentChange}
-      />
+      {!isReadAlongVisible && (
+        <AppHeader 
+          currentCourse={currentCourse} 
+          currentAssignment={currentAssignment}
+          onAssignmentChange={handleAssignmentChange}
+        />
+      )}
       
       <main className="max-w-screen-xl mx-auto px-3 sm:px-4">
         {currentAssignment ? (

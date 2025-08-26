@@ -342,15 +342,15 @@ export function OptimizedMiniPlayer() {
           {/* Divider */}
           <div className="h-5 w-px bg-gray-300" />
 
-          {/* Read Button */}
+          {/* Read Button - Toggle */}
           <Button
             onClick={(e) => {
               e.stopPropagation();
-              setIsReadAlongVisible(true);
+              setIsReadAlongVisible(!isReadAlongVisible);
             }}
             className="h-9 px-3 hover:bg-orange-600"
             style={{ 
-              background: '#FF6B35',
+              background: isReadAlongVisible ? '#374151' : '#FF6B35',
               color: 'white',
               borderRadius: '8px',
               display: 'flex',
@@ -522,15 +522,15 @@ export function OptimizedMiniPlayer() {
               </Button>
             </div>
 
-            {/* Read Button */}
+            {/* Read Button - Toggle */}
             <Button
               onClick={(e) => {
                 e.stopPropagation();
-                setIsReadAlongVisible(true);
+                setIsReadAlongVisible(!isReadAlongVisible);
               }}
               className="h-10 w-10 rounded-lg flex items-center justify-center"
               style={{ 
-                background: '#FF6B35',
+                background: isReadAlongVisible ? '#374151' : '#FF6B35',
                 color: 'white'
               }}
             >

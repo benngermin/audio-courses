@@ -75,22 +75,22 @@ export function ReadAlongPanel({ isVisible, onClose }: ReadAlongPanelProps) {
             variant="ghost"
             size="sm"
             onClick={onClose}
-            className="absolute top-4 right-4 z-50 h-10 w-10 p-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-full shadow-md hover:bg-white dark:hover:bg-gray-800"
+            className="absolute top-2 right-2 z-50 h-8 w-8 p-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-full shadow-md hover:bg-white dark:hover:bg-gray-800"
             title="Close (ESC)"
           >
-            <X className="h-5 w-5" />
+            <X className="h-4 w-4" />
           </Button>
 
           {/* Text size control positioned absolutely */}
-          <div className="absolute top-4 right-16 z-50">
+          <div className="absolute top-2 right-12 z-50">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-10 w-10 p-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-full shadow-md hover:bg-white dark:hover:bg-gray-800"
+                  className="h-8 w-8 p-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-full shadow-md hover:bg-white dark:hover:bg-gray-800"
                 >
-                  <Type className="h-5 w-5" />
+                  <Type className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
@@ -113,8 +113,8 @@ export function ReadAlongPanel({ isVisible, onClose }: ReadAlongPanelProps) {
             </DropdownMenu>
           </div>
 
-          {/* Read-Along Content - full screen with padding */}
-          <div className="flex-1 overflow-hidden pt-16 px-4 sm:px-8 lg:px-16">
+          {/* Read-Along Content - full screen with minimal padding */}
+          <div className="flex-1 overflow-hidden pt-12 px-2 sm:px-4 lg:px-8">
               {currentChapter.hasReadAlong ? (
                 <ReadAlongViewer
                   chapterId={currentChapter.id}
