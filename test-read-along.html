@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Read-Along Animation Test</title>
+  <style>
+    body {
+      font-family: -apple-system, system-ui, sans-serif;
+      margin: 0;
+      padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+      background: #f5f5f5;
+    }
+    
+    .container {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+    }
+    
+    .controls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      padding: 20px;
+      background: #1e293b;
+      color: white;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    
+    button {
+      padding: 10px 20px;
+      background: #ff6b35;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.2s;
+    }
+    
+    button:hover {
+      background: #e85a2a;
+    }
+    
+    .time-display {
+      font-family: monospace;
+      font-size: 14px;
+      margin-left: auto;
+    }
+    
+    .status {
+      padding: 10px 15px;
+      background: #22c55e;
+      color: white;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .read-along-container {
+      background: #fcfcfc;
+      border: 2px solid #e5e5e5;
+      border-radius: 8px;
+      padding: 30px;
+      min-height: 400px;
+      overflow-y: auto;
+      max-height: 500px;
+    }
+    
+    .text-segment {
+      display: inline;
+      cursor: pointer;
+      padding: 2px 8px;
+      margin: 0 -8px;
+      transition: all 0.3s ease;
+      line-height: 1.8;
+    }
+    
+    .text-segment:hover {
+      background: rgba(255, 107, 53, 0.1);
+    }
+    
+    .text-segment.active {
+      background: linear-gradient(90deg, rgba(251, 146, 60, 0.15) 0%, rgba(251, 146, 60, 0.05) 100%);
+      border-left: 3px solid #FB923C;
+      padding-left: 12px;
+      margin-left: -15px;
+      font-weight: 500;
+      color: #1a1a1a;
+    }
+    
+    .text-segment.past {
+      opacity: 0.4;
+      color: #666;
+    }
+    
+    .text-segment.future {
+      opacity: 0.6;
+      color: #888;
+    }
+    
+    .paragraph-break {
+      display: block;
+      margin: 20px 0;
+    }
+    
+    .info-box {
+      background: #f0f9ff;
+      border-left: 4px solid #3b82f6;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+    }
+    
+    .log {
+      background: #1e293b;
+      color: #10b981;
+      padding: 10px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 12px;
+      max-height: 150px;
+      overflow-y: auto;
+      margin-top: 20px;
+    }
+    
+    .log-entry {
+      margin: 2px 0;
+    }
+    
+    @keyframes highlight-pulse {
+      0%, 100% { transform: translateX(0); }
+      50% { transform: translateX(2px); }
+    }
+    
+    .text-segment.active {
+      animation: highlight-pulse 2s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎯 Read-Along Animation Test</h1>
+    
+    <div class="info-box">
+      <strong>✨ Testing Read-Along Features:</strong>
+      <ul style="margin: 10px 0 0 20px;">
+        <li>Real-time text highlighting synchronized with audio</li>
+        <li>Smooth transitions between segments (50ms update rate)</li>
+        <li>Click any text to seek to that position</li>
+        <li>Auto-scroll to keep active text visible</li>
+        <li>Visual states: past (faded), current (highlighted), future (semi-faded)</li>
+      </ul>
+    </div>
+    
+    <div class="status" id="status">
+      <span>⏸</span>
+      <span>Click Play to start the read-along experience</span>
+    </div>
+    
+    <div class="controls">
+      <button id="playBtn">▶️ Play</button>
+      <button id="resetBtn">↺ Reset</button>
+      <div class="time-display" id="timeDisplay">0:00 / 1:00</div>
+    </div>
+    
+    <div class="read-along-container" id="textContainer">
+      <!-- Text segments will be inserted here -->
+    </div>
+    
+    <div class="log" id="log"></div>
+  </div>
+  
+  <audio id="audio" style="display: none;"></audio>
+  
+  <script>
+    // Read-along segments with timing data
+    const segments = [
+      { id: 0, text: "Welcome to this comprehensive course on risk management and insurance principles.", start: 0, end: 4.5 },
+      { id: 1, text: "In today's rapidly evolving business landscape, understanding risk assessment has become more crucial than ever before.", start: 4.5, end: 10.2 },
+      { id: 2, text: "<br><br>", start: 10.2, end: 10.3, type: "break" },
+      { id: 3, text: "Risk management is the systematic process of identifying, analyzing, and responding to risk factors throughout the life of a project or business operation.", start: 11, end: 17.5 },
+      { id: 4, text: "This process involves several key components that we'll explore in detail.", start: 17.5, end: 21.8 },
+      { id: 5, text: "<br><br>", start: 21.8, end: 21.9, type: "break" },
+      { id: 6, text: "The first component is risk identification, which involves recognizing potential threats that could impact your organization.", start: 22.5, end: 28.2 },
+      { id: 7, text: "These threats can range from natural disasters and cyber attacks to market volatility and regulatory changes.", start: 28.2, end: 33.5 },
+      { id: 8, text: "<br><br>", start: 33.5, end: 33.6, type: "break" },
+      { id: 9, text: "Once risks are identified, the next step is risk assessment.", start: 34.2, end: 37.8 },
+      { id: 10, text: "This involves evaluating the likelihood of each risk occurring and the potential impact it could have on your business operations.", start: 37.8, end: 44.5 },
+      { id: 11, text: "This assessment helps prioritize which risks require immediate attention.", start: 44.5, end: 48.2 },
+      { id: 12, text: "<br><br>", start: 48.2, end: 48.3, type: "break" },
+      { id: 13, text: "Risk mitigation strategies then come into play, involving the development of plans to minimize, transfer, or eliminate identified risks.", start: 49, end: 55.8 },
+      { id: 14, text: "Common strategies include insurance coverage, diversification, and contingency planning.", start: 55.8, end: 60 }
+    ];
+    
+    const audio = document.getElementById('audio');
+    const playBtn = document.getElementById('playBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const textContainer = document.getElementById('textContainer');
+    const timeDisplay = document.getElementById('timeDisplay');
+    const status = document.getElementById('status');
+    const log = document.getElementById('log');
+    
+    let isPlaying = false;
+    let currentTime = 0;
+    let activeSegmentId = -1;
+    let animationFrame = null;
+    
+    // Initialize text segments
+    function initializeText() {
+      textContainer.innerHTML = '';
+      segments.forEach(segment => {
+        if (segment.type === 'break') {
+          textContainer.innerHTML += segment.text;
+        } else {
+          const span = document.createElement('span');
+          span.className = 'text-segment future';
+          span.dataset.segmentId = segment.id;
+          span.textContent = segment.text + ' ';
+          span.onclick = () => seekToSegment(segment.id);
+          textContainer.appendChild(span);
+        }
+      });
+      addLog('Text segments initialized');
+    }
+    
+    // Update segment highlighting
+    function updateSegments(time) {
+      const newActiveId = findActiveSegment(time);
+      
+      if (newActiveId !== activeSegmentId) {
+        activeSegmentId = newActiveId;
+        
+        // Update all segment classes
+        segments.forEach((segment, index) => {
+          if (segment.type === 'break') return;
+          
+          const element = textContainer.querySelector(`[data-segment-id="${segment.id}"]`);
+          if (!element) return;
+          
+          element.classList.remove('active', 'past', 'future');
+          
+          if (time > segment.end) {
+            element.classList.add('past');
+          } else if (time >= segment.start && time <= segment.end) {
+            element.classList.add('active');
+            // Auto-scroll to active element
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            addLog(`Active segment: ${segment.id} (${segment.start}s - ${segment.end}s)`);
+          } else {
+            element.classList.add('future');
+          }
+        });
+      }
+    }
+    
+    // Find active segment based on time
+    function findActiveSegment(time) {
+      for (let i = 0; i < segments.length; i++) {
+        const segment = segments[i];
+        if (segment.type !== 'break' && time >= segment.start && time <= segment.end) {
+          return segment.id;
+        }
+      }
+      return -1;
+    }
+    
+    // Seek to segment
+    function seekToSegment(segmentId) {
+      const segment = segments.find(s => s.id === segmentId);
+      if (segment) {
+        currentTime = segment.start;
+        updateSegments(currentTime);
+        updateTimeDisplay();
+        addLog(`Seeked to segment ${segmentId} at ${segment.start}s`);
+      }
+    }
+    
+    // Animation loop (20 updates per second)
+    function animate() {
+      if (isPlaying) {
+        currentTime += 0.05; // 50ms increments
+        
+        if (currentTime >= 60) {
+          currentTime = 60;
+          stop();
+        }
+        
+        updateSegments(currentTime);
+        updateTimeDisplay();
+        
+        animationFrame = requestAnimationFrame(() => {
+          setTimeout(animate, 50); // 50ms = 20fps for smooth animation
+        });
+      }
+    }
+    
+    // Play/pause functionality
+    function togglePlay() {
+      if (isPlaying) {
+        pause();
+      } else {
+        play();
+      }
+    }
+    
+    function play() {
+      isPlaying = true;
+      playBtn.textContent = '⏸ Pause';
+      status.innerHTML = '<span>🎵</span><span>Reading along with audio...</span>';
+      status.style.background = '#22c55e';
+      addLog('Started playback');
+      animate();
+    }
+    
+    function pause() {
+      isPlaying = false;
+      playBtn.textContent = '▶️ Play';
+      status.innerHTML = '<span>⏸</span><span>Paused</span>';
+      status.style.background = '#f59e0b';
+      if (animationFrame) {
+        cancelAnimationFrame(animationFrame);
+      }
+      addLog('Paused playback');
+    }
+    
+    function stop() {
+      pause();
+      status.innerHTML = '<span>✅</span><span>Completed</span>';
+      status.style.background = '#3b82f6';
+      addLog('Playback completed');
+    }
+    
+    function reset() {
+      pause();
+      currentTime = 0;
+      activeSegmentId = -1;
+      updateSegments(currentTime);
+      updateTimeDisplay();
+      status.innerHTML = '<span>⏸</span><span>Click Play to start the read-along experience</span>';
+      status.style.background = '#22c55e';
+      addLog('Reset to beginning');
+    }
+    
+    function updateTimeDisplay() {
+      const formatTime = (seconds) => {
+        const mins = Math.floor(seconds / 60);
+        const secs = Math.floor(seconds % 60);
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
+      };
+      timeDisplay.textContent = `${formatTime(currentTime)} / 1:00`;
+    }
+    
+    function addLog(message) {
+      const entry = document.createElement('div');
+      entry.className = 'log-entry';
+      const time = new Date().toLocaleTimeString();
+      entry.textContent = `[${time}] ${message}`;
+      log.insertBefore(entry, log.firstChild);
+      
+      // Keep only last 10 entries
+      while (log.children.length > 10) {
+        log.removeChild(log.lastChild);
+      }
+    }
+    
+    // Event listeners
+    playBtn.addEventListener('click', togglePlay);
+    resetBtn.addEventListener('click', reset);
+    
+    // Initialize
+    initializeText();
+    updateTimeDisplay();
+    addLog('Read-along test ready');
+  </script>
+</body>
+</html>

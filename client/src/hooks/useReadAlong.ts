@@ -79,11 +79,11 @@ export function useReadAlong({ chapterId, currentTime, isPlaying, enabled = true
 
   // Update active segment when time changes
   useEffect(() => {
-    if (!readAlongData?.segments || !isPlaying) return;
+    if (!readAlongData?.segments) return;
     
-    // Throttle updates to avoid excessive re-renders
+    // Throttle updates to avoid excessive re-renders (reduced for smoother animation)
     const now = Date.now();
-    if (now - lastUpdateTimeRef.current < 100) return; // Update max 10x per second
+    if (now - lastUpdateTimeRef.current < 50) return; // Update max 20x per second
     lastUpdateTimeRef.current = now;
     
     const newActiveIndex = findActiveSegment(currentTime, readAlongData.segments);
@@ -107,7 +107,7 @@ export function useReadAlong({ chapterId, currentTime, isPlaying, enabled = true
         setHighlightedWords(new Set(wordsInSegment));
       }
     }
-  }, [currentTime, isPlaying, readAlongData?.segments, activeSegmentIndex, findActiveSegment]);
+  }, [currentTime, readAlongData?.segments, activeSegmentIndex, findActiveSegment]);
 
   // Auto-scroll to active segment
   useEffect(() => {

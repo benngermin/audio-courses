@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Read-Along with Real Audio - Complete Test</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+    
+    .header h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    
+    .header p {
+      opacity: 0.9;
+      font-size: 14px;
+    }
+    
+    .main-content {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 30px;
+      padding: 30px;
+    }
+    
+    @media (max-width: 768px) {
+      .main-content {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    /* Chapter Selection Panel */
+    .chapters-panel {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 20px;
+    }
+    
+    .chapters-panel h2 {
+      font-size: 18px;
+      margin-bottom: 15px;
+      color: #333;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .chapter-card {
+      background: white;
+      border: 2px solid transparent;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .chapter-card:hover {
+      border-color: #FF6B35;
+      transform: translateX(5px);
+      box-shadow: 0 5px 15px rgba(255, 107, 53, 0.2);
+    }
+    
+    .chapter-card.active {
+      background: linear-gradient(135deg, #fff5f1 0%, #ffe8e0 100%);
+      border-color: #FF6B35;
+    }
+    
+    .chapter-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+    
+    .chapter-info {
+      flex: 1;
+    }
+    
+    .chapter-title {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 4px;
+      font-size: 14px;
+    }
+    
+    .chapter-duration {
+      font-size: 12px;
+      color: #666;
+    }
+    
+    /* Read-Along Panel */
+    .read-along-panel {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+    
+    .read-along-header {
+      background: #f8f9fa;
+      padding: 20px;
+      border-bottom: 1px solid #e9ecef;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .read-along-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+    }
+    
+    .text-size-controls {
+      display: flex;
+      gap: 5px;
+      background: white;
+      padding: 5px;
+      border-radius: 8px;
+    }
+    
+    .text-size-btn {
+      padding: 8px 12px;
+      background: white;
+      border: 1px solid #dee2e6;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.2s;
+    }
+    
+    .text-size-btn:hover {
+      background: #f8f9fa;
+    }
+    
+    .text-size-btn.active {
+      background: #FF6B35;
+      color: white;
+      border-color: #FF6B35;
+    }
+    
+    /* Auto-scroll toggle styling */
+    .auto-scroll-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: white;
+      border-radius: 8px;
+      border: 1px solid #dee2e6;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .auto-scroll-toggle:hover {
+      background: #f8f9fa;
+      border-color: #FF6B35;
+    }
+    
+    .auto-scroll-toggle.active {
+      background: #fff5f1;
+      border-color: #FF6B35;
+    }
+    
+    .read-along-content {
+      padding: 30px;
+      max-height: 500px;
+      overflow-y: auto;
+      line-height: 1.8;
+      color: #333;
+    }
+    
+    .read-along-content.text-sm {
+      font-size: 14px;
+    }
+    
+    .read-along-content.text-md {
+      font-size: 16px;
+    }
+    
+    .read-along-content.text-lg {
+      font-size: 18px;
+    }
+    
+    .read-along-content.text-xl {
+      font-size: 20px;
+    }
+    
+    .text-segment {
+      display: inline;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      padding: 2px 6px;
+      border-radius: 3px;
+    }
+    
+    .text-segment:hover {
+      background: rgba(255, 107, 53, 0.05);
+    }
+    
+    .text-segment.past {
+      opacity: 0.4;
+      color: #999;
+    }
+    
+    .text-segment.active {
+      background: linear-gradient(90deg, rgba(251, 146, 60, 0.2) 0%, rgba(251, 146, 60, 0.1) 100%);
+      color: #000;
+      font-weight: 500;
+      padding: 4px 10px;
+      margin: 0 -4px;
+      border-left: 3px solid #FB923C;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.9; }
+    }
+    
+    .text-segment.future {
+      opacity: 0.6;
+    }
+    
+    .paragraph-break {
+      display: block;
+      height: 20px;
+    }
+    
+    /* Audio Player */
+    .player-container {
+      background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+      padding: 20px 30px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .play-button {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
+      border: none;
+      border-radius: 50%;
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      transition: all 0.3s;
+      box-shadow: 0 5px 15px rgba(255, 107, 53, 0.3);
+    }
+    
+    .play-button:hover {
+      transform: scale(1.1);
+      box-shadow: 0 8px 25px rgba(255, 107, 53, 0.4);
+    }
+    
+    .play-button:active {
+      transform: scale(0.95);
+    }
+    
+    .skip-button {
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      transition: all 0.2s;
+    }
+    
+    .skip-button:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(1.1);
+    }
+    
+    .progress-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 3px;
+      overflow: hidden;
+      cursor: pointer;
+      position: relative;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #FF6B35 0%, #F7931E 100%);
+      border-radius: 3px;
+      transition: width 0.1s;
+      position: relative;
+    }
+    
+    .progress-handle {
+      position: absolute;
+      right: -8px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 16px;
+      background: white;
+      border: 3px solid #FF6B35;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+    
+    .time-display {
+      display: flex;
+      justify-content: space-between;
+      color: white;
+      font-size: 12px;
+      font-family: monospace;
+      opacity: 0.8;
+    }
+    
+    .speed-control {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 6px;
+      color: white;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+    
+    .speed-control:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+    
+    /* Status Messages */
+    .status-message {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: white;
+      padding: 15px 20px;
+      border-radius: 8px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      opacity: 0;
+      transform: translateY(-20px);
+      transition: all 0.3s;
+      z-index: 1000;
+    }
+    
+    .status-message.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .status-message.success {
+      border-left: 4px solid #22c55e;
+    }
+    
+    .status-message.error {
+      border-left: 4px solid #ef4444;
+    }
+    
+    .status-message.info {
+      border-left: 4px solid #3b82f6;
+    }
+    
+    /* Loading State */
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #666;
+    }
+    
+    .spinner {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #FF6B35;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>
+        <span>🎯</span>
+        <span>Read-Along Audio Test</span>
+      </h1>
+      <p>Complete test of synchronized text highlighting with real audio playback</p>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Chapter Selection -->
+      <div class="chapters-panel">
+        <h2>
+          <span>📚</span>
+          <span>Select Chapter</span>
+        </h2>
+        <div id="chapterList">
+          <!-- Chapters will be inserted here -->
+        </div>
+      </div>
+      
+      <!-- Read-Along Panel -->
+      <div class="read-along-panel">
+        <div class="read-along-header">
+          <div class="read-along-title" id="chapterTitle">Select a chapter to begin</div>
+          <div style="display: flex; gap: 15px; align-items: center;">
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" id="autoScrollToggle" checked style="width: 18px; height: 18px; cursor: pointer;">
+              <span style="font-size: 14px; color: #666;">Auto-scroll</span>
+            </label>
+            <div class="text-size-controls">
+              <button class="text-size-btn" data-size="sm">S</button>
+              <button class="text-size-btn active" data-size="md">M</button>
+              <button class="text-size-btn" data-size="lg">L</button>
+              <button class="text-size-btn" data-size="xl">XL</button>
+            </div>
+          </div>
+        </div>
+        <div class="read-along-content text-md" id="textContainer">
+          <div class="loading">
+            <div class="spinner"></div>
+            <p style="margin-top: 20px;">Select a chapter to load content</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Audio Player -->
+    <div class="player-container">
+      <button class="skip-button" id="skipBackBtn">-15</button>
+      <button class="play-button" id="playBtn">▶</button>
+      <button class="skip-button" id="skipForwardBtn">+15</button>
+      
+      <div class="progress-container">
+        <div class="progress-bar" id="progressBar">
+          <div class="progress-fill" id="progressFill" style="width: 0%">
+            <div class="progress-handle"></div>
+          </div>
+        </div>
+        <div class="time-display">
+          <span id="currentTime">0:00</span>
+          <span id="duration">0:00</span>
+        </div>
+      </div>
+      
+      <button class="speed-control" id="speedBtn">1x</button>
+    </div>
+  </div>
+  
+  <!-- Status Messages -->
+  <div class="status-message" id="statusMessage">
+    <span id="statusIcon">✓</span>
+    <span id="statusText">Ready</span>
+  </div>
+  
+  <!-- Hidden Audio Element -->
+  <audio id="audioElement" preload="auto"></audio>
+  
+  <script>
+    // Sample chapters with real audio URLs
+    const chapters = [
+      {
+        id: 1,
+        title: "Introduction to Risk Management",
+        duration: 180,
+        audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+        hasTranscript: true
+      },
+      {
+        id: 2,
+        title: "Types of Insurance Risk",
+        duration: 240,
+        audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+        hasTranscript: true
+      },
+      {
+        id: 3,
+        title: "Risk Assessment Techniques",
+        duration: 200,
+        audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+        hasTranscript: false
+      }
+    ];
+    
+    // Sample transcript segments with timing
+    const transcriptSegments = [
+      { id: 0, text: "Welcome to this comprehensive course on risk management and insurance principles.", start: 0, end: 4.5 },
+      { id: 1, text: "In today's rapidly evolving business landscape, understanding risk assessment has become more crucial than ever before.", start: 4.5, end: 10.2 },
+      { id: 2, text: "Risk management is the systematic process of identifying, analyzing, and responding to risk factors throughout the life of a project or business operation.", start: 11, end: 17.5 },
+      { id: 3, text: "This process involves several key components that we'll explore in detail.", start: 17.5, end: 21.8 },
+      { id: 4, text: "The first component is risk identification, which involves recognizing potential threats that could impact your organization.", start: 22.5, end: 28.2 },
+      { id: 5, text: "These threats can range from natural disasters and cyber attacks to market volatility and regulatory changes.", start: 28.2, end: 33.5 },
+      { id: 6, text: "Once risks are identified, the next step is risk assessment.", start: 34.2, end: 37.8 },
+      { id: 7, text: "This involves evaluating the likelihood of each risk occurring and the potential impact it could have on your business operations.", start: 37.8, end: 44.5 },
+      { id: 8, text: "This assessment helps prioritize which risks require immediate attention.", start: 44.5, end: 48.2 },
+      { id: 9, text: "Risk mitigation strategies then come into play, involving the development of plans to minimize, transfer, or eliminate identified risks.", start: 49, end: 55.8 },
+      { id: 10, text: "Common strategies include insurance coverage, diversification, and contingency planning.", start: 55.8, end: 61 },
+      { id: 11, text: "Finally, continuous monitoring ensures that risk management strategies remain effective as business conditions change.", start: 62, end: 68.5 },
+      { id: 12, text: "Regular reviews and updates to risk management plans are essential for maintaining organizational resilience.", start: 68.5, end: 74 }
+    ];
+    
+    // State variables
+    let currentChapter = null;
+    let currentSegmentId = -1;
+    let audioLoaded = false;
+    let updateInterval = null;
+    let autoScrollEnabled = true;
+    
+    // DOM elements
+    const audioElement = document.getElementById('audioElement');
+    const playBtn = document.getElementById('playBtn');
+    const skipBackBtn = document.getElementById('skipBackBtn');
+    const skipForwardBtn = document.getElementById('skipForwardBtn');
+    const progressBar = document.getElementById('progressBar');
+    const progressFill = document.getElementById('progressFill');
+    const currentTimeEl = document.getElementById('currentTime');
+    const durationEl = document.getElementById('duration');
+    const speedBtn = document.getElementById('speedBtn');
+    const textContainer = document.getElementById('textContainer');
+    const chapterTitle = document.getElementById('chapterTitle');
+    const chapterList = document.getElementById('chapterList');
+    
+    // Initialize chapters list
+    function initializeChapters() {
+      chapterList.innerHTML = '';
+      chapters.forEach(chapter => {
+        const card = document.createElement('div');
+        card.className = 'chapter-card';
+        card.dataset.chapterId = chapter.id;
+        card.innerHTML = `
+          <div class="chapter-icon">${chapter.id}</div>
+          <div class="chapter-info">
+            <div class="chapter-title">${chapter.title}</div>
+            <div class="chapter-duration">${formatTime(chapter.duration)} ${chapter.hasTranscript ? '• Read-along available' : ''}</div>
+          </div>
+        `;
+        card.onclick = () => selectChapter(chapter);
+        chapterList.appendChild(card);
+      });
+    }
+    
+    // Select and load a chapter
+    function selectChapter(chapter) {
+      currentChapter = chapter;
+      
+      // Update UI
+      document.querySelectorAll('.chapter-card').forEach(card => {
+        card.classList.toggle('active', card.dataset.chapterId == chapter.id);
+      });
+      
+      chapterTitle.textContent = chapter.title;
+      
+      // Load audio
+      audioElement.src = chapter.audioUrl;
+      audioElement.load();
+      audioLoaded = false;
+      
+      // Load transcript
+      if (chapter.hasTranscript) {
+        loadTranscript();
+      } else {
+        textContainer.innerHTML = `
+          <div class="loading">
+            <p style="color: #999;">📚 Read-along content not available for this chapter</p>
+            <p style="color: #999; font-size: 14px; margin-top: 10px;">Audio-only playback mode</p>
+          </div>
+        `;
+      }
+      
+      showStatus('info', `Loaded: ${chapter.title}`);
+      
+      // Reset player
+      playBtn.textContent = '▶';
+      currentTimeEl.textContent = '0:00';
+      progressFill.style.width = '0%';
+    }
+    
+    // Load transcript segments
+    function loadTranscript() {
+      textContainer.innerHTML = '';
+      
+      let lastParagraphEnd = 0;
+      transcriptSegments.forEach((segment, index) => {
+        // Add paragraph breaks
+        if (index > 0 && segment.start - lastParagraphEnd > 5) {
+          const breakEl = document.createElement('span');
+          breakEl.className = 'paragraph-break';
+          textContainer.appendChild(breakEl);
+        }
+        
+        const span = document.createElement('span');
+        span.className = 'text-segment future';
+        span.dataset.segmentId = segment.id;
+        span.textContent = segment.text + ' ';
+        span.onclick = () => seekToSegment(segment);
+        textContainer.appendChild(span);
+        
+        lastParagraphEnd = segment.end;
+      });
+    }
+    
+    // Update segment highlighting based on current time
+    function updateSegments() {
+      if (!currentChapter?.hasTranscript) return;
+      
+      const currentTime = audioElement.currentTime;
+      const activeSegment = transcriptSegments.find(seg => 
+        currentTime >= seg.start && currentTime <= seg.end
+      );
+      
+      // Always update segments, not just when ID changes
+      // This fixes seeking issues
+      const newSegmentId = activeSegment ? activeSegment.id : -1;
+      
+      // Update all segments regardless of whether segment changed
+      transcriptSegments.forEach(segment => {
+        const element = textContainer.querySelector(`[data-segment-id="${segment.id}"]`);
+        if (!element) return;
+        
+        element.classList.remove('active', 'past', 'future');
+        
+        if (currentTime > segment.end) {
+          element.classList.add('past');
+        } else if (activeSegment && segment.id === activeSegment.id) {
+          element.classList.add('active');
+          // Auto-scroll only if enabled AND segment changed
+          if (autoScrollEnabled && newSegmentId !== currentSegmentId) {
+            element.scrollIntoView({ 
+              behavior: 'smooth', 
+              block: 'center' 
+            });
+          }
+        } else {
+          element.classList.add('future');
+        }
+      });
+      
+      currentSegmentId = newSegmentId;
+    }
+    
+    // Seek to a specific segment
+    function seekToSegment(segment) {
+      audioElement.currentTime = segment.start;
+      updateSegments();
+      if (audioElement.paused) {
+        updateProgress();
+      }
+    }
+    
+    // Update progress bar and time display
+    function updateProgress() {
+      const currentTime = audioElement.currentTime;
+      const duration = audioElement.duration || 0;
+      
+      if (duration > 0) {
+        const percentage = (currentTime / duration) * 100;
+        progressFill.style.width = percentage + '%';
+      }
+      
+      currentTimeEl.textContent = formatTime(currentTime);
+      durationEl.textContent = formatTime(duration);
+      
+      // Update segments for read-along
+      updateSegments();
+    }
+    
+    // Format time in MM:SS
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return `${mins}:${secs.toString().padStart(2, '0')}`;
+    }
+    
+    // Show status message
+    function showStatus(type, message) {
+      const statusEl = document.getElementById('statusMessage');
+      const iconEl = document.getElementById('statusIcon');
+      const textEl = document.getElementById('statusText');
+      
+      statusEl.className = `status-message ${type}`;
+      
+      if (type === 'success') {
+        iconEl.textContent = '✓';
+      } else if (type === 'error') {
+        iconEl.textContent = '✗';
+      } else {
+        iconEl.textContent = 'ℹ';
+      }
+      
+      textEl.textContent = message;
+      statusEl.classList.add('show');
+      
+      setTimeout(() => {
+        statusEl.classList.remove('show');
+      }, 3000);
+    }
+    
+    
+    // Audio event handlers
+    audioElement.addEventListener('loadedmetadata', () => {
+      audioLoaded = true;
+      durationEl.textContent = formatTime(audioElement.duration);
+    });
+    
+    audioElement.addEventListener('play', () => {
+      playBtn.textContent = '⏸';
+      // Start smooth update interval (20 times per second)
+      updateInterval = setInterval(updateProgress, 50);
+      showStatus('success', 'Playing');
+    });
+    
+    audioElement.addEventListener('pause', () => {
+      playBtn.textContent = '▶';
+      if (updateInterval) {
+        clearInterval(updateInterval);
+        updateInterval = null;
+      }
+    });
+    
+    audioElement.addEventListener('ended', () => {
+      playBtn.textContent = '▶';
+      if (updateInterval) {
+        clearInterval(updateInterval);
+        updateInterval = null;
+      }
+      showStatus('info', 'Playback completed');
+    });
+    
+    audioElement.addEventListener('error', (e) => {
+      showStatus('error', 'Audio loading failed');
+      console.error('Audio error:', e);
+    });
+    
+    // Handle all time updates including seeking
+    audioElement.addEventListener('timeupdate', () => {
+      updateProgress();
+    });
+    
+    // Player controls
+    playBtn.addEventListener('click', () => {
+      if (!currentChapter) {
+        showStatus('error', 'Please select a chapter first');
+        return;
+      }
+      
+      if (audioElement.paused) {
+        audioElement.play().catch(err => {
+          showStatus('error', 'Playback failed - try again');
+          console.error('Play error:', err);
+        });
+      } else {
+        audioElement.pause();
+      }
+    });
+    
+    skipBackBtn.addEventListener('click', () => {
+      audioElement.currentTime = Math.max(0, audioElement.currentTime - 15);
+      // No need to call updateProgress - timeupdate event will handle it
+    });
+    
+    skipForwardBtn.addEventListener('click', () => {
+      audioElement.currentTime = Math.min(audioElement.duration || 0, audioElement.currentTime + 15);
+      // No need to call updateProgress - timeupdate event will handle it
+    });
+    
+    // Progress bar seeking
+    progressBar.addEventListener('click', (e) => {
+      if (!audioLoaded) return;
+      
+      const rect = progressBar.getBoundingClientRect();
+      const percentage = (e.clientX - rect.left) / rect.width;
+      audioElement.currentTime = percentage * audioElement.duration;
+      // timeupdate event will handle the update
+    });
+    
+    // Speed control
+    const speeds = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
+    let currentSpeedIndex = 2; // Start at 1x
+    
+    speedBtn.addEventListener('click', () => {
+      currentSpeedIndex = (currentSpeedIndex + 1) % speeds.length;
+      const speed = speeds[currentSpeedIndex];
+      audioElement.playbackRate = speed;
+      speedBtn.textContent = speed === 1 ? '1x' : `${speed}x`;
+      showStatus('info', `Playback speed: ${speed}x`);
+    });
+    
+    // Text size controls
+    document.querySelectorAll('.text-size-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const size = btn.dataset.size;
+        
+        // Update button states
+        document.querySelectorAll('.text-size-btn').forEach(b => {
+          b.classList.remove('active');
+        });
+        btn.classList.add('active');
+        
+        // Update text container class
+        textContainer.className = `read-along-content text-${size}`;
+        
+        // Scroll to active segment if exists
+        const activeSegment = textContainer.querySelector('.text-segment.active');
+        if (activeSegment) {
+          activeSegment.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      });
+    });
+    
+    // Auto-scroll toggle
+    const autoScrollToggle = document.getElementById('autoScrollToggle');
+    autoScrollToggle.addEventListener('change', (e) => {
+      autoScrollEnabled = e.target.checked;
+      showStatus('info', `Auto-scroll ${autoScrollEnabled ? 'enabled' : 'disabled'}`);
+      
+      // If enabling auto-scroll and audio is playing, scroll to active segment
+      if (autoScrollEnabled && !audioElement.paused) {
+        const activeSegment = textContainer.querySelector('.text-segment.active');
+        if (activeSegment) {
+          activeSegment.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center' 
+          });
+        }
+      }
+    });
+    
+    // Initialize
+    initializeChapters();
+    showStatus('info', 'Select a chapter to begin');
+    
+    // Auto-select first chapter for demo
+    setTimeout(() => {
+      selectChapter(chapters[0]);
+    }, 500);
+  </script>
+</body>
+</html>

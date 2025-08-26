@@ -143,12 +143,15 @@ export function useSimpleAudio({
     }
     setIsPlaying(!audio.paused);
 
-    // Smooth progress updates
+    // Smooth progress updates for read-along sync
     const progressInterval = setInterval(() => {
       if (!audio.paused) {
-        setCurrentTime(audio.currentTime);
+        const time = audio.currentTime;
+        setCurrentTime(time);
+        // Also trigger callback for external sync
+        onTimeUpdateRef.current?.(time);
       }
-    }, 100);
+    }, 50); // Update 20 times per second for smoother animations
 
     return () => {
       clearInterval(progressInterval);
