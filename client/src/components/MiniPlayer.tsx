@@ -251,20 +251,9 @@ export function MiniPlayer() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={async (e) => {
+                  onClick={(e) => {
                     e.stopPropagation();
-                    
-                    // CRITICAL: Handle first-time user interaction properly
-                    if (!isPlaying) {
-                      // Direct call to play() instead of togglePlay() for better control
-                      try {
-                        await play();
-                      } catch (error) {
-                        console.error('Play failed:', error);
-                      }
-                    } else {
-                      pause();
-                    }
+                    togglePlay();
                   }}
                   className="hover:bg-black/5"
                   style={{

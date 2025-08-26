@@ -238,53 +238,23 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
         });
       }
       
-      // CRITICAL FIX: Force audio context to be in 'running' state
-      // This ensures browser allows audio playback
-      if (typeof window !== 'undefined' && window.AudioContext) {
-        try {
-          const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-          if (audioContext.state === 'suspended') {
-            await audioContext.resume();
-            console.log('Audio context resumed');
-          }
-          audioContext.close(); // Clean up temporary context
-        } catch (e) {
-          console.log('AudioContext not available or failed to resume:', e);
-        }
-      }
-      
-      // Try to play the audio with immediate state check
+      // Try to play the audio
       const playPromise = audio.play();
       
       if (playPromise !== undefined) {
         await playPromise;
-        console.log('Play promise resolved successfully');
         
-        // Immediate check instead of setTimeout
-        if (audio.paused) {
-          console.error('AUTOPLAY BLOCKED: Audio is still paused after play() resolved');
-          setIsPlaying(false);
-          
-          // Try one more time with a brief delay
-          setTimeout(async () => {
-            try {
-              await audio.play();
-              if (!audio.paused) {
-                console.log('Second play attempt successful');
-                setIsPlaying(true);
-              } else {
-                console.error('Second play attempt also blocked');
-                setIsPlaying(false);
-              }
-            } catch (e) {
-              console.error('Second play attempt failed:', e);
-              setIsPlaying(false);
-            }
-          }, 50);
-        } else {
-          console.log('Audio playing successfully');
-          setIsPlaying(true);
-        }
+        // Critical fix: Check if audio is actually playing after promise resolves
+        // The promise can resolve successfully but audio might still be paused due to autoplay policy
+        setTimeout(() => {
+          if (audio.paused) {
+            console.log('Audio play() succeeded but audio is still paused - likely blocked by browser autoplay policy');
+            setIsPlaying(false);
+          } else {
+            console.log('Audio playing successfully');
+            setIsPlaying(true);
+          }
+        }, 100); // Small delay to let the audio element update its state
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -292,24 +262,6 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
           console.log('Play request was interrupted');
         } else if (error.name === 'NotAllowedError') {
           console.error('Audio playback not allowed. User interaction may be required:', error);
-          // Try to unlock audio with a user gesture simulation
-          try {
-            // Create a silent audio element to unlock audio context
-            const silentAudio = new Audio();
-            silentAudio.src = 'data:audio/mpeg;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCaWdTb3VuZEJhbmsuY29tIC8gTGFTb25vdGhlcXVlLm9yZwBURU5DAAAAHQAAASAATGF2ZjU5LjI3LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAAEAAABIADAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
-            silentAudio.volume = 0.01;
-            await silentAudio.play();
-            silentAudio.pause();
-            
-            // Now try original audio again
-            await audio.play();
-            if (!audio.paused) {
-              console.log('Audio unlocked and playing');
-              setIsPlaying(true);
-            }
-          } catch (unlockError) {
-            console.error('Failed to unlock audio:', unlockError);
-          }
         } else if (error.name === 'NotSupportedError') {
           console.error('Audio format not supported:', error);
         } else {
