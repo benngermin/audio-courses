@@ -1,13 +1,18 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { LinearProgress } from "@/components/ui/circular-progress";
-import { Play, Pause, ChevronUp, X, ListMusic, RotateCcw, RotateCw } from "lucide-react";
+import { Play, Pause, RotateCcw, RotateCw, Grid3X3 } from "lucide-react";
 import { useAudioContext } from "@/contexts/AudioContext";
 import { useAudio } from "@/hooks/useAudio";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Chapter } from "@shared/schema";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export function MiniPlayer() {
   const { 
@@ -22,6 +27,8 @@ export function MiniPlayer() {
     isPlayAllMode,
     setCurrentTrack,
     setIsPlayAllMode,
+    isReadAlongVisible,
+    setIsReadAlongVisible,
   } = useAudioContext();
   
   const lastProgressUpdateRef = useRef(0);
@@ -171,6 +178,15 @@ export function MiniPlayer() {
     setIsPlayAllMode(false); // Clear Play All mode when closing
   };
 
+  const handleSpeedChange = (speed: number) => {
+    changePlaybackRate(speed);
+  };
+
+  const getSpeedLabel = (rate: number) => {
+    if (rate === 1) return '1x';
+    return `${rate}x`;
+  };
+
   if (!currentChapter || !currentAssignment) return null;
 
   return (
@@ -182,209 +198,189 @@ export function MiniPlayer() {
         transition={{ type: "spring", damping: 25, stiffness: 300 }}
         className="fixed bottom-0 left-0 right-0 z-50"
         style={{ 
-          height: '80px',
+          height: '72px',
           background: '#FFFFFF',
-          borderTop: '1px solid #E0E0E0',
-          padding: '12px',
-          paddingBottom: `calc(12px + env(safe-area-inset-bottom))` 
+          borderTop: '1px solid #E5E7EB',
+          paddingBottom: `env(safe-area-inset-bottom)` 
         }}
-        onClick={() => setIsExpanded(true)}
       >
-        <div className="flex items-center" style={{ gap: '12px', height: '100%' }}>
-          {/* Visualizer */}
-          <div 
-            className="flex-shrink-0 bg-[#2c2d3e] flex items-center justify-center overflow-hidden"
-            style={{
-              width: '56px',
-              height: '56px',
-              borderRadius: '8px'
+        <div className="flex items-center h-full px-4" style={{ gap: '16px' }}>
+          {/* Time Display - Left */}
+          <span 
+            className="text-sm tabular-nums"
+            style={{ 
+              color: '#374151',
+              minWidth: '40px',
+              fontSize: '13px'
             }}
           >
-            <div className={`visualizer ${isPlaying ? 'playing' : 'paused'} w-full h-full flex items-center justify-center relative scale-[0.3]`}>
-              <div className="center-orb relative w-[120px] h-[120px] flex items-center justify-center">
-                <div className="orb-inner absolute w-[60px] h-[60px] rounded-full"></div>
-                <div className="orb-pulse absolute w-[100px] h-[100px] rounded-full"></div>
-                <div className="orb-glow absolute w-[120px] h-[120px] rounded-full"></div>
-              </div>
+            {formatTime(currentTime)}
+          </span>
+
+          {/* Progress Bar */}
+          <div 
+            className="flex-1 relative cursor-pointer py-2"
+            onClick={(e) => {
+              e.stopPropagation();
+              if (!duration || !seek) return;
+              const rect = e.currentTarget.getBoundingClientRect();
+              const x = e.clientX - rect.left;
+              const percentage = x / rect.width;
+              const newTime = percentage * duration;
+              seek(newTime);
+            }}
+          >
+            <div 
+              className="w-full relative"
+              style={{
+                height: '4px',
+                background: '#E5E7EB',
+                borderRadius: '2px'
+              }}
+            >
+              {/* Progress fill */}
+              <div
+                className="absolute top-0 left-0 h-full transition-all duration-100"
+                style={{ 
+                  background: '#FF6B35',
+                  borderRadius: '2px',
+                  width: duration ? `${(currentTime / duration) * 100}%` : '0%' 
+                }}
+              />
+              
+              {/* Progress handle */}
+              <div
+                className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-md transition-all duration-100"
+                style={{ 
+                  left: duration ? `${(currentTime / duration) * 100}%` : '0%', 
+                  marginLeft: '-6px',
+                  border: '2px solid #FF6B35'
+                }}
+              />
             </div>
           </div>
 
-          {/* Content Wrapper */}
-          <div className="flex-1 flex flex-col justify-center" style={{ gap: '10px', minWidth: 0 }}>
-            {/* Top Row - Title and Controls */}
-            <div className="flex items-center" style={{ gap: '12px' }}>
-              {/* Title */}
-              <p 
-                className="flex-1 line-clamp-2"
-                style={{
-                  fontSize: '14px',
-                  fontWeight: 500,
-                  color: '#1A1A1A',
-                  lineHeight: 1.3
+          {/* Time Display - Right */}
+          <span 
+            className="text-sm tabular-nums"
+            style={{ 
+              color: '#374151',
+              minWidth: '40px',
+              fontSize: '13px',
+              textAlign: 'right'
+            }}
+          >
+            {formatTime(duration)}
+          </span>
+
+          {/* Speed Control */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={(e) => e.stopPropagation()}
+                className="h-8 px-2 hover:bg-gray-100 font-medium"
+                style={{ 
+                  minWidth: '40px',
+                  color: '#374151',
+                  fontSize: '13px'
                 }}
               >
-                {currentChapter.title}
-              </p>
-
-              {/* Controls Group */}
-              <div className="flex items-center flex-shrink-0" style={{ gap: '2px' }}>
-                {/* Rewind Button */}
-                <Button
-                  variant="ghost"
-                  size="icon"
+                {getSpeedLabel(playbackRate)}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="center" side="top">
+              {[0.5, 0.75, 1, 1.25, 1.5, 1.75, 2].map(speed => (
+                <DropdownMenuItem
+                  key={speed}
                   onClick={(e) => {
                     e.stopPropagation();
-                    skipBackward(15);
+                    handleSpeedChange(speed);
                   }}
-                  className="hover:bg-black/5"
-                  style={{
-                    width: '36px',
-                    height: '36px',
-                    background: 'transparent',
-                    borderRadius: '50%'
-                  }}
+                  className="cursor-pointer"
                 >
-                  <RotateCcw className="h-5 w-5" style={{ color: '#1A1A1A' }} />
-                </Button>
+                  <span className={playbackRate === speed ? 'font-semibold' : ''}>
+                    {getSpeedLabel(speed)}
+                  </span>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
 
-                {/* Play/Pause Button */}
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    togglePlay();
-                  }}
-                  className="hover:bg-black/5"
-                  style={{
-                    width: '40px',
-                    height: '40px',
-                    background: 'transparent',
-                    borderRadius: '50%'
-                  }}
-                >
-                  {isPlaying ? (
-                    <svg 
-                      width="18" 
-                      height="18" 
-                      viewBox="0 0 18 18" 
-                      fill="none"
-                      style={{ color: '#1A1A1A' }}
-                    >
-                      <rect x="2" y="0" width="4" height="18" fill="currentColor" />
-                      <rect x="12" y="0" width="4" height="18" fill="currentColor" />
-                    </svg>
-                  ) : (
-                    <svg 
-                      width="14" 
-                      height="18" 
-                      viewBox="0 0 14 18" 
-                      fill="none"
-                      style={{ marginLeft: '2px', color: '#1A1A1A' }}
-                    >
-                      <path d="M0 0L14 9L0 18V0Z" fill="currentColor" />
-                    </svg>
-                  )}
-                </Button>
+          {/* Divider */}
+          <div className="h-5 w-px bg-gray-300" />
 
-                {/* Fast Forward Button */}
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    skipForward(30);
-                  }}
-                  className="hover:bg-black/5"
-                  style={{
-                    width: '36px',
-                    height: '36px',
-                    background: 'transparent',
-                    borderRadius: '50%'
-                  }}
-                >
-                  <RotateCw className="h-5 w-5" style={{ color: '#1A1A1A' }} />
-                </Button>
-              </div>
-            </div>
+          {/* Playback Controls */}
+          <div className="flex items-center" style={{ gap: '4px' }}>
+            {/* Skip Backward */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={(e) => {
+                e.stopPropagation();
+                skipBackward(15);
+              }}
+              className="hover:bg-gray-100 h-8 w-8"
+            >
+              <RotateCcw className="h-4 w-4" style={{ color: '#374151' }} />
+            </Button>
 
-            {/* Progress Container */}
-            <div className="flex items-center" style={{ gap: '8px' }}>
-              {/* Current Time */}
-              <span 
-                style={{
-                  fontSize: '11px',
-                  color: '#999999',
-                  minWidth: '28px',
-                  fontFamily: 'monospace'
-                }}
-              >
-                {formatTime(currentTime)}
-              </span>
+            {/* Play/Pause */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={(e) => {
+                e.stopPropagation();
+                togglePlay();
+              }}
+              className="hover:bg-gray-100 h-9 w-9"
+            >
+              {isPlaying ? (
+                <Pause className="h-5 w-5" style={{ color: '#374151' }} />
+              ) : (
+                <Play className="h-5 w-5" style={{ color: '#374151', marginLeft: '2px' }} />
+              )}
+            </Button>
 
-              {/* Progress Bar - Increased clickable area */}
-              <div 
-                className="flex-1 relative cursor-pointer"
-                style={{
-                  height: '20px', // Increased from 3px to 20px for larger click target
-                  display: 'flex',
-                  alignItems: 'center'
-                }}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (!duration || !seek) return;
-                  const rect = e.currentTarget.getBoundingClientRect();
-                  const x = e.clientX - rect.left;
-                  const percentage = x / rect.width;
-                  const newTime = percentage * duration;
-                  seek(newTime);
-                }}
-              >
-                {/* Actual visible progress bar */}
-                <div 
-                  className="w-full relative pointer-events-none"
-                  style={{
-                    height: '3px',
-                    background: '#E0E0E0',
-                    borderRadius: '2px'
-                  }}
-                >
-                  {/* Progress fill */}
-                  <div
-                    className="absolute top-0 left-0 h-full transition-all duration-100"
-                    style={{ 
-                      background: '#FF6B35',
-                      borderRadius: '2px',
-                      width: duration ? `${(currentTime / duration) * 100}%` : '0%' 
-                    }}
-                  />
-                  
-                  {/* White circle handle */}
-                  <div
-                    className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-sm transition-all duration-100 pointer-events-none"
-                    style={{ 
-                      left: duration ? `${(currentTime / duration) * 100}%` : '0%', 
-                      marginLeft: '-6px',
-                      border: '1px solid #FF6B35'
-                    }}
-                  />
-                </div>
-              </div>
-
-              {/* Duration */}
-              <span 
-                style={{
-                  fontSize: '11px',
-                  color: '#999999',
-                  minWidth: '28px',
-                  fontFamily: 'monospace',
-                  textAlign: 'right'
-                }}
-              >
-                {formatTime(duration)}
-              </span>
-            </div>
+            {/* Skip Forward */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={(e) => {
+                e.stopPropagation();
+                skipForward(30);
+              }}
+              className="hover:bg-gray-100 h-8 w-8"
+            >
+              <RotateCw className="h-4 w-4" style={{ color: '#374151' }} />
+            </Button>
           </div>
+
+          {/* Divider */}
+          <div className="h-5 w-px bg-gray-300" />
+
+          {/* Read Button */}
+          <Button
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsReadAlongVisible(true);
+            }}
+            className="h-9 px-3 hover:bg-orange-600"
+            style={{ 
+              background: '#FF6B35',
+              color: 'white',
+              borderRadius: '8px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              fontSize: '14px',
+              fontWeight: 500
+            }}
+          >
+            <Grid3X3 className="h-4 w-4" />
+            <span>Read</span>
+          </Button>
         </div>
       </motion.div>
     </AnimatePresence>
