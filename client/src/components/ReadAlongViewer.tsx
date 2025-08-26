@@ -186,7 +186,7 @@ export function ReadAlongViewer({
       {/* Floating Settings Button */}
       <motion.button
         onClick={() => setShowSettingsMenu(!showSettingsMenu)}
-        className="fixed bottom-32 right-6 z-50 w-14 h-14 rounded-full bg-orange-500 hover:bg-orange-600 flex items-center justify-center shadow-lg transition-colors"
+        className="fixed bottom-32 right-6 z-50 w-14 h-14 rounded-full bg-orange-500 flex items-center justify-center shadow-lg"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
         data-testid="button-read-along-settings"
