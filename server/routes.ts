@@ -174,7 +174,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       res.json(assignment);
     } catch (error) {
-      console.error("Error fetching assignment:", error);
+      logError('fetch-assignment', error);
       res.status(500).json({ message: "Failed to fetch assignment" });
     }
   });
@@ -188,7 +188,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log("API - Fetched chapters:", chapters.map(ch => ({ id: ch.id, title: ch.title, audioUrl: ch.audioUrl })));
       res.json(chapters);
     } catch (error) {
-      console.error("Error fetching chapters:", error);
+      logError('fetch-chapters', error);
       res.status(500).json({ message: "Failed to fetch chapters" });
     }
   });
@@ -201,7 +201,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       res.json(chapter);
     } catch (error) {
-      console.error("Error fetching chapter:", error);
+      logError('fetch-chapter', error);
       res.status(500).json({ message: "Failed to fetch chapter" });
     }
   });
@@ -215,7 +215,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const progress = await storage.getUserProgress(userId, chapterId);
       res.json(progress || { currentTime: 0, isCompleted: false });
     } catch (error) {
-      console.error("Error fetching progress:", error);
+      logError('fetch-progress', error);
       res.status(500).json({ message: "Failed to fetch progress" });
     }
   });
@@ -230,7 +230,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const progress = await storage.updateUserProgress(progressData);
       res.json(progress);
     } catch (error) {
-      console.error("Error updating progress:", error);
+      logError('update-progress', error);
       res.status(500).json({ message: "Failed to update progress" });
     }
   });
@@ -283,7 +283,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json(downloadedContent);
     } catch (error) {
-      console.error("Error downloading audio:", error);
+      logError('download-audio', error);
       res.status(500).json({ message: "Failed to download audio" });
     }
   });
@@ -294,7 +294,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const downloads = await storage.getDownloadedContent(userId);
       res.json(downloads);
     } catch (error) {
-      console.error("Error fetching downloads:", error);
+      logError('fetch-downloads', error);
       res.status(500).json({ message: "Failed to fetch downloads" });
     }
   });
@@ -309,7 +309,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json({ message: "Download removed" });
     } catch (error) {
-      console.error("Error removing download:", error);
+      logError('remove-download', error);
       res.status(500).json({ message: "Failed to remove download" });
     }
   });
@@ -328,7 +328,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         setupCommand: `tsx server/scripts/setAdmin.ts ${userId}`
       });
     } catch (error) {
-      console.error("Error fetching setup info:", error);
+      logError('fetch-setup-info', error);
       res.status(500).json({ message: "Failed to fetch setup info" });
     }
   });
@@ -346,7 +346,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         message: isConnected ? "Successfully connected to TI Content Repository API" : "Failed to connect to TI Content Repository API"
       });
     } catch (error) {
-      console.error("Error testing connection:", error);
+      logError('test-connection', error);
       res.status(500).json({ message: "Failed to test connection" });
     }
   });
@@ -384,7 +384,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const latestLog = await storage.getLatestSyncLog();
       res.json(latestLog);
     } catch (error) {
-      console.error("Error fetching sync status:", error);
+      logError('fetch-sync-status', error);
       res.status(500).json({ message: "Failed to fetch sync status" });
     }
   });
@@ -418,7 +418,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const updatedCourse = await storage.updateCourse(courseId, courseData);
       res.json(updatedCourse);
     } catch (error) {
-      console.error("Error updating course:", error);
+      logError('update-course', error);
       res.status(500).json({ message: "Failed to update course" });
     }
   });
@@ -434,7 +434,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await storage.deleteCourse(courseId);
       res.json({ message: "Course deleted successfully" });
     } catch (error) {
-      console.error("Error deleting course:", error);
+      logError('delete-course', error);
       res.status(500).json({ message: "Failed to delete course" });
     }
   });
@@ -450,7 +450,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const newAssignment = await storage.createAssignment(assignmentData);
       res.json(newAssignment);
     } catch (error) {
-      console.error("Error creating assignment:", error);
+      logError('create-assignment', error);
       res.status(500).json({ message: "Failed to create assignment" });
     }
   });
@@ -467,7 +467,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const updatedAssignment = await storage.updateAssignment(assignmentId, assignmentData);
       res.json(updatedAssignment);
     } catch (error) {
-      console.error("Error updating assignment:", error);
+      logError('update-assignment', error);
       res.status(500).json({ message: "Failed to update assignment" });
     }
   });
@@ -483,7 +483,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await storage.deleteAssignment(assignmentId);
       res.json({ message: "Assignment deleted successfully" });
     } catch (error) {
-      console.error("Error deleting assignment:", error);
+      logError('delete-assignment', error);
       res.status(500).json({ message: "Failed to delete assignment" });
     }
   });
@@ -499,7 +499,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const newChapter = await storage.createChapter(chapterData);
       res.json(newChapter);
     } catch (error) {
-      console.error("Error creating chapter:", error);
+      logError('create-chapter', error);
       res.status(500).json({ message: "Failed to create chapter" });
     }
   });
@@ -516,7 +516,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const updatedChapter = await storage.updateChapter(chapterId, chapterData);
       res.json(updatedChapter);
     } catch (error) {
-      console.error("Error updating chapter:", error);
+      logError('update-chapter', error);
       res.status(500).json({ message: "Failed to update chapter" });
     }
   });
@@ -532,7 +532,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await storage.deleteChapter(chapterId);
       res.json({ message: "Chapter deleted successfully" });
     } catch (error) {
-      console.error("Error deleting chapter:", error);
+      logError('delete-chapter', error);
       res.status(500).json({ message: "Failed to delete chapter" });
     }
   });
@@ -702,7 +702,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       res.json(readAlongData);
     } catch (error) {
-      console.error("Error fetching read-along data:", error);
+      logError('fetch-read-along', error);
       res.status(500).json({ message: "Failed to fetch read-along data" });
     }
   });
@@ -737,7 +737,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       res.json({ message: "Read-along data updated successfully" });
     } catch (error) {
-      console.error("Error updating read-along data:", error);
+      logError('update-read-along', error);
       res.status(500).json({ message: "Failed to update read-along data" });
     }
   });
@@ -782,7 +782,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           data: validated
         });
       } catch (validationError) {
-        console.error("Validation error:", validationError);
+        logError('validation-read-along', validationError);
         return res.status(400).json({ 
           message: "Invalid JSON structure. Please ensure the file contains 'textContent' and 'segments' fields." 
         });
@@ -825,7 +825,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       res.json(allChapters);
     } catch (error) {
-      console.error("Error fetching all chapters:", error);
+      logError('fetch-all-chapters', error);
       res.status(500).json({ message: "Failed to fetch chapters" });
     }
   });
