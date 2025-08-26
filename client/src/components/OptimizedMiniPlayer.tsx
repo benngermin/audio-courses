@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Play, Pause, RotateCcw, RotateCw, Grid3X3 } from "lucide-react";
+import { Play, Pause, RotateCcw, RotateCw, Grid3X3, BookOpen } from "lucide-react";
 import { useCurrentTrack, usePlaybackState, useAudioControls, useAudioState } from "@/contexts/OptimizedAudioContext";
 import { useSimpleAudio } from "@/hooks/useSimpleAudio";
 import { useProgressTracker } from "@/hooks/useProgressTracker";
