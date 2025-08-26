@@ -148,11 +148,11 @@ export function ReadAlongViewer({
                   onClick={() => handleSegmentClick(item.segmentIndex)}
                   className={cn(
                     "transition-all duration-200 cursor-pointer rounded px-1 py-0.5",
-                    "hover:bg-gray-100 dark:hover:bg-gray-800",
+                    "hover:bg-orange-50 dark:hover:bg-orange-950/20",
                     isActive && [
-                      "bg-gray-900 dark:bg-gray-100",
-                      "text-white dark:text-gray-900",
-                      "font-medium"
+                      "bg-orange-600 dark:bg-orange-500",
+                      "text-white dark:text-white",
+                      "font-medium shadow-sm"
                     ],
                     !isActive && "text-gray-700 dark:text-gray-300",
                     isParagraph && "block mb-4 p-2"
