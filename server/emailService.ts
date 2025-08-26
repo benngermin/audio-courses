@@ -9,7 +9,7 @@ export async function sendMagicLinkEmail(toEmail: string, magicLinkUrl: string):
       return true; // Return true to allow testing without email
     }
     
-    const fromEmail = process.env.AUTH_FROM_EMAIL || 'Audio Courses <no-reply@audiocourses.theinstituteslab.org>';
+    const fromEmail = process.env.AUTH_FROM_EMAIL || 'Audio Courses <onboarding@resend.dev>';
     
     const htmlContent = `
       <!DOCTYPE html>
@@ -53,6 +53,8 @@ export async function sendMagicLinkEmail(toEmail: string, magicLinkUrl: string):
       If you didn't request this email, you can safely ignore it.
     `;
     
+    console.log(`Attempting to send email to ${toEmail} from ${fromEmail}`);
+    
     const response = await resend.emails.send({
       from: fromEmail,
       to: [toEmail],
@@ -61,7 +63,13 @@ export async function sendMagicLinkEmail(toEmail: string, magicLinkUrl: string):
       text: textContent,
     });
     
-    console.log(`Magic link email sent to ${toEmail}, response:`, response);
+    console.log(`Magic link email sent to ${toEmail}, response:`, JSON.stringify(response, null, 2));
+    
+    if (response.error) {
+      console.error(`Resend API error:`, response.error);
+      return false;
+    }
+    
     return true;
   } catch (error) {
     console.error(`Failed to send magic link email to ${toEmail}:`, error);
