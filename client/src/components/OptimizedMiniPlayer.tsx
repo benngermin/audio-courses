@@ -253,10 +253,10 @@ export function OptimizedMiniPlayer() {
                 }}
               >
                 <div 
-                  className="text-sm whitespace-nowrap"
+                  className="text-sm whitespace-nowrap tabular-nums"
                   style={{
-                    color: '#6B7280',
-                    fontSize: '12px',
+                    color: '#374151',
+                    fontSize: '13px',
                     animation: currentChapter.title.length > 50 ? 'scroll-text 15s linear infinite' : 'none',
                     paddingRight: currentChapter.title.length > 50 ? '60px' : '0',
                     display: 'inline-block'
@@ -453,10 +453,10 @@ export function OptimizedMiniPlayer() {
                 }}
               >
                 <div 
-                  className="text-xs whitespace-nowrap"
+                  className="text-sm whitespace-nowrap font-medium"
                   style={{
-                    color: '#6B7280',
-                    fontSize: '11px',
+                    color: '#1F2937',
+                    fontSize: '13px',
                     animation: currentChapter.title.length > 30 ? 'scroll-text 12s linear infinite' : 'none',
                     paddingRight: currentChapter.title.length > 30 ? '40px' : '0',
                     display: 'inline-block'
