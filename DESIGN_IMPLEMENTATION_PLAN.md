@@ -47,43 +47,58 @@ This document outlines the comprehensive changes needed to implement the new Min
 
 ## Detailed Changes Required
 
-### 1. MiniPlayer Updates
-- [ ] Remove visualizer orb component
-- [ ] Restructure layout to be more horizontal and compact
-- [ ] Add speed control button showing current speed (e.g., "1x")
-- [ ] Move time displays to sides of progress bar (not below)
-- [ ] Add "Read" button on far right with grid icon
-- [ ] Update skip controls to be more subtle
-- [ ] Refine progress bar styling
+### 1. MiniPlayer Updates ✅ COMPLETED
+- [x] Remove visualizer orb component
+- [x] Restructure layout to be more horizontal and compact
+- [x] Add speed control button showing current speed (e.g., "1x")
+- [x] Move time displays to sides of progress bar (not below)
+- [x] Add "Read" button on far right with grid icon
+- [x] Update skip controls to be more subtle
+- [x] Refine progress bar styling
 
-### 2. Read-Along Full Screen
-- [ ] Change positioning from sliding panel to full-screen overlay
-- [ ] Update z-index to cover navigation bar (z-50 or higher)
-- [ ] Remove drag-to-dismiss functionality
-- [ ] Remove header with drag handle
-- [ ] Add fixed bottom control bar with playback controls
-- [ ] Implement cleaner close mechanism
+### 2. Read-Along Full Screen ✅ COMPLETED
+- [x] Change positioning from sliding panel to full-screen overlay
+- [x] Update z-index to cover navigation bar (z-50 or higher)
+- [x] Remove drag-to-dismiss functionality
+- [x] Remove header with drag handle
+- [x] Add fixed bottom control bar with playback controls
+- [x] Implement cleaner close mechanism
 
-### 3. Read-Along Controls Bar
+### 3. Read-Along Bottom Control Bar
 Create new bottom control component with:
-- [ ] Compact time display
-- [ ] Speed selector
-- [ ] Skip controls (-15s, +30s)
-- [ ] Play/pause toggle
-- [ ] Grid/list view toggle
-- [ ] Style to match the mockup's minimal design
+- [ ] Time display: MM:SS / MM:SS format on left and right sides
+- [ ] Playback speed button: "1x" format, orange styling when active
+- [ ] Skip controls: 15s back, 30s forward with proper icons
+- [ ] Play/pause button: Large, orange, centered position
+- [ ] Grid/list view toggle: Square icon on far right
+- [ ] Fixed positioning at bottom of read-along screen
+- [ ] Mobile-optimized touch targets (minimum 44px)
+- [ ] Consistent orange accent color (#FF6B35)
 
-### 4. Text Display Improvements
-- [ ] Update highlight color from orange to dark/black
-- [ ] Improve text spacing and line height
-- [ ] Optimize font size for readability
-- [ ] Enhance scroll behavior for active segments
-- [ ] Refine clickable segments interaction
+### 4. Floating Settings Implementation
+Create floating settings system with:
+- [ ] Floating settings button: Fixed bottom-right, orange background, gear icon
+- [ ] Settings panel: Text size (S/M/L/XL), auto-scroll toggle
+- [ ] Panel positioning: Above floating button with proper spacing
+- [ ] Animation: Smooth show/hide transitions
+- [ ] Z-index management: Above text, below controls
+- [ ] Mobile responsiveness: Proper spacing from screen edges
 
-### 5. State Management Updates
-- [ ] Add playback speed to audio context
-- [ ] Add read-along view mode state (grid/list)
-- [ ] Update panel visibility logic for full-screen mode
+### 5. Text Display and Highlighting Improvements
+- [ ] Update highlight color to orange (#FF6B35) to match design
+- [ ] Implement smooth highlighting animations
+- [ ] Improve text spacing and line height for readability
+- [ ] Optimize font size options (S/M/L/XL) with live preview
+- [ ] Enhance scroll behavior to follow active segments smoothly
+- [ ] Refine click-to-seek interaction with visual feedback
+
+### 6. State Management and Integration Updates
+- [ ] Add settings panel visibility state to read-along context
+- [ ] Add text size preference to user settings
+- [ ] Add auto-scroll preference with persistent storage
+- [ ] Add view mode state (grid/list) for future implementation
+- [ ] Ensure settings persist across read-along sessions
+- [ ] Integrate floating settings with main audio controls
 
 ## Implementation Priority
 
@@ -108,32 +123,85 @@ Create new bottom control component with:
 - `client/src/components/ReadAlongViewer.tsx`
 - `client/src/index.css` (for full-screen styles)
 
-### Phase 3: Read-Along Control Bar Implementation
+### Phase 3: Read-Along Bottom Control Bar Implementation
 **Priority: Medium**
-- Create new bottom control bar component
-- Integrate playback controls
-- Add view mode toggle
+- Create new bottom control bar component with specific design requirements:
+  - Time display format: MM:SS / MM:SS (left and right sides)
+  - Playback speed button showing current speed (e.g., "1x")
+  - Skip back/forward controls (15s back, 30s forward)
+  - Play/pause button (large, orange, centered)
+  - Grid/list view toggle button on far right (square icon)
+  - Consistent styling with orange accent color (#FF6B35)
+  - Proper spacing and mobile-optimized touch targets
 
 **Files to create/modify:**
 - `client/src/components/ReadAlongControlBar.tsx` (new)
 - `client/src/components/ReadAlongViewer.tsx`
 
-### Phase 4: Typography and Highlighting Refinements
+### Phase 4: Settings Floating Button & Panel Implementation
 **Priority: Medium**
-- Update highlight color scheme
-- Improve text spacing and readability
-- Enhance interaction feedback
+- Create floating settings button:
+  - Position: Fixed bottom-right corner with proper spacing
+  - Orange background matching design system
+  - Gear icon with appropriate sizing
+  - Z-index above text content but below control bar
+- Create settings panel component:
+  - Text size selector with S, M, L, XL options
+  - Auto-scroll toggle switch with orange accent
+  - Clean panel design with rounded corners
+  - Proper positioning relative to floating button
+  - Smooth show/hide animations
+
+**Files to create/modify:**
+- `client/src/components/ReadAlongFloatingSettings.tsx` (new)
+- `client/src/components/ReadAlongSettingsPanel.tsx` (new)
+- `client/src/components/ReadAlongViewer.tsx`
+
+### Phase 5: Typography and Highlighting Refinements
+**Priority: Medium**
+- Update highlight color scheme:
+  - Active text highlighting in orange (#FF6B35)
+  - Smooth transition animations for highlighting
+  - Proper contrast ratios for accessibility
+- Improve text display:
+  - Optimize line height and spacing for readability
+  - Ensure text wraps properly on mobile devices
+  - Implement smooth scrolling to active segments
+- Enhance interaction feedback:
+  - Click-to-seek visual feedback
+  - Hover states for interactive elements
+  - Loading states during text synchronization
 
 **Files to modify:**
 - `client/src/components/WordHighlighter.tsx`
+- `client/src/components/ReadAlongViewer.tsx`
 - `client/src/index.css`
 
-### Phase 5: Testing and Polish
+### Phase 6: Integration and State Management
+**Priority: Medium**
+- Integrate floating settings with main read-along viewer
+- Connect bottom control bar to audio context
+- Ensure proper state synchronization between components:
+  - Settings changes persist during playback
+  - Control bar reflects current audio state
+  - View mode toggle works seamlessly
+- Implement responsive behavior for different screen sizes
+
+**Files to modify:**
+- `client/src/components/ReadAlongViewer.tsx`
+- `client/src/contexts/OptimizedAudioContext.tsx`
+- `client/src/components/ReadAlongPanel.tsx`
+
+### Phase 7: Testing and Polish
 **Priority: Low**
-- Cross-device testing
-- Performance optimization
-- Accessibility improvements
-- Final UI polish
+- Cross-device testing for all new components
+- Performance optimization for smooth animations
+- Accessibility improvements:
+  - Keyboard navigation for settings panel
+  - Screen reader support for floating button
+  - ARIA labels for all interactive elements
+- Final UI polish and bug fixes
+- User experience testing and refinements
 
 ## Technical Considerations
 
@@ -165,7 +233,7 @@ Create new bottom control component with:
 
 ## Success Criteria
 
-### MiniPlayer
+### MiniPlayer ✅ COMPLETED
 - ✅ Clean, compact design without visualizer
 - ✅ Time displays on sides of progress bar
 - ✅ Functional speed control button
@@ -174,10 +242,24 @@ Create new bottom control component with:
 
 ### Read-Along Experience
 - ✅ True full-screen experience (covers nav bar)
-- ✅ Dark text highlighting (not orange)
-- ✅ Bottom control bar with all required controls
-- ✅ Smooth transitions and interactions
-- ✅ Improved readability and typography
+- [ ] Orange text highlighting matching design mockup
+- [ ] Bottom control bar with time display (MM:SS / MM:SS)
+- [ ] Large orange play/pause button centered in control bar
+- [ ] Speed control (1x) and skip controls (15s/30s) in control bar
+- [ ] Grid/list view toggle on right side of control bar
+- [ ] Floating settings button (gear icon) in bottom-right corner
+- [ ] Settings panel with text size (S/M/L/XL) and auto-scroll toggle
+- [ ] Smooth animations for settings panel show/hide
+- [ ] Improved readability with proper text spacing
+- [ ] Mobile-optimized touch targets throughout interface
+
+### Design Consistency
+- [ ] Orange accent color (#FF6B35) used consistently across all elements
+- [ ] Proper spacing and alignment matching mockup specifications
+- [ ] Mobile-first responsive design with safe area considerations
+- [ ] Smooth transitions and micro-interactions
+- [ ] Accessibility compliance (keyboard navigation, screen readers)
+- [ ] Performance optimization for smooth scrolling and highlighting
 
 ### Overall Experience
 - ✅ Seamless audio playback continuity
