@@ -176,8 +176,10 @@ export function UnifiedContentManager() {
   });
 
   // Load all chapters
-  const { data: allChapters = [] } = useQuery<Chapter[]>({
+  const { data: allChapters = [], refetch: refetchChapters } = useQuery<Chapter[]>({
     queryKey: ["/api/admin/all-chapters"],
+    staleTime: 0, // Force fresh data
+    gcTime: 0, // Prevent caching
   });
 
   // Organize data hierarchically
@@ -186,6 +188,11 @@ export function UnifiedContentManager() {
       .filter(a => a.courseId === course.id)
       .map(assignment => {
         const assignmentChapters = allChapters.filter(c => c.assignmentId === assignment.id);
+        // Debug logging
+        if (assignment.id === '4f53a908-4427-44fa-a77e-156b5fc5b427') {
+          console.log('Assignment chapters for "The Insurance Solution":', assignmentChapters);
+          console.log('All chapters:', allChapters);
+        }
         return { ...assignment, chapters: assignmentChapters };
       });
     return { ...course, assignments: courseAssignments };
@@ -343,6 +350,8 @@ export function UnifiedContentManager() {
       toast({ title: "Content Sync Started", description: "Syncing course audio from content repository API" });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/sync-status"] });
       queryClient.invalidateQueries({ queryKey: ["/api/courses"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/all-assignments"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/all-chapters"] });
     },
     onError: (error) => {
       toast({ title: "Sync Failed", description: error.message, variant: "destructive" });
