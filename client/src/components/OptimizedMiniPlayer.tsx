@@ -177,7 +177,7 @@ export function OptimizedMiniPlayer() {
         transition={{ type: "spring", damping: 25, stiffness: 300 }}
         className="fixed left-0 right-0 z-50"
         style={{ 
-          bottom: `calc(env(safe-area-inset-bottom, 0px) + 16px)`,
+          bottom: `calc(env(safe-area-inset-bottom, 0px) + 40px)`,
           height: '72px',
           background: '#FFFFFF'
         }}
