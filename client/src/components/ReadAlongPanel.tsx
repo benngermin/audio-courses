@@ -80,6 +80,10 @@ export function ReadAlongPanel({ isVisible, onClose }: ReadAlongPanelProps) {
                   currentTime={audioState.currentTime}
                   isPlaying={isPlaying}
                   onSeek={handleSeek}
+                  onPlayPause={audioControls?.togglePlay}
+                  duration={audioState.duration}
+                  playbackRate={audioState.playbackRate}
+                  onPlaybackRateChange={audioControls?.changePlaybackRate}
                   className={cn("h-full", textSize)}
                 />
               ) : (
