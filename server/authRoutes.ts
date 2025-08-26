@@ -67,7 +67,18 @@ router.post('/api/auth/request-magic-link', async (req: Request, res: Response) 
       userAgent,
     });
 
-    const baseUrl = process.env.APP_BASE_URL || `http://localhost:${process.env.PORT || 5000}`;
+    // Get the proper base URL - use Replit domain in production, localhost for local dev
+    let baseUrl = process.env.APP_BASE_URL;
+    if (!baseUrl) {
+      // Check if we're running on Replit
+      if (process.env.REPLIT_DEV_DOMAIN) {
+        // Use HTTPS for Replit domains
+        baseUrl = `https://${process.env.REPLIT_DEV_DOMAIN}`;
+      } else {
+        // Fallback to localhost for local development
+        baseUrl = `http://localhost:${process.env.PORT || 5000}`;
+      }
+    }
     const magicLinkUrl = `${baseUrl}/api/auth/callback?token=${rawToken}`;
 
     const emailSent = await sendMagicLinkEmail(email, magicLinkUrl);
