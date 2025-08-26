@@ -60,7 +60,7 @@ export default function Login() {
             </div>
             <CardTitle className="text-2xl text-center">Welcome to AudioLearn</CardTitle>
             <CardDescription className="text-center">
-              Enter your email to receive a magic link and start learning
+              Enter your email to receive a magic link
             </CardDescription>
           </CardHeader>
           <CardContent>
