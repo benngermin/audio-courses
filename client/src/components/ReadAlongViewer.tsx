@@ -142,8 +142,9 @@ export function ReadAlongViewer({
             "h-full overflow-y-auto prose prose-slate max-w-none read-along-content",
             getTextSizeClass(textSize)
           )}
+          style={{ padding: '20px' }}
         >
-          <div className="space-y-4 pb-8">
+          <div style={{ marginBottom: '20px' }}>
             {processedText.map((item, index) => {
               if (item.type === 'text') {
                 return (
@@ -169,15 +170,22 @@ export function ReadAlongViewer({
                   data-segment-index={item.segmentIndex}
                   onClick={() => handleSegmentClick(item.segmentIndex)}
                   className={cn(
-                    "transition-all duration-200 cursor-pointer rounded px-1 py-0.5",
+                    "transition-all duration-200 cursor-pointer rounded",
                     "hover:bg-gray-100 dark:hover:bg-gray-800",
-                    isParagraph && "block mb-4 p-2"
+                    isParagraph && "block"
                   )}
                   style={{
                     color: isCurrent ? '#333' : '#333',
                     opacity: isPast ? 0.4 : isFuture ? 0.6 : 1,
                     backgroundColor: isActive ? '#333' : 'transparent',
-                    fontWeight: isActive ? 500 : 400
+                    fontWeight: isActive ? 500 : 400,
+                    marginLeft: isActive ? '-11px' : '0',
+                    paddingLeft: isActive ? '8px' : '2px',
+                    paddingRight: '2px',
+                    paddingTop: '2px',
+                    paddingBottom: '2px',
+                    marginBottom: isParagraph ? '20px' : '0',
+                    display: isParagraph ? 'block' : 'inline'
                   }}
                   title={`Click to jump to ${segmentStartTime.toFixed(1)}s`}
                 >
