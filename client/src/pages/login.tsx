@@ -30,10 +30,9 @@ export default function Login() {
     setIsSuccess(false);
 
     try {
-      const response = await apiRequest("POST", "/api/auth/request-magic-link", { email });
-      const data = await response.json();
+      const data = await apiRequest("POST", "/api/auth/request-magic-link", { email });
       
-      if (response.ok) {
+      if (data.ok) {
         setIsSuccess(true);
       } else {
         throw new Error(data.message || "Failed to send magic link");
