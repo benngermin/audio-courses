@@ -147,7 +147,7 @@ export function ReadAlongViewer({
             {processedText.map((item, index) => {
               if (item.type === 'text') {
                 return (
-                  <span key={index} className="text-slate-700">
+                  <span key={index} style={{ color: '#333', opacity: 0.6 }}>
                     {item.content}
                   </span>
                 );
@@ -155,6 +155,13 @@ export function ReadAlongViewer({
 
               const isActive = isSegmentActive(item.segmentIndex);
               const isParagraph = 'segmentType' in item && item.segmentType === 'paragraph';
+              
+              // Determine if segment is past, current, or future
+              const segmentStartTime = 'startTime' in item ? (item.startTime as number) : 0;
+              const segmentEndTime = 'endTime' in item ? (item.endTime as number) : 0;
+              const isPast = currentTime > segmentEndTime;
+              const isCurrent = currentTime >= segmentStartTime && currentTime <= segmentEndTime;
+              const isFuture = currentTime < segmentStartTime;
 
               return (
                 <span
@@ -164,18 +171,20 @@ export function ReadAlongViewer({
                   className={cn(
                     "transition-all duration-200 cursor-pointer rounded px-1 py-0.5",
                     "hover:bg-gray-100 dark:hover:bg-gray-800",
-                    isActive && [
-                      "bg-gray-900 dark:bg-gray-100",
-                      "text-white dark:text-gray-900",
-                      "font-medium"
-                    ],
-                    !isActive && "text-gray-700 dark:text-gray-300",
                     isParagraph && "block mb-4 p-2"
                   )}
-                  title={`Click to jump to ${('startTime' in item ? (item.startTime as number) : 0).toFixed(1)}s`}
+                  style={{
+                    color: isCurrent ? '#333' : '#333',
+                    opacity: isPast ? 0.4 : isFuture ? 0.6 : 1,
+                    backgroundColor: isActive ? '#333' : 'transparent',
+                    fontWeight: isActive ? 500 : 400
+                  }}
+                  title={`Click to jump to ${segmentStartTime.toFixed(1)}s`}
                 >
                   {/* Removed play icon for cleaner look */}
-                  {item.content}
+                  <span style={{ color: isActive ? '#fff' : 'inherit' }}>
+                    {item.content}
+                  </span>
                 </span>
               );
             })}
