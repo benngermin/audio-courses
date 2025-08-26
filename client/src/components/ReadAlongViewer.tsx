@@ -176,7 +176,7 @@ export function ReadAlongViewer({
                   )}
                   style={{
                     color: '#333',
-                    opacity: isPast ? 0.4 : isFuture ? 0.6 : 1,
+                    opacity: isPast ? 0.4 : isFuture ? 0.6 : (isCurrent || isActive) ? 1 : 0.6,
                     transition: 'opacity 0.3s ease, background-color 0.3s ease, padding 0.3s ease',
                     background: isActive ? 'linear-gradient(90deg, rgba(251, 146, 60, 0.1) 0%, rgba(251, 146, 60, 0.05) 100%)' : 'transparent',
                     borderLeftWidth: isActive ? '3px' : '0',
