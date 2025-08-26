@@ -81,37 +81,6 @@ export function ReadAlongPanel({ isVisible, onClose }: ReadAlongPanelProps) {
             <X className="h-4 w-4" />
           </Button>
 
-          {/* Text size control positioned absolutely */}
-          <div className="absolute top-2 right-12 z-50">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-8 w-8 p-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-full shadow-md hover:bg-white dark:hover:bg-gray-800"
-                >
-                  <Type className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                {textSizes.map((size) => (
-                  <DropdownMenuItem
-                    key={size.value}
-                    onClick={() => setTextSize(size.value)}
-                  >
-                    <span
-                      className={cn(
-                        "font-medium",
-                        textSize === size.value && "text-orange-600"
-                      )}
-                    >
-                      {size.label}
-                    </span>
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
 
           {/* Read-Along Content - full screen with minimal padding */}
           <div className="flex-1 overflow-hidden pt-12 px-2 sm:px-4 lg:px-8">
