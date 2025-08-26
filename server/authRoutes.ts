@@ -70,9 +70,13 @@ router.post('/api/auth/request-magic-link', async (req: Request, res: Response) 
     // Get the proper base URL - use Replit domain in production, localhost for local dev
     let baseUrl = process.env.APP_BASE_URL;
     if (!baseUrl) {
-      // Check if we're running on Replit
-      if (process.env.REPLIT_DEV_DOMAIN) {
-        // Use HTTPS for Replit domains
+      // Check if we're running on Replit - prioritize REPLIT_DOMAINS over REPLIT_DEV_DOMAIN
+      if (process.env.REPLIT_DOMAINS) {
+        // Use the first domain from REPLIT_DOMAINS (comma-separated list)
+        const firstDomain = process.env.REPLIT_DOMAINS.split(',')[0];
+        baseUrl = `https://${firstDomain}`;
+      } else if (process.env.REPLIT_DEV_DOMAIN) {
+        // Fallback to REPLIT_DEV_DOMAIN if REPLIT_DOMAINS is not available
         baseUrl = `https://${process.env.REPLIT_DEV_DOMAIN}`;
       } else {
         // Fallback to localhost for local development
