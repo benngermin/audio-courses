@@ -32,10 +32,6 @@ export function ReadAlongPanel({ isVisible, onClose }: ReadAlongPanelProps) {
   const [textSize, setTextSize] = useState("text-base");
   const panelRef = useRef<HTMLDivElement>(null);
 
-  // Calculate panel height based on viewport (accounting for mini player height)
-  const panelHeight = "calc(100vh - 80px - env(safe-area-inset-bottom) - env(safe-area-inset-top))";
-  const minHeight = "300px";
-
   // Handle keyboard shortcuts
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
@@ -48,12 +44,7 @@ export function ReadAlongPanel({ isVisible, onClose }: ReadAlongPanelProps) {
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [isVisible, onClose]);
 
-  // Handle drag gestures
-  const handleDragEnd = (_: any, info: PanInfo) => {
-    if (info.offset.y > 100) {
-      onClose();
-    }
-  };
+  // Removed drag gestures for full-screen mode
 
   const handleSeek = (time: number) => {
     if (audioControls?.seek) {
@@ -64,60 +55,23 @@ export function ReadAlongPanel({ isVisible, onClose }: ReadAlongPanelProps) {
   if (!currentChapter) return null;
 
   return (
-    <>
-      {/* Backdrop overlay */}
-      <AnimatePresence>
-        {isVisible && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black/30 z-30"
-            onClick={onClose}
-          />
-        )}
-      </AnimatePresence>
-
-      {/* Read-Along Panel */}
-      <AnimatePresence>
-        {isVisible && (
-          <motion.div
-            ref={panelRef}
-            initial={{ y: "100%" }}
-            animate={{ y: 0 }}
-            exit={{ y: "100%" }}
-            transition={{
-              type: "spring",
-              damping: 25,
-              stiffness: 300,
-              mass: 0.8,
-            }}
-            drag="y"
-            dragConstraints={{ top: 0 }}
-            dragElastic={0.2}
-            onDragEnd={handleDragEnd}
-            style={{
-              height: panelHeight,
-              minHeight: minHeight,
-              bottom: "calc(80px + env(safe-area-inset-bottom))",
-            }}
-            className={cn(
-              "fixed left-0 right-0 z-40",
-              "bg-white dark:bg-gray-900",
-              "rounded-t-[20px] shadow-2xl",
-              "flex flex-col overflow-hidden"
-            )}
-          >
-            {/* Panel Header with drag handle */}
-            <div className="flex-shrink-0 border-b border-gray-200 dark:border-gray-700">
-              {/* Drag handle */}
-              <div className="w-full py-2 flex justify-center">
-                <div className="w-12 h-1 bg-gray-300 dark:bg-gray-600 rounded-full" />
-              </div>
-
-              {/* Header controls */}
-              <div className="flex items-center justify-between px-4 pb-3">
+    <AnimatePresence>
+      {isVisible && (
+        <motion.div
+          ref={panelRef}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
+          className={cn(
+            "fixed inset-0 z-50",
+            "bg-white dark:bg-gray-900",
+            "flex flex-col overflow-hidden"
+          )}
+        >
+          {/* Full-Screen Header */}
+          <div className="flex-shrink-0 border-b border-gray-200 dark:border-gray-700">
+            <div className="flex items-center justify-between px-4 py-4">
                 {/* Chapter info */}
                 <div className="flex-1 min-w-0 mr-4">
                   <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
@@ -160,15 +114,16 @@ export function ReadAlongPanel({ isVisible, onClose }: ReadAlongPanelProps) {
                     </DropdownMenuContent>
                   </DropdownMenu>
 
-                  {/* Close button */}
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={onClose}
-                    className="h-8 w-8 p-0"
-                  >
-                    <ChevronDown className="h-4 w-4" />
-                  </Button>
+                {/* Close button */}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={onClose}
+                  className="h-8 w-8 p-0"
+                  title="Close (ESC)"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
                 </div>
               </div>
             </div>
@@ -189,9 +144,8 @@ export function ReadAlongPanel({ isVisible, onClose }: ReadAlongPanelProps) {
                 </div>
               )}
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
