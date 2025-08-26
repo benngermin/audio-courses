@@ -174,15 +174,11 @@ export class DatabaseStorage implements IStorage {
 
   // Chapter operations
   async getChaptersByAssignment(assignmentId: string): Promise<Chapter[]> {
-    const chapterList = await db
+    return await db
       .select()
       .from(chapters)
       .where(eq(chapters.assignmentId, assignmentId))
       .orderBy(asc(chapters.orderIndex));
-    
-    // TODO: Remove this when hasReadAlong is properly set in DB
-    // Temporarily set hasReadAlong to true for testing
-    return chapterList.map(ch => ({ ...ch, hasReadAlong: true }));
   }
 
   async getChapter(id: string): Promise<Chapter | undefined> {

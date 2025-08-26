@@ -1125,14 +1125,28 @@ export function UnifiedContentManager() {
                           size="sm"
                           onClick={async () => {
                             try {
-                              const response = await fetch(`/api/read-along/${editingItem.id}`);
+                              const response = await fetch(`/api/read-along/${editingItem.id}`, {
+                                credentials: 'include'
+                              });
                               if (response.ok) {
                                 const data = await response.json();
                                 setJsonContent(data);
                                 setShowJsonContent(true);
+                              } else {
+                                console.error("Failed to fetch read-along data:", response.status);
+                                toast({
+                                  title: "Error",
+                                  description: "Failed to fetch read-along data",
+                                  variant: "destructive",
+                                });
                               }
                             } catch (error) {
                               console.error("Error fetching read-along data:", error);
+                              toast({
+                                title: "Error",
+                                description: "Failed to fetch read-along data",
+                                variant: "destructive",
+                              });
                             }
                           }}
                         >
