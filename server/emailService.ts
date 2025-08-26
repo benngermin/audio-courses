@@ -9,7 +9,7 @@ export async function sendMagicLinkEmail(toEmail: string, magicLinkUrl: string):
       return true; // Return true to allow testing without email
     }
     
-    const fromEmail = process.env.AUTH_FROM_EMAIL || 'Audio Courses <onboarding@resend.dev>';
+    const fromEmail = process.env.AUTH_FROM_EMAIL || 'Audio Courses <no-reply@audiocourses.theinstituteslab.org>';
     
     const htmlContent = `
       <!DOCTYPE html>
