@@ -107,6 +107,16 @@
   --opacity-disabled: 0.5;
 }
 
+/* Animation for scrolling text */
+@keyframes scroll-text {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
 .dark {
   /* Dark mode variants - using inverted contrast */
   --primary-orange: hsl(16 100% 60%); /* Keep orange same */

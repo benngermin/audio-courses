@@ -187,73 +187,101 @@ export function OptimizedMiniPlayer() {
       >
         {/* Desktop Layout - Hidden on mobile */}
         <div className="hidden sm:flex items-center h-full px-4" style={{ gap: '16px' }}>
-          {/* Time Display - Left */}
-          <span 
-            className="text-sm tabular-nums"
-            style={{ 
-              color: '#374151',
-              minWidth: '40px',
-              fontSize: '13px'
-            }}
-          >
-            {formatTime(currentTime)}
-          </span>
-
-          {/* Progress Bar */}
-          <div 
-            className="flex-1 relative cursor-pointer py-2"
-            onClick={(e) => {
-              e.stopPropagation();
-              if (!duration || !seek) return;
-              const rect = e.currentTarget.getBoundingClientRect();
-              const x = e.clientX - rect.left;
-              const percentage = x / rect.width;
-              const newTime = percentage * duration;
-              seek(newTime);
-            }}
-          >
+          {/* Time Display and Progress Container */}
+          <div className="flex-1 flex flex-col justify-center" style={{ gap: '4px' }}>
+            {/* Progress Bar */}
             <div 
-              className="w-full relative"
-              style={{
-                height: '4px',
-                background: '#E5E7EB',
-                borderRadius: '2px'
+              className="relative cursor-pointer py-2"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (!duration || !seek) return;
+                const rect = e.currentTarget.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const percentage = x / rect.width;
+                const newTime = percentage * duration;
+                seek(newTime);
               }}
             >
-              {/* Progress fill */}
-              <div
-                className="absolute top-0 left-0 h-full transition-all duration-100"
-                style={{ 
-                  background: '#FF6B35',
-                  borderRadius: '2px',
-                  width: duration ? `${(currentTime / duration) * 100}%` : '0%' 
+              <div 
+                className="w-full relative"
+                style={{
+                  height: '4px',
+                  background: '#E5E7EB',
+                  borderRadius: '2px'
                 }}
-              />
+              >
+                {/* Progress fill */}
+                <div
+                  className="absolute top-0 left-0 h-full transition-all duration-100"
+                  style={{ 
+                    background: '#FF6B35',
+                    borderRadius: '2px',
+                    width: duration ? `${(currentTime / duration) * 100}%` : '0%' 
+                  }}
+                />
+                
+                {/* Progress handle */}
+                <div
+                  className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-md transition-all duration-100"
+                  style={{ 
+                    left: duration ? `${(currentTime / duration) * 100}%` : '0%', 
+                    marginLeft: '-6px',
+                    border: '2px solid #FF6B35'
+                  }}
+                />
+              </div>
+            </div>
+            
+            {/* Time Display and Chapter Title Row */}
+            <div className="flex items-center justify-between">
+              <span 
+                className="text-sm tabular-nums"
+                style={{ 
+                  color: '#374151',
+                  minWidth: '40px',
+                  fontSize: '13px'
+                }}
+              >
+                {formatTime(currentTime)}
+              </span>
               
-              {/* Progress handle */}
-              <div
-                className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-md transition-all duration-100"
-                style={{ 
-                  left: duration ? `${(currentTime / duration) * 100}%` : '0%', 
-                  marginLeft: '-6px',
-                  border: '2px solid #FF6B35'
+              {/* Chapter Title - Scrollable */}
+              <div 
+                className="flex-1 mx-3 overflow-hidden"
+                style={{
+                  maxWidth: 'calc(100% - 120px)'
                 }}
-              />
+              >
+                <div 
+                  className="text-sm whitespace-nowrap"
+                  style={{
+                    color: '#6B7280',
+                    fontSize: '12px',
+                    animation: currentChapter.title.length > 50 ? 'scroll-text 15s linear infinite' : 'none',
+                    paddingRight: currentChapter.title.length > 50 ? '60px' : '0',
+                    display: 'inline-block'
+                  }}
+                >
+                  {currentChapter.title}
+                  {currentChapter.title.length > 50 && (
+                    <span style={{ paddingLeft: '60px' }}>{currentChapter.title}</span>
+                  )}
+                </div>
+              </div>
+              
+              <span 
+                className="text-sm tabular-nums"
+                style={{ 
+                  color: '#374151',
+                  minWidth: '40px',
+                  fontSize: '13px',
+                  textAlign: 'right'
+                }}
+              >
+                {formatTime(duration)}
+              </span>
             </div>
           </div>
-
-          {/* Time Display - Right */}
-          <span 
-            className="text-sm tabular-nums"
-            style={{ 
-              color: '#374151',
-              minWidth: '40px',
-              fontSize: '13px',
-              textAlign: 'right'
-            }}
-          >
-            {formatTime(duration)}
-          </span>
 
           {/* Speed Control */}
           <DropdownMenu>
@@ -405,7 +433,7 @@ export function OptimizedMiniPlayer() {
 
           {/* Content Container */}
           <div className="flex flex-col justify-center flex-1 px-4 pt-3">
-            {/* Time Display Row */}
+            {/* Time Display Row with Chapter Title */}
             <div className="flex justify-between items-center mb-2">
               <span 
                 className="text-sm font-medium"
@@ -416,6 +444,31 @@ export function OptimizedMiniPlayer() {
               >
                 {formatTime(currentTime)}
               </span>
+              
+              {/* Chapter Title - Scrollable on Mobile */}
+              <div 
+                className="flex-1 mx-2 overflow-hidden"
+                style={{
+                  maxWidth: 'calc(100% - 80px)'
+                }}
+              >
+                <div 
+                  className="text-xs whitespace-nowrap"
+                  style={{
+                    color: '#6B7280',
+                    fontSize: '11px',
+                    animation: currentChapter.title.length > 30 ? 'scroll-text 12s linear infinite' : 'none',
+                    paddingRight: currentChapter.title.length > 30 ? '40px' : '0',
+                    display: 'inline-block'
+                  }}
+                >
+                  {currentChapter.title}
+                  {currentChapter.title.length > 30 && (
+                    <span style={{ paddingLeft: '40px' }}>{currentChapter.title}</span>
+                  )}
+                </div>
+              </div>
+              
               <span 
                 className="text-sm font-medium"
                 style={{ 
