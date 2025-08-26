@@ -290,11 +290,12 @@ export function OptimizedMiniPlayer() {
                 variant="ghost"
                 size="sm"
                 onClick={(e) => e.stopPropagation()}
-                className="h-8 px-2 hover:bg-gray-100 font-medium"
+                className="h-8 hover:bg-gray-100 font-medium"
                 style={{ 
-                  minWidth: '40px',
+                  width: '52px',
                   color: '#374151',
-                  fontSize: '13px'
+                  fontSize: '13px',
+                  padding: '0 8px'
                 }}
               >
                 {getSpeedLabel(playbackRate)}
@@ -489,12 +490,13 @@ export function OptimizedMiniPlayer() {
                   variant="ghost"
                   size="sm"
                   onClick={(e) => e.stopPropagation()}
-                  className="h-10 px-2 hover:bg-gray-100 font-medium"
+                  className="h-10 hover:bg-gray-100 font-medium"
                   style={{ 
-                    minWidth: '36px',
+                    width: '48px',
                     color: '#1F2937',
                     fontSize: '14px',
-                    fontWeight: 600
+                    fontWeight: 600,
+                    padding: '0 8px'
                   }}
                 >
                   {getSpeedLabel(playbackRate)}
