@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Play, Pause, RotateCcw, RotateCw, Grid3X3 } from "lucide-react";
 import { useCurrentTrack, usePlaybackState, useAudioControls, useAudioState } from "@/contexts/OptimizedAudioContext";
-import { useOptimizedAudio } from "@/hooks/useOptimizedAudio";
+import { useSimpleAudio } from "@/hooks/useSimpleAudio";
 import { useProgressTracker } from "@/hooks/useProgressTracker";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
@@ -56,7 +56,7 @@ export function OptimizedMiniPlayer() {
     updateProgress(currentChapter.duration || 0, true);
   }, [currentChapter, currentAssignment, updateProgress]);
 
-  // Use optimized audio hook with preloading
+  // Use simple audio hook - creates audio element on first user interaction
   const {
     isPlaying,
     currentTime,
@@ -73,9 +73,8 @@ export function OptimizedMiniPlayer() {
     changePlaybackRate,
     changeVolume,
     toggleMute,
-  } = useOptimizedAudio({
+  } = useSimpleAudio({
     src: currentChapter?.audioUrl || "",
-    preloadNext: nextChapterUrls.current,
     onTimeUpdate: handleTimeUpdate,
     onEnded: handleEnded,
   });
@@ -125,20 +124,16 @@ export function OptimizedMiniPlayer() {
         // Clear the flag immediately to prevent multiple attempts
         clearAutoPlay();
         
-        // Small delay to ensure audio element is ready
-        setTimeout(async () => {
-          try {
-            const success = await play();
-            if (success) {
-              console.log('Audio started playing from chapter selection');
-            } else {
-              console.log('Audio play was blocked - user needs to click play button');
-            }
-          } catch (error) {
-            console.log('Failed to auto-play after chapter selection:', error);
-            // User will need to click the play button manually
+        // Play immediately - the audio element will be created on this user interaction
+        play().then((success) => {
+          if (success) {
+            console.log('Audio started playing from chapter selection');
+          } else {
+            console.log('Audio play was blocked - user needs to click play button');
           }
-        }, 150); // Slightly longer delay for better reliability
+        }).catch((error) => {
+          console.log('Failed to auto-play after chapter selection:', error);
+        });
       }
     }
   }, [currentChapter?.id, shouldAutoPlay, play, clearAutoPlay]);

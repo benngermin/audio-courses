@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple Audio Test - Autoplay Fix</title>
+  <style>
+    body {
+      font-family: -apple-system, system-ui, sans-serif;
+      padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .container {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+    .info {
+      background: #f0f9ff;
+      border-left: 4px solid #3b82f6;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 4px;
+    }
+    .chapters {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 20px 0;
+    }
+    .chapter {
+      padding: 15px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .chapter:hover {
+      background: #e0f2fe;
+      border-color: #0284c7;
+    }
+    .chapter.active {
+      background: #fef3c7;
+      border-color: #f59e0b;
+    }
+    .controls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      padding: 20px;
+      background: #1e293b;
+      color: white;
+      border-radius: 8px;
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    button {
+      padding: 8px 16px;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    button:hover {
+      background: #2563eb;
+    }
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .status {
+      background: #22c55e;
+      padding: 8px 16px;
+      border-radius: 4px;
+      margin: 20px 0;
+      color: white;
+    }
+    .error {
+      background: #ef4444;
+    }
+    .warning {
+      background: #f59e0b;
+    }
+    .log {
+      background: #1e293b;
+      color: #10b981;
+      padding: 10px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 12px;
+      max-height: 200px;
+      overflow-y: auto;
+      margin-top: 20px;
+    }
+    .log-entry {
+      margin: 2px 0;
+    }
+    .progress {
+      flex: 1;
+      height: 4px;
+      background: #475569;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .progress-bar {
+      height: 100%;
+      background: #3b82f6;
+      transition: width 0.1s;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎵 Simple Audio Test - Autoplay Fix</h1>
+    
+    <div class="info">
+      <strong>✅ How this implementation fixes autoplay:</strong>
+      <ul style="margin: 10px 0 0 20px;">
+        <li>Audio element is created ONLY on first user interaction (click)</li>
+        <li>Single global audio element is reused for all chapters</li>
+        <li>No pre-creation or pooling that violates browser policies</li>
+        <li>Chapter clicks immediately trigger playback (user gesture preserved)</li>
+      </ul>
+    </div>
+
+    <div id="status" class="status">Click a chapter to start</div>
+
+    <div class="chapters">
+      <div class="chapter" data-src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3">
+        📚 Chapter 1: Introduction to Risk Management
+      </div>
+      <div class="chapter" data-src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3">
+        📊 Chapter 2: Types of Insurance Risk
+      </div>
+      <div class="chapter" data-src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3">
+        🔍 Chapter 3: Risk Assessment Techniques
+      </div>
+    </div>
+
+    <div class="log" id="log"></div>
+  </div>
+
+  <div class="controls" id="controls" style="display: none;">
+    <button id="playPause">▶️ Play</button>
+    <div class="progress">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <span id="time">0:00 / 0:00</span>
+  </div>
+
+  <script>
+    // Global audio element - created on first user interaction
+    let globalAudio = null;
+    let currentChapter = null;
+    const log = document.getElementById('log');
+    const status = document.getElementById('status');
+    const controls = document.getElementById('controls');
+    const playPauseBtn = document.getElementById('playPause');
+    const progressBar = document.getElementById('progressBar');
+    const timeDisplay = document.getElementById('time');
+    
+    function addLog(message, type = 'info') {
+      const entry = document.createElement('div');
+      entry.className = 'log-entry';
+      const time = new Date().toLocaleTimeString();
+      entry.textContent = `[${time}] ${message}`;
+      if (type === 'error') entry.style.color = '#ef4444';
+      if (type === 'success') entry.style.color = '#22c55e';
+      log.insertBefore(entry, log.firstChild);
+    }
+
+    function createAudioElement() {
+      if (!globalAudio) {
+        addLog('Creating audio element on user interaction', 'success');
+        globalAudio = new Audio();
+        globalAudio.preload = 'auto';
+        globalAudio.setAttribute('playsinline', 'true');
+        
+        // Add event listeners
+        globalAudio.addEventListener('play', () => {
+          addLog('Audio playing', 'success');
+          playPauseBtn.textContent = '⏸ Pause';
+          status.textContent = '🎵 Playing';
+          status.className = 'status';
+        });
+        
+        globalAudio.addEventListener('pause', () => {
+          addLog('Audio paused');
+          playPauseBtn.textContent = '▶️ Play';
+          status.textContent = '⏸ Paused';
+          status.className = 'status warning';
+        });
+        
+        globalAudio.addEventListener('error', (e) => {
+          addLog(`Audio error: ${e.message || 'Unknown error'}`, 'error');
+          status.textContent = '❌ Error loading audio';
+          status.className = 'status error';
+        });
+        
+        globalAudio.addEventListener('loadedmetadata', () => {
+          addLog('Audio metadata loaded');
+        });
+        
+        globalAudio.addEventListener('timeupdate', () => {
+          if (globalAudio.duration) {
+            const progress = (globalAudio.currentTime / globalAudio.duration) * 100;
+            progressBar.style.width = progress + '%';
+            
+            const current = formatTime(globalAudio.currentTime);
+            const total = formatTime(globalAudio.duration);
+            timeDisplay.textContent = `${current} / ${total}`;
+          }
+        });
+      }
+      return globalAudio;
+    }
+
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return `${mins}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    async function playChapter(chapterElement) {
+      const src = chapterElement.dataset.src;
+      
+      // Create audio on first interaction
+      const audio = createAudioElement();
+      
+      // Update UI
+      document.querySelectorAll('.chapter').forEach(ch => {
+        ch.classList.remove('active');
+      });
+      chapterElement.classList.add('active');
+      controls.style.display = 'flex';
+      
+      // Update source if different
+      if (audio.src !== src) {
+        addLog(`Loading chapter: ${chapterElement.textContent.trim()}`);
+        audio.src = src;
+        audio.load();
+      }
+      
+      // Try to play
+      try {
+        addLog('Attempting to play...');
+        const playPromise = audio.play();
+        if (playPromise) {
+          await playPromise;
+          addLog('✅ Playback started successfully!', 'success');
+        }
+      } catch (error) {
+        addLog(`❌ Play failed: ${error.name} - ${error.message}`, 'error');
+        if (error.name === 'NotAllowedError') {
+          status.textContent = '⚠️ Click play button to start';
+          status.className = 'status warning';
+        }
+      }
+    }
+
+    // Chapter click handlers
+    document.querySelectorAll('.chapter').forEach(chapter => {
+      chapter.addEventListener('click', () => {
+        currentChapter = chapter;
+        playChapter(chapter);
+      });
+    });
+
+    // Play/pause button
+    playPauseBtn.addEventListener('click', () => {
+      if (globalAudio) {
+        if (globalAudio.paused) {
+          globalAudio.play().then(() => {
+            addLog('Resumed playback', 'success');
+          }).catch(err => {
+            addLog(`Play failed: ${err.message}`, 'error');
+          });
+        } else {
+          globalAudio.pause();
+        }
+      }
+    });
+
+    addLog('Ready - click a chapter to test autoplay fix');
+  </script>
+</body>
+</html>
