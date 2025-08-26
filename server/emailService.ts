@@ -9,7 +9,7 @@ export async function sendMagicLinkEmail(toEmail: string, magicLinkUrl: string):
       return true; // Return true to allow testing without email
     }
     
-    const fromEmail = process.env.AUTH_FROM_EMAIL || 'Audio Learning Platform <noreply@example.com>';
+    const fromEmail = process.env.AUTH_FROM_EMAIL || 'Audio Courses <no-reply@audiocourses.theinstituteslab.org>';
     
     const htmlContent = `
       <!DOCTYPE html>
@@ -21,7 +21,7 @@ export async function sendMagicLinkEmail(toEmail: string, magicLinkUrl: string):
       </head>
       <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
         <div style="background: #f8f9fa; padding: 30px; border-radius: 8px; text-align: center;">
-          <h1 style="color: #0066cc; margin-bottom: 20px;">Audio Learning Platform</h1>
+          <h1 style="color: #0066cc; margin-bottom: 20px;">Audio Courses</h1>
           <h2 style="color: #333; margin-bottom: 30px;">Sign in to your account</h2>
           
           <p style="font-size: 16px; margin-bottom: 30px;">Click the button below to securely sign in to your account:</p>
@@ -44,7 +44,7 @@ export async function sendMagicLinkEmail(toEmail: string, magicLinkUrl: string):
     `;
     
     const textContent = `
-      Sign in to Audio Learning Platform
+      Sign in to Audio Courses
       
       Click this link to sign in: ${magicLinkUrl}
       
@@ -56,7 +56,7 @@ export async function sendMagicLinkEmail(toEmail: string, magicLinkUrl: string):
     const response = await resend.emails.send({
       from: fromEmail,
       to: [toEmail],
-      subject: 'Your sign-in link for Audio Learning Platform',
+      subject: 'Your Audio Courses sign-in link',
       html: htmlContent,
       text: textContent,
     });
