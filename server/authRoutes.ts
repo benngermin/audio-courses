@@ -67,28 +67,43 @@ router.post('/api/auth/request-magic-link', async (req: Request, res: Response) 
       userAgent,
     });
 
-    // Get the proper base URL - use Replit domain in production, localhost for local dev
-    let baseUrl = process.env.APP_BASE_URL;
-    if (!baseUrl) {
-      // Check if we're running on Replit - prioritize REPLIT_DOMAINS over REPLIT_DEV_DOMAIN
-      if (process.env.REPLIT_DOMAINS) {
-        // Use the first domain from REPLIT_DOMAINS (comma-separated list)
-        const firstDomain = process.env.REPLIT_DOMAINS.split(',')[0];
-        baseUrl = `https://${firstDomain}`;
-      } else if (process.env.REPLIT_DEV_DOMAIN) {
-        // Fallback to REPLIT_DEV_DOMAIN if REPLIT_DOMAINS is not available
-        baseUrl = `https://${process.env.REPLIT_DEV_DOMAIN}`;
-      } else {
-        // Fallback to localhost for local development
-        baseUrl = `http://localhost:${process.env.PORT || 5000}`;
-      }
+    // Get the proper base URL - prioritize Replit domains over APP_BASE_URL
+    let baseUrl: string;
+    
+    // Check if we're running on Replit - prioritize REPLIT_DOMAINS over REPLIT_DEV_DOMAIN
+    if (process.env.REPLIT_DOMAINS) {
+      // Use the first domain from REPLIT_DOMAINS (comma-separated list)
+      const firstDomain = process.env.REPLIT_DOMAINS.split(',')[0];
+      baseUrl = `https://${firstDomain}`;
+      console.log(`Using REPLIT_DOMAINS for magic link: ${baseUrl}`);
+    } else if (process.env.REPLIT_DEV_DOMAIN) {
+      // Fallback to REPLIT_DEV_DOMAIN if REPLIT_DOMAINS is not available
+      baseUrl = `https://${process.env.REPLIT_DEV_DOMAIN}`;
+      console.log(`Using REPLIT_DEV_DOMAIN for magic link: ${baseUrl}`);
+    } else if (process.env.APP_BASE_URL && !process.env.APP_BASE_URL.includes('localhost')) {
+      // Use APP_BASE_URL only if it's not localhost
+      baseUrl = process.env.APP_BASE_URL;
+      console.log(`Using APP_BASE_URL for magic link: ${baseUrl}`);
+    } else {
+      // Fallback to localhost for local development
+      baseUrl = `http://localhost:${process.env.PORT || 5000}`;
+      console.log(`Warning: Using localhost for magic link (no proper domain found): ${baseUrl}`);
     }
     const magicLinkUrl = `${baseUrl}/api/auth/callback?token=${rawToken}`;
+    console.log(`Generated magic link for ${email}: ${magicLinkUrl}`);
 
     const emailSent = await sendMagicLinkEmail(email, magicLinkUrl);
 
     if (!emailSent) {
       console.error(`Failed to send magic link email to ${email}`);
+      // Log additional debug info
+      console.error('Debug info:', {
+        hasResendApiKey: !!process.env.RESEND_API_KEY,
+        authFromEmail: process.env.AUTH_FROM_EMAIL || 'Audio Courses <no-reply@audiocourses.theinstituteslab.org>',
+        baseUrl: baseUrl
+      });
+    } else {
+      console.log(`Magic link email successfully queued for ${email}`);
     }
 
     return res.json({
