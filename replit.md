@@ -115,13 +115,20 @@ This is a mobile-first audio learning platform built for The Institutes educatio
 
 ## Technical Architecture
 
-### Frontend Components
-- **OptimizedMiniPlayer**: Performance-optimized compact audio player with pooled audio elements and read-along toggle
-- **ReadAlongPanel**: Bottom-anchored sliding panel that replaces full-screen player, displays synchronized text above mini player
-- **AudioPlayerUI**: Orchestration component managing mini player and read-along panel interaction
-- **ReadAlongViewer**: Synchronized text display with click-to-seek and highlighting
-- **ReadAlongSettings**: Comprehensive customization panel for reading experience
-- **ReadAlongToggle**: Mode switching controls for audio-only vs read-along modes
+### Audio System Implementation
+- **AudioPlayerUI**: Top-level component in App.tsx that conditionally renders the dual-layer audio interface
+  ```typescript
+  // Rendered at app level for persistent playback
+  <AudioPlayerUI />
+  ```
+- **Dual-Layer Architecture**: 
+  - OptimizedMiniPlayer: Always visible when audio is loaded (z-index 50)
+  - ReadAlongPanel: Conditionally visible above mini player (z-index 40)
+  - State coordination via `isReadAlongVisible` in OptimizedAudioContext
+- **Audio Element Management**:
+  - Single AudioPool instance manages up to 5 HTML Audio elements
+  - Elements are reused across chapter changes to prevent memory leaks
+  - Automatic preloading of next 2 chapters using idle callback scheduling
 
 ### Performance Systems
 - **AudioPool**: Manages HTML Audio element reuse and intelligent preloading with proper memory cleanup
@@ -192,5 +199,3 @@ GET    /api/audio/:chapterId.wav           // Redirect to .mp3 for compatibility
 // Content management
 GET    /api/admin/all-chapters             // All chapters for admin interface
 GET    /api/admin/all-assignments          // All assignments for admin interface
-```
-
