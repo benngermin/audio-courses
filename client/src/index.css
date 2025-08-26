@@ -625,6 +625,22 @@
   .read-along-content p {
     margin-bottom: 20px !important;
   }
+  
+  /* Read-along interactive states */
+  .read-along-content span {
+    transition: opacity 0.3s ease, background-color 0.3s ease, color 0.3s ease !important;
+  }
+  
+  /* Active segment highlight animation */
+  @keyframes highlight-pulse {
+    0% { border-left-width: 4px; }
+    50% { border-left-width: 6px; }
+    100% { border-left-width: 4px; }
+  }
+  
+  .read-along-active-segment {
+    animation: highlight-pulse 2s ease infinite;
+  }
 
   .read-along-content::-webkit-scrollbar {
     width: 8px;

@@ -169,20 +169,30 @@ export function ReadAlongViewer({
                   data-segment-index={item.segmentIndex}
                   onClick={() => handleSegmentClick(item.segmentIndex)}
                   className={cn(
-                    "transition-all duration-200 cursor-pointer rounded px-1 py-0.5",
+                    "cursor-pointer rounded",
                     "hover:bg-gray-100 dark:hover:bg-gray-800",
-                    isParagraph && "block mb-4 p-2"
+                    isParagraph && "block mb-4",
+                    isActive && "border-l-4"
                   )}
                   style={{
-                    color: isCurrent ? '#333' : '#333',
+                    color: '#333',
                     opacity: isPast ? 0.4 : isFuture ? 0.6 : 1,
-                    backgroundColor: isActive ? '#333' : 'transparent',
+                    transition: 'opacity 0.3s ease, background-color 0.3s ease, padding 0.3s ease',
+                    background: isActive ? 'linear-gradient(90deg, rgba(51,51,51,0.1) 0%, rgba(51,51,51,0.05) 100%)' : 'transparent',
+                    borderLeftColor: isActive ? '#333' : 'transparent',
+                    paddingLeft: isActive ? '12px' : '4px',
+                    paddingRight: '4px',
+                    paddingTop: '2px',
+                    paddingBottom: '2px',
                     fontWeight: isActive ? 500 : 400
                   }}
                   title={`Click to jump to ${segmentStartTime.toFixed(1)}s`}
                 >
                   {/* Removed play icon for cleaner look */}
-                  <span style={{ color: isActive ? '#fff' : 'inherit' }}>
+                  <span style={{ 
+                    color: isActive ? '#333' : 'inherit',
+                    fontWeight: isActive ? 600 : 'inherit'
+                  }}>
                     {item.content}
                   </span>
                 </span>
