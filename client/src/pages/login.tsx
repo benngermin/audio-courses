@@ -72,6 +72,7 @@ export default function Login() {
                     onChange={(e) => setEmail(e.target.value)}
                     disabled={isLoading}
                     required
+                    autoComplete="off"
                     className="h-11"
                     data-testid="input-email"
                   />
