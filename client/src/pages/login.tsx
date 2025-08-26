@@ -6,6 +6,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { Loader2, Mail, Sparkles, BookOpen, Headphones, Brain } from "lucide-react";
+import logoUrl from '@assets/image_1756245208467.png';
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -54,9 +55,7 @@ export default function Login() {
         <Card className="w-full max-w-md">
           <CardHeader className="space-y-1">
             <div className="flex items-center justify-center mb-4">
-              <div className="bg-primary/10 p-3 rounded-full">
-                <Headphones className="h-8 w-8 text-primary" />
-              </div>
+              <img src={logoUrl} alt="Audio Courses Logo" className="h-16 w-16" />
             </div>
             <CardTitle className="text-2xl text-center">Welcome to Audio Courses</CardTitle>
             <CardDescription className="text-center">
