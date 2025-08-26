@@ -179,7 +179,10 @@ export function OptimizedMiniPlayer() {
         style={{ 
           bottom: `calc(env(safe-area-inset-bottom, 0px) + 40px)`,
           height: '72px',
-          background: '#FFFFFF'
+          background: '#FFFFFF',
+          boxShadow: 'none',
+          border: 'none',
+          borderBottom: 'none'
         }}
       >
         {/* Desktop Layout - Hidden on mobile */}
