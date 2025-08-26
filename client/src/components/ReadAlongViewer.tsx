@@ -169,32 +169,31 @@ export function ReadAlongViewer({
                   data-segment-index={item.segmentIndex}
                   onClick={() => handleSegmentClick(item.segmentIndex)}
                   className={cn(
-                    "cursor-pointer rounded",
+                    "cursor-pointer",
                     "hover:bg-gray-100 dark:hover:bg-gray-800",
                     isParagraph && "block mb-4",
-                    isActive && "border-l-4"
+                    isActive && "border-l"
                   )}
                   style={{
                     color: '#333',
                     opacity: isPast ? 0.4 : isFuture ? 0.6 : 1,
                     transition: 'opacity 0.3s ease, background-color 0.3s ease, padding 0.3s ease',
-                    background: isActive ? 'linear-gradient(90deg, rgba(51,51,51,0.1) 0%, rgba(51,51,51,0.05) 100%)' : 'transparent',
-                    borderLeftColor: isActive ? '#333' : 'transparent',
-                    paddingLeft: isActive ? '12px' : '4px',
-                    paddingRight: '4px',
-                    paddingTop: '2px',
-                    paddingBottom: '2px',
-                    fontWeight: isActive ? 500 : 400
+                    background: isActive ? 'linear-gradient(90deg, rgba(251, 146, 60, 0.1) 0%, rgba(251, 146, 60, 0.05) 100%)' : 'transparent',
+                    borderLeftWidth: isActive ? '3px' : '0',
+                    borderLeftStyle: 'solid',
+                    borderLeftColor: isActive ? '#FB923C' : 'transparent',
+                    paddingLeft: '8px',
+                    paddingRight: '8px',
+                    paddingTop: '4px',
+                    paddingBottom: '4px',
+                    marginLeft: isActive ? '-11px' : '0',
+                    fontWeight: isActive ? 500 : 400,
+                    borderRadius: '0'
                   }}
                   title={`Click to jump to ${segmentStartTime.toFixed(1)}s`}
                 >
                   {/* Removed play icon for cleaner look */}
-                  <span style={{ 
-                    color: isActive ? '#333' : 'inherit',
-                    fontWeight: isActive ? 600 : 'inherit'
-                  }}>
-                    {item.content}
-                  </span>
+                  {item.content}
                 </span>
               );
             })}
