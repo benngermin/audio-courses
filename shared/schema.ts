@@ -14,7 +14,7 @@ import { relations } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-// Session storage table (mandatory for Replit Auth)
+// Session storage table (updated for passwordless auth)
 export const sessions = pgTable(
   "sessions",
   {
@@ -25,10 +25,37 @@ export const sessions = pgTable(
   (table) => [index("IDX_session_expire").on(table.expire)],
 );
 
-// User storage table (mandatory for Replit Auth)
+// Magic link tokens table
+export const magicLinkTokens = pgTable("magic_link_tokens", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  email: varchar("email").notNull(),
+  tokenHash: varchar("token_hash", { length: 64 }).unique().notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
+  consumedAt: timestamp("consumed_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  createdIp: varchar("created_ip", { length: 45 }),
+  userAgent: text("user_agent"),
+});
+
+// User sessions table for passwordless auth
+export const userSessions = pgTable("user_sessions", {
+  id: varchar("id", { length: 64 }).primaryKey(),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Rate limit table
+export const rateLimits = pgTable("rate_limits", {
+  key: varchar("key").primaryKey(),
+  windowStart: timestamp("window_start").notNull(),
+  count: integer("count").default(0).notNull(),
+});
+
+// User storage table (updated for passwordless auth)
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  email: varchar("email").unique(),
+  email: varchar("email").unique().notNull(),
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
   profileImageUrl: varchar("profile_image_url"),
@@ -211,6 +238,9 @@ export type UserProgress = typeof userProgress.$inferSelect;
 export type DownloadedContent = typeof downloadedContent.$inferSelect;
 export type SyncLog = typeof syncLogs.$inferSelect;
 export type TextSynchronization = typeof textSynchronization.$inferSelect;
+export type MagicLinkToken = typeof magicLinkTokens.$inferSelect;
+export type UserSession = typeof userSessions.$inferSelect;
+export type RateLimit = typeof rateLimits.$inferSelect;
 export type InsertCourse = z.infer<typeof insertCourseSchema>;
 export type InsertAssignment = z.infer<typeof insertAssignmentSchema>;
 export type InsertChapter = z.infer<typeof insertChapterSchema>;

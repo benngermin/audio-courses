@@ -1,7 +1,9 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { setupAuth, isAuthenticated } from "./replitAuth";
+import authRoutes from "./authRoutes";
+import { isAuthenticated } from "./authUtils";
+import cookieParser from "cookie-parser";
 import { bubbleApiService } from "./services/bubbleApi";
 import { audioService } from "./services/audioService";
 import { objectStorageService } from "./services/objectStorageService";
@@ -86,20 +88,13 @@ const uploadJson = multer({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Auth middleware
-  await setupAuth(app);
-
+  // Cookie parser middleware
+  app.use(cookieParser());
+  
   // Auth routes
-  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
-      res.json(user);
-    } catch (error) {
-      logError('fetch-user', error);
-      res.status(500).json({ message: "Failed to fetch user" });
-    }
-  });
+  app.use(authRoutes);
+
+  // Protected user route is now handled by authRoutes
 
   // Health check endpoint (no auth required for testing)
   app.get('/api/health', async (req, res) => {
@@ -139,7 +134,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/courses', isAuthenticated, async (req: any, res) => {
     try {
-      const user = await storage.getUser(req.user.claims.sub);
+      const user = req.user;
       if (!user?.isAdmin) {
         return res.status(403).json({ message: "Admin access required" });
       }
@@ -209,7 +204,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // User progress routes
   app.get('/api/progress/:chapterId', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       // SECURITY: Validate parameter format
       const chapterId = paramIdSchema.parse(req.params.chapterId);
       const progress = await storage.getUserProgress(userId, chapterId);
@@ -222,7 +217,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/progress', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const progressData = insertUserProgressSchema.parse({
         ...req.body,
         userId,
@@ -238,7 +233,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Batch progress update endpoint for improved performance
   app.post('/api/progress/batch', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       // SECURITY: Validate batch update data
       const updates = batchProgressSchema.parse(req.body);
       
@@ -270,7 +265,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Audio download routes
   app.post('/api/download/:chapterId', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const chapterId = req.params.chapterId;
       
       const chapter = await storage.getChapter(chapterId);
@@ -290,7 +285,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/downloads', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const downloads = await storage.getDownloadedContent(userId);
       res.json(downloads);
     } catch (error) {
@@ -301,7 +296,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.delete('/api/downloads/:chapterId', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const chapterId = req.params.chapterId;
       
       await audioService.deleteDownloadedAudio(chapterId);
@@ -319,8 +314,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Admin setup route - helps identify user for admin setup
   app.get('/api/admin/setup-info', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
+      const userId = req.user.id;
+      const user = req.user;
       res.json({ 
         userId,
         email: user?.email,
@@ -335,7 +330,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   app.get('/api/admin/test-connection', isAuthenticated, async (req: any, res) => {
     try {
-      const user = await storage.getUser(req.user.claims.sub);
+      const user = req.user;
       if (!user?.isAdmin) {
         return res.status(403).json({ message: "Admin access required" });
       }
@@ -353,7 +348,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/admin/sync', isAuthenticated, async (req: any, res) => {
     try {
-      const user = await storage.getUser(req.user.claims.sub);
+      const user = req.user;
       if (!user?.isAdmin) {
         return res.status(403).json({ message: "Admin access required" });
       }
@@ -376,7 +371,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/admin/sync-status', isAuthenticated, async (req: any, res) => {
     try {
-      const user = await storage.getUser(req.user.claims.sub);
+      const user = req.user;
       if (!user?.isAdmin) {
         return res.status(403).json({ message: "Admin access required" });
       }
@@ -392,7 +387,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Manual content management endpoints
   app.post('/api/admin/courses', isAuthenticated, async (req: any, res) => {
     try {
-      const user = await storage.getUser(req.user.claims.sub);
+      const user = req.user;
       if (!user?.isAdmin) {
         return res.status(403).json({ message: "Admin access required" });
       }
@@ -408,7 +403,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put('/api/admin/courses/:courseId', isAuthenticated, async (req: any, res) => {
     try {
-      const user = await storage.getUser(req.user.claims.sub);
+      const user = req.user;
       if (!user?.isAdmin) {
         return res.status(403).json({ message: "Admin access required" });
       }
@@ -425,7 +420,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.delete('/api/admin/courses/:courseId', isAuthenticated, async (req: any, res) => {
     try {
-      const user = await storage.getUser(req.user.claims.sub);
+      const user = req.user;
       if (!user?.isAdmin) {
         return res.status(403).json({ message: "Admin access required" });
       }
@@ -441,7 +436,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/admin/assignments', isAuthenticated, async (req: any, res) => {
     try {
-      const user = await storage.getUser(req.user.claims.sub);
+      const user = req.user;
       if (!user?.isAdmin) {
         return res.status(403).json({ message: "Admin access required" });
       }
@@ -457,7 +452,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put('/api/admin/assignments/:assignmentId', isAuthenticated, async (req: any, res) => {
     try {
-      const user = await storage.getUser(req.user.claims.sub);
+      const user = req.user;
       if (!user?.isAdmin) {
         return res.status(403).json({ message: "Admin access required" });
       }
@@ -474,7 +469,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.delete('/api/admin/assignments/:assignmentId', isAuthenticated, async (req: any, res) => {
     try {
-      const user = await storage.getUser(req.user.claims.sub);
+      const user = req.user;
       if (!user?.isAdmin) {
         return res.status(403).json({ message: "Admin access required" });
       }
@@ -490,7 +485,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/admin/chapters', isAuthenticated, async (req: any, res) => {
     try {
-      const user = await storage.getUser(req.user.claims.sub);
+      const user = req.user;
       if (!user?.isAdmin) {
         return res.status(403).json({ message: "Admin access required" });
       }
@@ -506,7 +501,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put('/api/admin/chapters/:chapterId', isAuthenticated, async (req: any, res) => {
     try {
-      const user = await storage.getUser(req.user.claims.sub);
+      const user = req.user;
       if (!user?.isAdmin) {
         return res.status(403).json({ message: "Admin access required" });
       }
@@ -523,7 +518,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.delete('/api/admin/chapters/:chapterId', isAuthenticated, async (req: any, res) => {
     try {
-      const user = await storage.getUser(req.user.claims.sub);
+      const user = req.user;
       if (!user?.isAdmin) {
         return res.status(403).json({ message: "Admin access required" });
       }
@@ -540,7 +535,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Upload audio file temporarily (without chapter association)
   app.post('/api/admin/upload-temp-audio', isAuthenticated, uploadAudio.single('audio'), async (req: any, res) => {
     try {
-      const user = await storage.getUser(req.user.claims.sub);
+      const user = req.user;
       if (!user?.isAdmin) {
         return res.status(403).json({ message: "Admin access required" });
       }
@@ -583,7 +578,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Upload audio file for a specific chapter
   app.post('/api/admin/upload-audio', isAuthenticated, uploadAudio.single('audio'), async (req: any, res) => {
     try {
-      const user = await storage.getUser(req.user.claims.sub);
+      const user = req.user;
       if (!user?.isAdmin) {
         return res.status(403).json({ message: "Admin access required" });
       }
@@ -653,7 +648,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get all assignments across all courses for admin dropdown
   app.get('/api/admin/all-assignments', isAuthenticated, async (req: any, res) => {
     try {
-      const user = await storage.getUser(req.user.claims.sub);
+      const user = req.user;
       if (!user?.isAdmin) {
         return res.status(403).json({ message: "Admin access required" });
       }
@@ -710,7 +705,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Update chapter text content (admin only)
   app.post('/api/admin/read-along/:chapterId', isAuthenticated, async (req: any, res) => {
     try {
-      const user = await storage.getUser(req.user.claims.sub);
+      const user = req.user;
       if (!user?.isAdmin) {
         return res.status(403).json({ message: "Admin access required" });
       }
@@ -745,7 +740,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Admin endpoint to upload read-along JSON file
   app.post('/api/admin/upload-readalong-json', isAuthenticated, uploadJson.single('readalong'), async (req: any, res) => {
     try {
-      const user = await storage.getUser(req.user.claims.sub);
+      const user = req.user;
       if (!user?.isAdmin) {
         return res.status(403).json({ message: "Admin access required" });
       }
@@ -799,7 +794,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get all chapters across all assignments for admin interface
   app.get('/api/admin/all-chapters', isAuthenticated, async (req: any, res) => {
     try {
-      const user = await storage.getUser(req.user.claims.sub);
+      const user = req.user;
       if (!user?.isAdmin) {
         return res.status(403).json({ message: "Admin access required" });
       }
@@ -833,7 +828,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Upload course audio endpoint - uploads audio for all chapters in a course
   app.post('/api/admin/courses/:courseId/upload-audio', isAuthenticated, async (req: any, res) => {
     try {
-      const user = await storage.getUser(req.user.claims.sub);
+      const user = req.user;
       if (!user?.isAdmin) {
         return res.status(403).json({ message: "Admin access required" });
       }
