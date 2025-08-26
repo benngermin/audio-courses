@@ -175,10 +175,10 @@ export function OptimizedMiniPlayer() {
         animate={{ y: 0 }}
         exit={{ y: 100 }}
         transition={{ type: "spring", damping: 25, stiffness: 300 }}
-        className="fixed left-0 right-0 bottom-0 z-[60]"
+        className="fixed left-0 right-0 z-[60]"
         style={{ 
-          paddingTop: '32px',
-          paddingBottom: `calc(env(safe-area-inset-bottom, 0px) + 40px)`,
+          bottom: `env(safe-area-inset-bottom, 0px)`,
+          height: '72px',
           background: '#FFFFFF',
           boxShadow: 'none',
           border: 'none',
