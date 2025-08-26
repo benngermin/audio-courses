@@ -267,11 +267,11 @@ export function useOptimizedAudio({
     };
   }, [src, onTimeUpdate, onEnded, onLoadedMetadata]);
 
-  const play = useCallback(async () => {
+  const play = useCallback(async (): Promise<boolean> => {
     const audio = currentAudioRef.current;
     if (!audio) {
       console.error('No audio element available');
-      return;
+      return false;
     }
 
     try {
@@ -323,11 +323,14 @@ export function useOptimizedAudio({
         if (!audio.paused) {
           console.log('Audio playing successfully');
           setIsPlaying(true);
+          return true; // Indicate success
         } else {
           console.warn('Audio play() succeeded but audio is still paused - likely blocked by browser autoplay policy');
           setIsPlaying(false);
+          return false; // Indicate failure
         }
       }
+      return false; // No promise returned, likely failed
     } catch (error) {
       if (error instanceof Error) {
         if (error.name === 'AbortError') {
@@ -345,6 +348,7 @@ export function useOptimizedAudio({
         console.error('Unknown error playing audio:', error);
       }
       // The pause event listener will handle setting isPlaying to false
+      return false; // Indicate failure
     }
   }, []);
 

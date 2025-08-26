@@ -31,7 +31,9 @@ export default function Chapters() {
 
   const handleChapterSelect = (chapter: Chapter) => {
     if (assignment) {
-      setCurrentTrack(chapter, assignment);
+      // Set the current track with autoPlay flag true
+      // This indicates the user clicked on the chapter (user interaction)
+      setCurrentTrack(chapter, assignment, true);
     }
   };
 

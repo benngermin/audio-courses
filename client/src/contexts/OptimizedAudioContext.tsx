@@ -25,6 +25,7 @@ interface AudioContextType {
   // Track info (changes less frequently)
   currentChapter: Chapter | null;
   currentAssignment: Assignment | null;
+  shouldAutoPlay: boolean;
   
   // Playback state (changes frequently)
   isPlaying: boolean;
@@ -32,8 +33,9 @@ interface AudioContextType {
   isReadAlongVisible: boolean;
   
   // Actions (stable references)
-  setCurrentTrack: (chapter: Chapter, assignment: Assignment) => void;
+  setCurrentTrack: (chapter: Chapter, assignment: Assignment, autoPlay?: boolean) => void;
   clearCurrentTrack: () => void;
+  clearAutoPlay: () => void;
   setIsPlaying: (playing: boolean) => void;
   setIsExpanded: (expanded: boolean) => void;
   setIsReadAlongVisible: (visible: boolean) => void;
@@ -55,6 +57,7 @@ export function OptimizedAudioProvider({ children }: { children: ReactNode }) {
   // Track state (changes infrequently)
   const [currentChapter, setCurrentChapter] = useState<Chapter | null>(null);
   const [currentAssignment, setCurrentAssignment] = useState<Assignment | null>(null);
+  const [shouldAutoPlay, setShouldAutoPlay] = useState(false);
   
   // UI state (changes infrequently)
   const [isPlaying, setIsPlaying] = useState(false);
@@ -74,7 +77,7 @@ export function OptimizedAudioProvider({ children }: { children: ReactNode }) {
   });
 
   // Memoized stable callbacks
-  const setCurrentTrack = useCallback((chapter: Chapter, assignment: Assignment) => {
+  const setCurrentTrack = useCallback((chapter: Chapter, assignment: Assignment, autoPlay: boolean = false) => {
     setCurrentChapter(prevChapter => {
       if (prevChapter?.id === chapter.id) return prevChapter;
       return chapter;
@@ -83,6 +86,8 @@ export function OptimizedAudioProvider({ children }: { children: ReactNode }) {
       if (prevAssignment?.id === assignment.id) return prevAssignment;
       return assignment;
     });
+    // Set auto-play flag when track is set from user interaction
+    setShouldAutoPlay(autoPlay);
   }, []);
 
   const clearCurrentTrack = useCallback(() => {
@@ -90,6 +95,11 @@ export function OptimizedAudioProvider({ children }: { children: ReactNode }) {
     setCurrentAssignment(null);
     setIsPlaying(false);
     setIsExpanded(false);
+    setShouldAutoPlay(false);
+  }, []);
+  
+  const clearAutoPlay = useCallback(() => {
+    setShouldAutoPlay(false);
   }, []);
 
   const toggleExpanded = useCallback(() => {
@@ -107,11 +117,13 @@ export function OptimizedAudioProvider({ children }: { children: ReactNode }) {
   const contextValue = useMemo(() => ({
     currentChapter,
     currentAssignment,
+    shouldAutoPlay,
     isPlaying,
     isExpanded,
     isReadAlongVisible,
     setCurrentTrack,
     clearCurrentTrack,
+    clearAutoPlay,
     setIsPlaying,
     setIsExpanded,
     setIsReadAlongVisible,
@@ -124,11 +136,13 @@ export function OptimizedAudioProvider({ children }: { children: ReactNode }) {
   }), [
     currentChapter,
     currentAssignment,
+    shouldAutoPlay,
     isPlaying,
     isExpanded,
     isReadAlongVisible,
     setCurrentTrack,
     clearCurrentTrack,
+    clearAutoPlay,
     toggleExpanded,
     toggleReadAlong,
     audioControls,
@@ -161,9 +175,11 @@ export function useCurrentTrack() {
   return useMemo(() => ({
     currentChapter: context.currentChapter,
     currentAssignment: context.currentAssignment,
+    shouldAutoPlay: context.shouldAutoPlay,
     setCurrentTrack: context.setCurrentTrack,
     clearCurrentTrack: context.clearCurrentTrack,
-  }), [context.currentChapter, context.currentAssignment, context.setCurrentTrack, context.clearCurrentTrack]);
+    clearAutoPlay: context.clearAutoPlay,
+  }), [context.currentChapter, context.currentAssignment, context.shouldAutoPlay, context.setCurrentTrack, context.clearCurrentTrack, context.clearAutoPlay]);
 }
 
 export function usePlaybackState() {

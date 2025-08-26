@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export function OptimizedMiniPlayer() {
-  const { currentChapter, currentAssignment, setCurrentTrack } = useCurrentTrack();
+  const { currentChapter, currentAssignment, shouldAutoPlay, setCurrentTrack, clearAutoPlay } = useCurrentTrack();
   const { isExpanded, setIsExpanded, setIsPlaying, isReadAlongVisible, setIsReadAlongVisible } = usePlaybackState();
   const { setAudioControls } = useAudioControls();
   const { setAudioState } = useAudioState();
@@ -110,30 +110,41 @@ export function OptimizedMiniPlayer() {
     setIsPlaying(isPlaying);
   }, [isPlaying, setIsPlaying]);
 
-  // Track if this is the first interaction with a chapter
-  const isFirstPlayRef = useRef(true);
+  // Track previous chapter to detect changes
   const prevChapterIdRef = useRef<string | null>(null);
   
+  // Effect to handle auto-play when chapter changes from user interaction
   useEffect(() => {
     const currentId = currentChapter?.id;
     
-    // When chapter changes, try to auto-play
-    if (currentId && currentId !== prevChapterIdRef.current && play) {
+    // When chapter changes and we should auto-play (from user click)
+    if (currentId && currentId !== prevChapterIdRef.current) {
       prevChapterIdRef.current = currentId;
       
-      // Only auto-play after user has interacted with play button at least once
-      // This ensures we comply with browser autoplay policies
-      if (!isFirstPlayRef.current) {
-        play().catch((error) => {
-          console.log('Chapter change auto-play blocked, user needs to click play');
-        });
+      if (shouldAutoPlay && play) {
+        // Clear the flag immediately to prevent multiple attempts
+        clearAutoPlay();
+        
+        // Small delay to ensure audio element is ready
+        setTimeout(async () => {
+          try {
+            const success = await play();
+            if (success) {
+              console.log('Audio started playing from chapter selection');
+            } else {
+              console.log('Audio play was blocked - user needs to click play button');
+            }
+          } catch (error) {
+            console.log('Failed to auto-play after chapter selection:', error);
+            // User will need to click the play button manually
+          }
+        }, 150); // Slightly longer delay for better reliability
       }
     }
-  }, [currentChapter?.id, play]);
+  }, [currentChapter?.id, shouldAutoPlay, play, clearAutoPlay]);
   
-  // Track when user first clicks play
+  // Regular play button handler
   const handlePlayClick = useCallback(() => {
-    isFirstPlayRef.current = false;
     togglePlay();
   }, [togglePlay]);
 

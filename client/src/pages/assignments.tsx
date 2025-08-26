@@ -44,8 +44,8 @@ export default function Assignments() {
 
   const handleChapterSelect = (chapter: Chapter) => {
     if (currentAssignment && chapter) {
-      setCurrentTrack(chapter, currentAssignment);
-      // Audio will auto-play in OptimizedMiniPlayer when chapter changes
+      // Set track with autoPlay true since this is from user interaction (chapter click)
+      setCurrentTrack(chapter, currentAssignment, true);
     }
   };
 
