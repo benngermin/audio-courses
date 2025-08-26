@@ -175,11 +175,11 @@ export function OptimizedMiniPlayer() {
         animate={{ y: 0 }}
         exit={{ y: 100 }}
         transition={{ type: "spring", damping: 25, stiffness: 300 }}
-        className="fixed bottom-0 left-0 right-0 z-50"
+        className="fixed left-0 right-0 z-50"
         style={{ 
+          bottom: `env(safe-area-inset-bottom, 0px)`,
           height: '72px',
-          background: '#FFFFFF',
-          paddingBottom: `env(safe-area-inset-bottom)` 
+          background: '#FFFFFF'
         }}
       >
         {/* Desktop Layout - Hidden on mobile */}
