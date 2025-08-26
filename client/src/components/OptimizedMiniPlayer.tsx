@@ -179,7 +179,6 @@ export function OptimizedMiniPlayer() {
         style={{ 
           height: '72px',
           background: '#FFFFFF',
-          borderTop: '1px solid #E5E7EB',
           paddingBottom: `env(safe-area-inset-bottom)` 
         }}
       >
@@ -364,80 +363,69 @@ export function OptimizedMiniPlayer() {
         </div>
 
         {/* Mobile Layout - Visible only on mobile */}
-        <div className="flex sm:hidden flex-col h-full px-4 py-2 justify-center">
-          {/* Top Row - Progress and Time */}
-          <div className="flex items-center" style={{ gap: '8px', marginBottom: '8px' }}>
-            {/* Current Time */}
-            <span 
-              className="text-sm font-medium"
+        <div className="flex sm:hidden flex-col h-full relative">
+          {/* Progress Bar - Edge to Edge at Top */}
+          <div 
+            className="absolute top-0 left-0 right-0 h-1 cursor-pointer"
+            onClick={(e) => {
+              e.stopPropagation();
+              if (!duration || !seek) return;
+              const rect = e.currentTarget.getBoundingClientRect();
+              const x = e.clientX - rect.left;
+              const percentage = x / rect.width;
+              const newTime = percentage * duration;
+              seek(newTime);
+            }}
+            style={{
+              background: '#E5E7EB'
+            }}
+          >
+            {/* Progress fill */}
+            <div
+              className="absolute top-0 left-0 h-full transition-all duration-100"
               style={{ 
-                color: '#1F2937',
-                fontSize: '14px',
-                minWidth: '45px'
+                background: '#FF6B35',
+                width: duration ? `${(currentTime / duration) * 100}%` : '0%' 
               }}
-            >
-              {formatTime(currentTime)}
-            </span>
-
-            {/* Progress Bar */}
-            <div 
-              className="flex-1 relative py-1"
-              onClick={(e) => {
-                e.stopPropagation();
-                if (!duration || !seek) return;
-                const rect = e.currentTarget.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const percentage = x / rect.width;
-                const newTime = percentage * duration;
-                seek(newTime);
-              }}
-            >
-              <div 
-                className="w-full relative"
-                style={{
-                  height: '3px',
-                  background: '#E5E7EB',
-                  borderRadius: '2px'
-                }}
-              >
-                {/* Progress fill */}
-                <div
-                  className="absolute top-0 left-0 h-full transition-all duration-100"
-                  style={{ 
-                    background: '#FF6B35',
-                    borderRadius: '2px',
-                    width: duration ? `${(currentTime / duration) * 100}%` : '0%' 
-                  }}
-                />
-                
-                {/* Progress handle - smaller on mobile */}
-                <div
-                  className="absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-white rounded-full shadow-md transition-all duration-100"
-                  style={{ 
-                    left: duration ? `${(currentTime / duration) * 100}%` : '0%', 
-                    marginLeft: '-5px',
-                    border: '2px solid #FF6B35'
-                  }}
-                />
-              </div>
-            </div>
-
-            {/* Total Duration */}
-            <span 
-              className="text-sm font-medium"
+            />
+            
+            {/* Progress handle - hidden on mobile for cleaner look */}
+            <div
+              className="absolute top-1/2 -translate-y-1/2 w-2 h-2 bg-white rounded-full shadow-md transition-all duration-100 opacity-0"
               style={{ 
-                color: '#1F2937',
-                fontSize: '14px',
-                minWidth: '45px',
-                textAlign: 'right'
+                left: duration ? `${(currentTime / duration) * 100}%` : '0%', 
+                marginLeft: '-4px',
+                border: '1.5px solid #FF6B35'
               }}
-            >
-              {formatTime(duration)}
-            </span>
+            />
           </div>
 
-          {/* Bottom Row - Controls */}
-          <div className="flex items-center justify-between">
+          {/* Content Container */}
+          <div className="flex flex-col justify-center flex-1 px-4 pt-3">
+            {/* Time Display Row */}
+            <div className="flex justify-between items-center mb-2">
+              <span 
+                className="text-sm font-medium"
+                style={{ 
+                  color: '#1F2937',
+                  fontSize: '13px'
+                }}
+              >
+                {formatTime(currentTime)}
+              </span>
+              <span 
+                className="text-sm font-medium"
+                style={{ 
+                  color: '#1F2937',
+                  fontSize: '13px'
+                }}
+              >
+                {formatTime(duration)}
+              </span>
+            </div>
+
+            {/* Bottom Row - Controls */}
+            <div className="flex items-center justify-between">
             {/* Speed Control */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -545,6 +533,7 @@ export function OptimizedMiniPlayer() {
             >
               <Grid3X3 className="h-5 w-5" />
             </Button>
+            </div>
           </div>
         </div>
       </motion.div>
