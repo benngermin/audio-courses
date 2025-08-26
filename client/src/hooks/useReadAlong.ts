@@ -129,10 +129,10 @@ export function useReadAlong({ chapterId, currentTime, isPlaying, enabled = true
   // Text size helpers
   const getTextSizeClass = useCallback((size: typeof textSize) => {
     const sizeMap = {
-      sm: 'text-sm leading-6',
-      md: 'text-base leading-7',
-      lg: 'text-lg leading-8',
-      xl: 'text-xl leading-9'
+      sm: 'text-sm',
+      md: '',  // Default size, no class needed
+      lg: 'text-lg',
+      xl: 'text-xl'
     };
     return sizeMap[size];
   }, []);
