@@ -244,16 +244,17 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
       if (playPromise !== undefined) {
         await playPromise;
         
-        // Check immediately if audio is actually playing
-        if (!audio.paused) {
-          console.log('Audio playing successfully');
-          setIsPlaying(true);
-        } else {
-          // If still paused after promise resolves, it's blocked by autoplay policy
-          console.warn('Audio play() succeeded but audio is still paused - blocked by browser autoplay policy');
-          setIsPlaying(false);
-          // Don't use setTimeout as it can cause state sync issues
-        }
+        // Critical fix: Check if audio is actually playing after promise resolves
+        // The promise can resolve successfully but audio might still be paused due to autoplay policy
+        setTimeout(() => {
+          if (audio.paused) {
+            console.log('Audio play() succeeded but audio is still paused - likely blocked by browser autoplay policy');
+            setIsPlaying(false);
+          } else {
+            console.log('Audio playing successfully');
+            setIsPlaying(true);
+          }
+        }, 100); // Small delay to let the audio element update its state
       }
     } catch (error) {
       if (error instanceof Error) {
