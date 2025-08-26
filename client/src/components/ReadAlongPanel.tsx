@@ -73,7 +73,7 @@ export function ReadAlongPanel({ isVisible, onClose }: ReadAlongPanelProps) {
 
 
           {/* Read-Along Content - full screen with minimal padding */}
-          <div className="flex-1 overflow-hidden pt-12 px-2 sm:px-4 lg:px-8">
+          <div className="flex-1 overflow-hidden pt-2 px-2 sm:px-4 lg:px-8">
               {currentChapter.hasReadAlong ? (
                 <ReadAlongViewer
                   chapterId={currentChapter.id}
