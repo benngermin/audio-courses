@@ -58,7 +58,7 @@ export default function Login() {
                 <Headphones className="h-8 w-8 text-primary" />
               </div>
             </div>
-            <CardTitle className="text-2xl text-center">Welcome to AudioLearn</CardTitle>
+            <CardTitle className="text-2xl text-center">Welcome to Audio Courses</CardTitle>
             <CardDescription className="text-center">
               Enter your email to receive a magic link
             </CardDescription>
