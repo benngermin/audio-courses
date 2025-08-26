@@ -183,7 +183,8 @@ export function OptimizedMiniPlayer() {
           paddingBottom: `env(safe-area-inset-bottom)` 
         }}
       >
-        <div className="flex items-center h-full px-4" style={{ gap: '16px' }}>
+        {/* Desktop Layout - Hidden on mobile */}
+        <div className="hidden sm:flex items-center h-full px-4" style={{ gap: '16px' }}>
           {/* Time Display - Left */}
           <span 
             className="text-sm tabular-nums"
@@ -360,6 +361,191 @@ export function OptimizedMiniPlayer() {
             <Grid3X3 className="h-4 w-4" />
             <span>Read</span>
           </Button>
+        </div>
+
+        {/* Mobile Layout - Visible only on mobile */}
+        <div className="flex sm:hidden flex-col h-full px-4 py-2 justify-center">
+          {/* Top Row - Progress and Time */}
+          <div className="flex items-center" style={{ gap: '8px', marginBottom: '8px' }}>
+            {/* Current Time */}
+            <span 
+              className="text-sm font-medium"
+              style={{ 
+                color: '#1F2937',
+                fontSize: '14px',
+                minWidth: '45px'
+              }}
+            >
+              {formatTime(currentTime)}
+            </span>
+
+            {/* Progress Bar */}
+            <div 
+              className="flex-1 relative py-1"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (!duration || !seek) return;
+                const rect = e.currentTarget.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const percentage = x / rect.width;
+                const newTime = percentage * duration;
+                seek(newTime);
+              }}
+            >
+              <div 
+                className="w-full relative"
+                style={{
+                  height: '3px',
+                  background: '#E5E7EB',
+                  borderRadius: '2px'
+                }}
+              >
+                {/* Progress fill */}
+                <div
+                  className="absolute top-0 left-0 h-full transition-all duration-100"
+                  style={{ 
+                    background: '#FF6B35',
+                    borderRadius: '2px',
+                    width: duration ? `${(currentTime / duration) * 100}%` : '0%' 
+                  }}
+                />
+                
+                {/* Progress handle - smaller on mobile */}
+                <div
+                  className="absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-white rounded-full shadow-md transition-all duration-100"
+                  style={{ 
+                    left: duration ? `${(currentTime / duration) * 100}%` : '0%', 
+                    marginLeft: '-5px',
+                    border: '2px solid #FF6B35'
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Total Duration */}
+            <span 
+              className="text-sm font-medium"
+              style={{ 
+                color: '#1F2937',
+                fontSize: '14px',
+                minWidth: '45px',
+                textAlign: 'right'
+              }}
+            >
+              {formatTime(duration)}
+            </span>
+          </div>
+
+          {/* Bottom Row - Controls */}
+          <div className="flex items-center justify-between">
+            {/* Speed Control */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={(e) => e.stopPropagation()}
+                  className="h-10 px-2 hover:bg-gray-100 font-medium"
+                  style={{ 
+                    minWidth: '36px',
+                    color: '#1F2937',
+                    fontSize: '14px',
+                    fontWeight: 600
+                  }}
+                >
+                  {getSpeedLabel(playbackRate)}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" side="top">
+                {[0.5, 0.75, 1, 1.25, 1.5, 1.75, 2].map(speed => (
+                  <DropdownMenuItem
+                    key={speed}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleSpeedChange(speed);
+                    }}
+                    className="cursor-pointer"
+                  >
+                    <span className={playbackRate === speed ? 'font-semibold' : ''}>
+                      {getSpeedLabel(speed)}
+                    </span>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* Playback Controls */}
+            <div className="flex items-center" style={{ gap: '8px' }}>
+              {/* Skip Backward */}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  skipBackward(15);
+                }}
+                className="hover:bg-gray-100 h-10 w-10"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                  <path d="M19 12L5 12M5 12L12 5M5 12L12 19" stroke="#1F2937" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </Button>
+
+              {/* Play/Pause - Larger and Orange on Mobile */}
+              <Button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handlePlayClick();
+                }}
+                className="h-12 w-12 rounded-full flex items-center justify-center"
+                style={{ 
+                  background: '#FF6B35',
+                  color: 'white'
+                }}
+              >
+                {isPlaying ? (
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <rect x="4" y="3" width="4" height="14" fill="white" />
+                    <rect x="12" y="3" width="4" height="14" fill="white" />
+                  </svg>
+                ) : (
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M6 3L16 10L6 17V3Z" fill="white" />
+                  </svg>
+                )}
+              </Button>
+
+              {/* Skip Forward */}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  skipForward(30);
+                }}
+                className="hover:bg-gray-100 h-10 w-10"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                  <path d="M5 12L19 12M19 12L12 5M19 12L12 19" stroke="#1F2937" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </Button>
+            </div>
+
+            {/* Read Button */}
+            <Button
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsReadAlongVisible(true);
+              }}
+              className="h-10 w-10 rounded-lg flex items-center justify-center"
+              style={{ 
+                background: '#FF6B35',
+                color: 'white'
+              }}
+            >
+              <Grid3X3 className="h-5 w-5" />
+            </Button>
+          </div>
         </div>
       </motion.div>
     </AnimatePresence>
