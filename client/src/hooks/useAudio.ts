@@ -105,6 +105,16 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
       setIsLoading(false);
     };
 
+    const handlePlay = () => {
+      console.log('Audio play event fired');
+      setIsPlaying(true);
+    };
+
+    const handlePause = () => {
+      console.log('Audio pause event fired');
+      setIsPlaying(false);
+    };
+
     const handleError = (e: Event) => {
       const audioError = audio.error;
       if (audioError) {
@@ -146,6 +156,8 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
     audio.addEventListener("canplay", handleCanPlay);
     audio.addEventListener("waiting", handleWaiting);
     audio.addEventListener("canplaythrough", handleCanPlayThrough);
+    audio.addEventListener("play", handlePlay);
+    audio.addEventListener("pause", handlePause);
     audio.addEventListener("error", handleError);
     // Remove verbose logging
     // audio.addEventListener("loadstart", () => console.log("Audio load started for:", src));
@@ -168,6 +180,8 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
       audio.removeEventListener("canplay", handleCanPlay);
       audio.removeEventListener("waiting", handleWaiting);
       audio.removeEventListener("canplaythrough", handleCanPlayThrough);
+      audio.removeEventListener("play", handlePlay);
+      audio.removeEventListener("pause", handlePause);
       audio.removeEventListener("error", handleError);
       // Don't set src to empty string as it causes AbortError
       // Just pause the audio and keep the reference
@@ -229,8 +243,18 @@ export function useAudio({ src, onTimeUpdate, onEnded, onLoadedMetadata }: UseAu
       
       if (playPromise !== undefined) {
         await playPromise;
-        console.log('Audio playing successfully');
-        setIsPlaying(true);
+        
+        // Critical fix: Check if audio is actually playing after promise resolves
+        // The promise can resolve successfully but audio might still be paused due to autoplay policy
+        setTimeout(() => {
+          if (audio.paused) {
+            console.log('Audio play() succeeded but audio is still paused - likely blocked by browser autoplay policy');
+            setIsPlaying(false);
+          } else {
+            console.log('Audio playing successfully');
+            setIsPlaying(true);
+          }
+        }, 100); // Small delay to let the audio element update its state
       }
     } catch (error) {
       if (error instanceof Error) {

@@ -130,42 +130,16 @@ export function MiniPlayer() {
     setIsPlaying(isPlaying);
   }, [isPlaying, setIsPlaying]);
 
-  // Auto-play when a new chapter is selected (only when chapter changes)
+  // Track chapter changes for progress reset
   const prevChapterIdRef = useRef<string | null>(null);
-  const hasAutoPlayedRef = useRef(false);
   
   useEffect(() => {
     if (currentChapter?.id && currentChapter.id !== prevChapterIdRef.current) {
       prevChapterIdRef.current = currentChapter.id;
-      hasAutoPlayedRef.current = false;
       // Reset progress update tracking for new chapter
       lastProgressUpdateRef.current = 0;
     }
   }, [currentChapter?.id]);
-  
-  useEffect(() => {
-    // Auto-play immediately when a new chapter is selected, don't wait for duration
-    if (currentChapter?.id && !hasAutoPlayedRef.current && !isPlaying && play) {
-      hasAutoPlayedRef.current = true;
-      console.log('Auto-playing chapter:', currentChapter.id);
-      // Add small delay to ensure audio element is ready
-      // iOS needs a bit more time to prepare the audio element
-      const autoPlayTimer = setTimeout(() => {
-        play()
-          .then(() => {
-            console.log('Auto-play successful');
-          })
-          .catch((error) => {
-            console.error('Auto-play failed:', error);
-            // On iOS, auto-play might fail initially but work on user interaction
-            // Set flag to false to allow manual play attempt
-            hasAutoPlayedRef.current = false; 
-          });
-      }, 200); // Increased delay for iOS compatibility
-      
-      return () => clearTimeout(autoPlayTimer);
-    }
-  }, [currentChapter?.id, isPlaying, play]);
 
   // Update Media Session metadata
   useEffect(() => {
