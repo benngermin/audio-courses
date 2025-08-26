@@ -64,72 +64,57 @@ export function ReadAlongPanel({ isVisible, onClose }: ReadAlongPanelProps) {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
           className={cn(
-            "fixed inset-0 z-50",
+            "fixed inset-0 z-40",
             "bg-white dark:bg-gray-900",
-            "flex flex-col overflow-hidden"
+            "flex flex-col overflow-hidden",
+            "pb-20" // Add padding for miniplayer
           )}
         >
-          {/* Full-Screen Header */}
-          <div className="flex-shrink-0 border-b border-gray-200 dark:border-gray-700">
-            <div className="flex items-center justify-between px-4 py-4">
-                {/* Chapter info */}
-                <div className="flex-1 min-w-0 mr-4">
-                  <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                    {currentAssignment?.title}
-                  </h3>
-                  <h2 className="text-lg font-semibold text-gray-900 dark:text-white truncate">
-                    {currentChapter.title}
-                  </h2>
-                </div>
+          {/* Close button positioned absolutely */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onClose}
+            className="absolute top-4 right-4 z-50 h-10 w-10 p-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-full shadow-md hover:bg-white dark:hover:bg-gray-800"
+            title="Close (ESC)"
+          >
+            <X className="h-5 w-5" />
+          </Button>
 
-                {/* Control buttons */}
-                <div className="flex items-center gap-2">
-                  {/* Text size control */}
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 w-8 p-0"
-                      >
-                        <Type className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      {textSizes.map((size) => (
-                        <DropdownMenuItem
-                          key={size.value}
-                          onClick={() => setTextSize(size.value)}
-                        >
-                          <span
-                            className={cn(
-                              "font-medium",
-                              textSize === size.value && "text-orange-600"
-                            )}
-                          >
-                            {size.label}
-                          </span>
-                        </DropdownMenuItem>
-                      ))}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-
-                {/* Close button */}
+          {/* Text size control positioned absolutely */}
+          <div className="absolute top-4 right-16 z-50">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={onClose}
-                  className="h-8 w-8 p-0"
-                  title="Close (ESC)"
+                  className="h-10 w-10 p-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-full shadow-md hover:bg-white dark:hover:bg-gray-800"
                 >
-                  <X className="h-4 w-4" />
+                  <Type className="h-5 w-5" />
                 </Button>
-                </div>
-              </div>
-            </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {textSizes.map((size) => (
+                  <DropdownMenuItem
+                    key={size.value}
+                    onClick={() => setTextSize(size.value)}
+                  >
+                    <span
+                      className={cn(
+                        "font-medium",
+                        textSize === size.value && "text-orange-600"
+                      )}
+                    >
+                      {size.label}
+                    </span>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
 
-            {/* Read-Along Content */}
-            <div className="flex-1 overflow-hidden">
+          {/* Read-Along Content - full screen with padding */}
+          <div className="flex-1 overflow-hidden pt-16 px-4 sm:px-8 lg:px-16">
               {currentChapter.hasReadAlong ? (
                 <ReadAlongViewer
                   chapterId={currentChapter.id}
