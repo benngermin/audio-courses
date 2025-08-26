@@ -235,11 +235,11 @@ export function OptimizedMiniPlayer() {
             {/* Time Display and Chapter Title Row */}
             <div className="flex items-center justify-between">
               <span 
-                className="text-sm tabular-nums"
+                className="text-xs tabular-nums"
                 style={{ 
-                  color: '#374151',
+                  color: '#6B7280',
                   minWidth: '40px',
-                  fontSize: '13px'
+                  fontSize: '11px'
                 }}
               >
                 {formatTime(currentTime)}
@@ -270,11 +270,11 @@ export function OptimizedMiniPlayer() {
               </div>
               
               <span 
-                className="text-sm tabular-nums"
+                className="text-xs tabular-nums"
                 style={{ 
-                  color: '#374151',
+                  color: '#6B7280',
                   minWidth: '40px',
-                  fontSize: '13px',
+                  fontSize: '11px',
                   textAlign: 'right'
                 }}
               >
@@ -436,10 +436,10 @@ export function OptimizedMiniPlayer() {
             {/* Time Display Row with Chapter Title */}
             <div className="flex justify-between items-center mb-2">
               <span 
-                className="text-sm font-medium"
+                className="text-xs font-medium"
                 style={{ 
-                  color: '#1F2937',
-                  fontSize: '13px'
+                  color: '#6B7280',
+                  fontSize: '11px'
                 }}
               >
                 {formatTime(currentTime)}
@@ -470,10 +470,10 @@ export function OptimizedMiniPlayer() {
               </div>
               
               <span 
-                className="text-sm font-medium"
+                className="text-xs font-medium"
                 style={{ 
-                  color: '#1F2937',
-                  fontSize: '13px'
+                  color: '#6B7280',
+                  fontSize: '11px'
                 }}
               >
                 {formatTime(duration)}
