@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 // Card components removed for full-screen mode
 import { Badge } from '@/components/ui/badge';

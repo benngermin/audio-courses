@@ -256,8 +256,9 @@ export function useOptimizedAudio({
     progressIntervalRef.current = window.setInterval(() => {
       if (audio && !audio.paused) {
         setCurrentTime(audio.currentTime);
+        onTimeUpdate?.(audio.currentTime);
       }
-    }, 100);
+    }, 50);
 
     return () => {
       if (progressIntervalRef.current) {

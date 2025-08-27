@@ -49,65 +49,78 @@ export function useReadAlong({ chapterId, currentTime, isPlaying, enabled = true
     },
   });
 
-  // Find active segment based on current time
+  // Find active segment based on current time using binary search for efficiency
   const findActiveSegment = useCallback((time: number, segments: ReadAlongSegment[]) => {
     if (!segments || segments.length === 0) return -1;
     
-    // Simple linear search for sentence segments to ensure accuracy
-    // Filter for sentence segments only
-    const sentenceSegments = segments.filter(seg => seg.segmentType === 'sentence');
+    // Filter for sentence segments only and sort by startTime
+    const sentenceSegments = segments
+      .filter(seg => seg.segmentType === 'sentence')
+      .sort((a, b) => a.startTime - b.startTime);
     
-    for (let i = 0; i < sentenceSegments.length; i++) {
-      const segment = sentenceSegments[i];
-      // Add a small buffer (0.1s) to handle timing edge cases
-      if (time >= segment.startTime - 0.1 && time <= segment.endTime + 0.1) {
+    if (sentenceSegments.length === 0) return -1;
+    
+    // Binary search for the active segment (O(log n) complexity as per documentation)
+    let left = 0;
+    let right = sentenceSegments.length - 1;
+    let activeIndex = -1;
+    
+    while (left <= right) {
+      const mid = Math.floor((left + right) / 2);
+      const segment = sentenceSegments[mid];
+      
+      // Check if current time is within this segment (with small buffer for edge cases)
+      if (time >= segment.startTime - 0.05 && time <= segment.endTime + 0.05) {
         return segment.segmentIndex;
       }
-    }
-    
-    // If no exact match, find the closest previous segment
-    for (let i = sentenceSegments.length - 1; i >= 0; i--) {
-      if (time > sentenceSegments[i].endTime) {
-        return sentenceSegments[i].segmentIndex;
+      
+      if (time < segment.startTime) {
+        right = mid - 1;
+      } else {
+        // Time is past this segment's end, this could be our active segment
+        // if there's no next segment or next segment hasn't started yet
+        activeIndex = segment.segmentIndex;
+        left = mid + 1;
       }
     }
     
-    return -1;
+    // Return the last segment that has started
+    return activeIndex;
   }, []);
 
-  // Update active segment when time changes
+  // Update active segment when time changes with proper throttling
   useEffect(() => {
-    if (!readAlongData?.segments) return;
+    if (!readAlongData?.segments || !isPlaying) return;
     
-    // Use requestAnimationFrame for smooth updates
-    const updateActiveSegment = () => {
-      const newActiveIndex = findActiveSegment(currentTime, readAlongData.segments);
+    // Throttle updates to prevent excessive re-renders (50ms as per documentation)
+    const now = Date.now();
+    if (now - lastUpdateTimeRef.current < 50) {
+      return;
+    }
+    
+    const newActiveIndex = findActiveSegment(currentTime, readAlongData.segments);
+    
+    if (newActiveIndex !== activeSegmentIndex) {
+      lastUpdateTimeRef.current = now;
+      setActiveSegmentIndex(newActiveIndex);
       
-      if (newActiveIndex !== activeSegmentIndex) {
-        setActiveSegmentIndex(newActiveIndex);
-        
-        // Update highlighted words for word-level sync
-        const activeSegment = readAlongData.segments.find(seg => seg.segmentIndex === newActiveIndex);
-        if (activeSegment?.segmentType === 'word') {
-          setHighlightedWords(prev => new Set(prev).add(newActiveIndex));
-        } else if (activeSegment) {
-          // For sentence/paragraph level, highlight all words in the segment
-          const wordsInSegment = readAlongData.segments
-            .filter((seg) => 
-              seg.segmentType === 'word' && 
-              seg.startTime >= activeSegment.startTime &&
-              seg.endTime <= activeSegment.endTime
-            )
-            .map((seg) => seg.segmentIndex);
-          setHighlightedWords(new Set(wordsInSegment));
-        }
+      // Update highlighted words for word-level sync
+      const activeSegment = readAlongData.segments.find(seg => seg.segmentIndex === newActiveIndex);
+      if (activeSegment?.segmentType === 'word') {
+        setHighlightedWords(prev => new Set(prev).add(newActiveIndex));
+      } else if (activeSegment) {
+        // For sentence/paragraph level, highlight all words in the segment
+        const wordsInSegment = readAlongData.segments
+          .filter((seg) => 
+            seg.segmentType === 'word' && 
+            seg.startTime >= activeSegment.startTime &&
+            seg.endTime <= activeSegment.endTime
+          )
+          .map((seg) => seg.segmentIndex);
+        setHighlightedWords(new Set(wordsInSegment));
       }
-    };
-    
-    // Use a more frequent update interval for smoother highlighting
-    const timeoutId = setTimeout(updateActiveSegment, 10);
-    return () => clearTimeout(timeoutId);
-  }, [currentTime, readAlongData?.segments, activeSegmentIndex, findActiveSegment]);
+    }
+  }, [currentTime, readAlongData?.segments, activeSegmentIndex, findActiveSegment, isPlaying]);
 
   // Auto-scroll to active segment
   useEffect(() => {

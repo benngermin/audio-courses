@@ -41,7 +41,7 @@ const playbackSpeeds = [0.5, 0.75, 1, 1.25, 1.5, 2];
 export function ExpandedPlayer() {
   const { toast } = useToast();
   const { currentChapter, currentAssignment, setCurrentTrack } = useCurrentTrack();
-  const { isExpanded, setIsExpanded, isPlayAllMode, setIsPlayAllMode, isPlaying } = usePlaybackState();
+  const { isExpanded, setIsExpanded, isPlaying } = usePlaybackState();
   
   const [showVolume, setShowVolume] = useState(false);
   const [isReadAlongEnabled, setIsReadAlongEnabled] = useState(false);
@@ -362,14 +362,16 @@ export function ExpandedPlayer() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => setIsPlayAllMode(!isPlayAllMode)}
-                  className={`p-2 sm:p-3 min-h-[40px] sm:min-h-[48px] transition-all ${isPlayAllMode ? 'bg-primary/10 hover:bg-primary/20 px-3 sm:px-4' : 'hover:bg-gray-100'} flex items-center gap-1 sm:gap-2`}
-                  title={isPlayAllMode ? "Play All Mode: On" : "Play All Mode: Off"}
+                  onClick={() => {
+                    toast({
+                      title: "Play All",
+                      description: "Play All mode coming soon",
+                    });
+                  }}
+                  className="p-2 sm:p-3 min-h-[40px] sm:min-h-[48px] transition-all hover:bg-gray-100 flex items-center gap-1 sm:gap-2"
+                  title="Play All Mode"
                 >
-                  <ListMusic className={`h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 ${isPlayAllMode ? 'text-[#ff6b35]' : 'text-[#666]'}`} />
-                  {isPlayAllMode && (
-                    <span className="text-sm sm:text-base font-medium text-[#ff6b35]">Play All</span>
-                  )}
+                  <ListMusic className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 text-[#666]" />
                 </Button>
               </div>
 
