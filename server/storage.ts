@@ -71,6 +71,7 @@ export interface IStorage {
   // Text synchronization operations for read-along
   getTextSynchronization(chapterId: string): Promise<ReadAlongSegment[]>;
   saveTextSynchronization(chapterId: string, segments: ReadAlongSegment[]): Promise<void>;
+  deleteTextSynchronization(chapterId: string): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -329,6 +330,12 @@ export class DatabaseStorage implements IStorage {
           characterEnd: segment.characterEnd || null,
         })));
     }
+  }
+
+  async deleteTextSynchronization(chapterId: string): Promise<void> {
+    await db
+      .delete(textSynchronization)
+      .where(eq(textSynchronization.chapterId, chapterId));
   }
 }
 

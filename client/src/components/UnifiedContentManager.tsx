@@ -1082,8 +1082,33 @@ export function UnifiedContentManager() {
                           type="button"
                           variant="ghost"
                           size="sm"
+                          onClick={async () => {
+                            try {
+                              await apiRequest("DELETE", `/api/admin/chapters/${editingItem.id}/audio`);
+                              toast({
+                                title: "Audio deleted",
+                                description: "Audio file has been removed from the chapter.",
+                              });
+                              queryClient.invalidateQueries({ queryKey: ["/api/admin/all-chapters"] });
+                              setEditingItem({ ...editingItem, audioUrl: null });
+                            } catch (error) {
+                              toast({
+                                title: "Error",
+                                description: "Failed to delete audio file.",
+                                variant: "destructive",
+                              });
+                            }
+                          }}
+                          title="Delete audio file"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
                           onClick={() => setShowAudioUpload(!showAudioUpload)}
-                          title="Change audio file"
+                          title="Replace audio file"
                         >
                           <Pencil className="h-4 w-4" />
                         </Button>
@@ -1101,7 +1126,7 @@ export function UnifiedContentManager() {
                           onClick={() => setShowAudioUpload(!showAudioUpload)}
                           title="Upload audio file"
                         >
-                          <Pencil className="h-4 w-4" />
+                          <Plus className="h-4 w-4" />
                         </Button>
                       </div>
                     )}
@@ -1157,8 +1182,34 @@ export function UnifiedContentManager() {
                           type="button"
                           variant="ghost"
                           size="sm"
+                          onClick={async () => {
+                            try {
+                              await apiRequest("DELETE", `/api/admin/chapters/${editingItem.id}/read-along`);
+                              toast({
+                                title: "Read-along deleted",
+                                description: "Read-along data has been removed from the chapter.",
+                              });
+                              queryClient.invalidateQueries({ queryKey: ["/api/admin/all-chapters"] });
+                              queryClient.invalidateQueries({ queryKey: ['/api/read-along', editingItem.id] });
+                              setEditingItem({ ...editingItem, hasReadAlong: false, textContent: null });
+                            } catch (error) {
+                              toast({
+                                title: "Error",
+                                description: "Failed to delete read-along data.",
+                                variant: "destructive",
+                              });
+                            }
+                          }}
+                          title="Delete read-along data"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
                           onClick={() => setShowJsonUpload(!showJsonUpload)}
-                          title="Change read-along data"
+                          title="Replace read-along data"
                         >
                           <Pencil className="h-4 w-4" />
                         </Button>
@@ -1176,7 +1227,7 @@ export function UnifiedContentManager() {
                           onClick={() => setShowJsonUpload(!showJsonUpload)}
                           title="Upload read-along data"
                         >
-                          <Pencil className="h-4 w-4" />
+                          <Plus className="h-4 w-4" />
                         </Button>
                       </div>
                     )}
@@ -1185,7 +1236,7 @@ export function UnifiedContentManager() {
                   {/* Show audio upload when edit icon clicked */}
                   {showAudioUpload && (
                     <div className="space-y-2 pt-2 border-t">
-                      <Label>Replace Audio File</Label>
+                      <Label>{editingItem.audioUrl ? "Replace" : "Upload"} Audio File</Label>
                       <div className="flex items-center gap-4">
                         <Input
                           type="file"
@@ -1211,7 +1262,7 @@ export function UnifiedContentManager() {
                   {/* Show JSON upload when edit icon clicked */}
                   {showJsonUpload && (
                     <div className="space-y-2 pt-2 border-t">
-                      <Label>Replace Read-Along JSON File</Label>
+                      <Label>{editingItem.hasReadAlong ? "Replace" : "Upload"} Read-Along JSON File</Label>
                       <div className="flex items-center gap-4">
                         <Input
                           type="file"
