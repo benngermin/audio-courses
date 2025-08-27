@@ -70,7 +70,14 @@ export function ReadAlongPanel({ isVisible, onClose }: ReadAlongPanelProps) {
             "pb-20" // Add padding for miniplayer
           )}
         >
-
+          {/* Close button in top right corner */}
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 z-50 p-2 rounded-full bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors"
+            aria-label="Close read-along"
+          >
+            <X className="w-6 h-6 text-gray-600 dark:text-gray-400" />
+          </button>
 
           {/* Read-Along Content - full screen with minimal padding */}
           <div className="flex-1 overflow-hidden pt-2 px-2 sm:px-4 lg:px-8">
