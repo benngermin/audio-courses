@@ -53,77 +53,92 @@ export function useReadAlong({ chapterId, currentTime, isPlaying, enabled = true
   const findActiveSegment = useCallback((time: number, segments: ReadAlongSegment[]) => {
     if (!segments || segments.length === 0) return -1;
     
-    // Binary search for efficiency with large text segments
-    let left = 0;
-    let right = segments.length - 1;
-    let result = -1;
+    // Simple linear search for sentence segments to ensure accuracy
+    // Filter for sentence segments only
+    const sentenceSegments = segments.filter(seg => seg.segmentType === 'sentence');
     
-    while (left <= right) {
-      const mid = Math.floor((left + right) / 2);
-      const segment = segments[mid];
-      
-      if (time >= segment.startTime && time <= segment.endTime) {
-        return mid;
-      } else if (time < segment.startTime) {
-        right = mid - 1;
-      } else {
-        left = mid + 1;
-        if (time > segment.endTime) {
-          result = mid; // Keep track of the last passed segment
-        }
+    for (let i = 0; i < sentenceSegments.length; i++) {
+      const segment = sentenceSegments[i];
+      // Add a small buffer (0.1s) to handle timing edge cases
+      if (time >= segment.startTime - 0.1 && time <= segment.endTime + 0.1) {
+        return segment.segmentIndex;
       }
     }
     
-    return result;
+    // If no exact match, find the closest previous segment
+    for (let i = sentenceSegments.length - 1; i >= 0; i--) {
+      if (time > sentenceSegments[i].endTime) {
+        return sentenceSegments[i].segmentIndex;
+      }
+    }
+    
+    return -1;
   }, []);
 
   // Update active segment when time changes
   useEffect(() => {
     if (!readAlongData?.segments) return;
     
-    // Throttle updates to avoid excessive re-renders (reduced for smoother animation)
-    const now = Date.now();
-    if (now - lastUpdateTimeRef.current < 50) return; // Update max 20x per second
-    lastUpdateTimeRef.current = now;
-    
-    const newActiveIndex = findActiveSegment(currentTime, readAlongData.segments);
-    
-    if (newActiveIndex !== activeSegmentIndex) {
-      setActiveSegmentIndex(newActiveIndex);
+    // Use requestAnimationFrame for smooth updates
+    const updateActiveSegment = () => {
+      const newActiveIndex = findActiveSegment(currentTime, readAlongData.segments);
       
-      // Update highlighted words for word-level sync
-      const activeSegment = readAlongData.segments[newActiveIndex];
-      if (activeSegment?.segmentType === 'word') {
-        setHighlightedWords(prev => new Set(prev).add(newActiveIndex));
-      } else {
-        // For sentence/paragraph level, highlight all words in the segment
-        const wordsInSegment = readAlongData.segments
-          .filter((seg, idx) => 
-            seg.segmentType === 'word' && 
-            seg.startTime >= (activeSegment?.startTime || 0) &&
-            seg.endTime <= (activeSegment?.endTime || 0)
-          )
-          .map((_, idx) => idx);
-        setHighlightedWords(new Set(wordsInSegment));
+      if (newActiveIndex !== activeSegmentIndex) {
+        setActiveSegmentIndex(newActiveIndex);
+        
+        // Update highlighted words for word-level sync
+        const activeSegment = readAlongData.segments.find(seg => seg.segmentIndex === newActiveIndex);
+        if (activeSegment?.segmentType === 'word') {
+          setHighlightedWords(prev => new Set(prev).add(newActiveIndex));
+        } else if (activeSegment) {
+          // For sentence/paragraph level, highlight all words in the segment
+          const wordsInSegment = readAlongData.segments
+            .filter((seg) => 
+              seg.segmentType === 'word' && 
+              seg.startTime >= activeSegment.startTime &&
+              seg.endTime <= activeSegment.endTime
+            )
+            .map((seg) => seg.segmentIndex);
+          setHighlightedWords(new Set(wordsInSegment));
+        }
       }
-    }
+    };
+    
+    // Use a more frequent update interval for smoother highlighting
+    const timeoutId = setTimeout(updateActiveSegment, 10);
+    return () => clearTimeout(timeoutId);
   }, [currentTime, readAlongData?.segments, activeSegmentIndex, findActiveSegment]);
 
   // Auto-scroll to active segment
   useEffect(() => {
     if (!autoScroll || activeSegmentIndex < 0 || !textContainerRef.current) return;
     
-    const activeElement = textContainerRef.current.querySelector(
-      `[data-segment-index="${activeSegmentIndex}"]`
-    ) as HTMLElement;
+    // Add a small delay to ensure DOM is updated
+    const scrollTimeout = setTimeout(() => {
+      const activeElement = textContainerRef.current?.querySelector(
+        `[data-segment-index="${activeSegmentIndex}"]`
+      ) as HTMLElement;
+      
+      if (activeElement && textContainerRef.current) {
+        // Calculate if element is already visible
+        const containerRect = textContainerRef.current.getBoundingClientRect();
+        const elementRect = activeElement.getBoundingClientRect();
+        const isVisible = 
+          elementRect.top >= containerRect.top && 
+          elementRect.bottom <= containerRect.bottom;
+        
+        // Only scroll if element is not fully visible
+        if (!isVisible) {
+          activeElement.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+            inline: 'nearest'
+          });
+        }
+      }
+    }, 50);
     
-    if (activeElement) {
-      activeElement.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center',
-        inline: 'nearest'
-      });
-    }
+    return () => clearTimeout(scrollTimeout);
   }, [activeSegmentIndex, autoScroll]);
 
   // Text size helpers

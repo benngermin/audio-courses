@@ -158,9 +158,9 @@ export function ReadAlongViewer({
               // Determine if segment is past, current, or future
               const segmentStartTime = 'startTime' in item ? (item.startTime as number) : 0;
               const segmentEndTime = 'endTime' in item ? (item.endTime as number) : 0;
-              const isPast = currentTime > segmentEndTime;
-              const isCurrent = currentTime >= segmentStartTime && currentTime <= segmentEndTime;
-              const isFuture = currentTime < segmentStartTime;
+              const isPast = !isActive && currentTime > segmentEndTime;
+              const isCurrent = isActive; // Use the active state from the hook
+              const isFuture = !isActive && currentTime < segmentStartTime;
 
               return (
                 <p
@@ -174,11 +174,12 @@ export function ReadAlongViewer({
                     isActive && "border-l-4 border-orange-400 bg-orange-50 dark:bg-orange-950/20"
                   )}
                   style={{
-                    color: isPast ? '#6B7280' : isFuture ? '#9CA3AF' : (isCurrent || isActive) ? '#111827' : '#6B7280',
-                    opacity: isPast ? 0.6 : isFuture ? 0.8 : 1,
-                    fontWeight: isActive ? 500 : 400,
+                    color: isActive ? '#EA580C' : isPast ? '#6B7280' : isFuture ? '#9CA3AF' : '#111827',
+                    opacity: isActive ? 1 : isPast ? 0.5 : isFuture ? 0.7 : 1,
+                    fontWeight: isActive ? 600 : 400,
                     marginLeft: isActive ? '0' : '0', // Remove negative margin
                     paddingLeft: isActive ? '16px' : '12px',
+                    transition: 'all 0.3s ease',
                   }}
                   title={`Click to jump to ${segmentStartTime.toFixed(1)}s`}
                 >
