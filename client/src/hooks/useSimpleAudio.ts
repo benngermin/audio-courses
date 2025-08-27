@@ -29,6 +29,9 @@ export function useSimpleAudio({
   const onEndedRef = useRef(onEnded);
   const onLoadedMetadataRef = useRef(onLoadedMetadata);
   
+  // Track pending play promise to avoid conflicts
+  const playPromiseRef = useRef<Promise<void> | null>(null);
+  
   useEffect(() => {
     onTimeUpdateRef.current = onTimeUpdate;
     onEndedRef.current = onEnded;
@@ -53,13 +56,19 @@ export function useSimpleAudio({
       if (currentSrc !== normalizedSrc) {
         console.log('Updating audio source:', src);
         
-        // Pause current playback
-        audio.pause();
-        setIsPlaying(false);
+        // Pause current playback and wait a bit to avoid race conditions
+        if (!audio.paused) {
+          audio.pause();
+          setIsPlaying(false);
+        }
         
-        // Update source
-        audio.src = src;
-        audio.load();
+        // Small delay to ensure pause is processed before changing source
+        setTimeout(() => {
+          if (globalAudioElement) {
+            globalAudioElement.src = src;
+            globalAudioElement.load();
+          }
+        }, 10);
       }
       
       setIsLoading(false);
@@ -189,6 +198,12 @@ export function useSimpleAudio({
 
   const play = useCallback(async (): Promise<boolean> => {
     try {
+      // Abort any pending play promise
+      if (playPromiseRef.current) {
+        // Just track that we're starting a new play operation
+        playPromiseRef.current = null;
+      }
+      
       // Create audio element on first play (user interaction)
       const audio = globalAudioElement || createAudioElement();
       
@@ -239,7 +254,9 @@ export function useSimpleAudio({
       
       const playPromise = audio.play();
       if (playPromise !== undefined) {
+        playPromiseRef.current = playPromise;
         await playPromise;
+        playPromiseRef.current = null;
         console.log('Audio playing successfully');
         setIsPlaying(true);
         return true;
@@ -247,10 +264,16 @@ export function useSimpleAudio({
       
       return false;
     } catch (error) {
+      playPromiseRef.current = null;
       if (error instanceof Error) {
-        console.error('Play error:', error.name, error.message);
-        if (error.name === 'NotAllowedError') {
+        if (error.name === 'AbortError') {
+          console.log('Play request was interrupted');
+          // Don't log as error - this is normal behavior when switching tracks quickly
+          return false;
+        } else if (error.name === 'NotAllowedError') {
           console.error('Autoplay blocked - user interaction required');
+        } else {
+          console.error('Play error:', error.name, error.message);
         }
       }
       setIsPlaying(false);
