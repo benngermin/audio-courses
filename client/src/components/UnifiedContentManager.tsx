@@ -1119,15 +1119,6 @@ export function UnifiedContentManager() {
                           <X className="h-3 w-3 mr-1" />
                           No audio
                         </Badge>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setShowAudioUpload(!showAudioUpload)}
-                          title="Upload audio file"
-                        >
-                          <Plus className="h-4 w-4" />
-                        </Button>
                       </div>
                     )}
                   </div>
@@ -1220,15 +1211,6 @@ export function UnifiedContentManager() {
                           <X className="h-3 w-3 mr-1" />
                           Not available
                         </Badge>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setShowJsonUpload(!showJsonUpload)}
-                          title="Upload read-along data"
-                        >
-                          <Plus className="h-4 w-4" />
-                        </Button>
                       </div>
                     )}
                   </div>
