@@ -594,7 +594,7 @@ export async function registerRoutes(app: Express, existingServer?: Server): Pro
 
       // Update chapter to remove text content and read-along flag
       await storage.updateChapter(chapterId, {
-        textContent: undefined,
+        textContent: null,
         hasReadAlong: false,
       });
 

@@ -361,11 +361,19 @@ export function UnifiedContentManager() {
     mutationFn: async (chapterId: string) => {
       return await apiRequest("DELETE", `/api/admin/chapters/${chapterId}/readalong`);
     },
-    onSuccess: () => {
+    onSuccess: (_, chapterId) => {
       toast({ title: "Read-along deleted", description: "The read-along data has been deleted successfully." });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/all-chapters"] });
       refetchChapters();
       setDeletingReadAlong(false);
+      // Update the editing item to reflect the deletion
+      if (editingItem?.id === chapterId) {
+        setEditingItem({
+          ...editingItem,
+          hasReadAlong: false,
+          textContent: null,
+        });
+      }
     },
     onError: (error) => {
       toast({ title: "Error", description: error.message, variant: "destructive" });
