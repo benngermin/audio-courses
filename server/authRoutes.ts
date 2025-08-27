@@ -230,4 +230,61 @@ router.get('/api/auth/user', async (req: Request, res: Response) => {
   }
 });
 
+// Demo access route
+router.post('/api/auth/demo', async (req: Request, res: Response) => {
+  try {
+    const demoEmail = 'demo@audiocourses.example.com';
+    
+    // Check if demo user exists
+    let [demoUser] = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, demoEmail));
+    
+    // Create demo user if it doesn't exist
+    if (!demoUser) {
+      [demoUser] = await db.insert(users).values({
+        email: demoEmail,
+        firstName: 'Demo',
+        lastName: 'User',
+        isAdmin: false,
+      }).returning();
+    }
+    
+    // Create session
+    const sessionId = createToken();
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+    
+    await db.insert(userSessions).values({
+      id: sessionId,
+      userId: demoUser.id,
+      expiresAt,
+    });
+    
+    // Set cookie
+    res.cookie('sid', sessionId, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      expires: expiresAt,
+      path: '/',
+    });
+    
+    return res.json({
+      ok: true,
+      user: {
+        id: demoUser.id,
+        email: demoUser.email,
+        firstName: demoUser.firstName,
+        lastName: demoUser.lastName,
+        profileImageUrl: demoUser.profileImageUrl,
+        isAdmin: demoUser.isAdmin,
+      }
+    });
+  } catch (error) {
+    console.error('Error in demo access:', error);
+    return res.status(500).json({ ok: false, error: 'Failed to create demo session' });
+  }
+});
+
 export default router;

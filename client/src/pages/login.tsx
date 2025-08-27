@@ -5,14 +5,46 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { Loader2, Mail, Sparkles, BookOpen, Headphones, Brain } from "lucide-react";
+import { Loader2, Mail, Sparkles, BookOpen, Headphones, Brain, PlayCircle } from "lucide-react";
 import logoUrl from '@assets/image_1756245208467.png';
+import { useLocation } from "wouter";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isDemoLoading, setIsDemoLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const { toast } = useToast();
+  const [, navigate] = useLocation();
+
+  const handleDemoAccess = async () => {
+    setIsDemoLoading(true);
+
+    try {
+      const data = await apiRequest("POST", "/api/auth/demo", {});
+      
+      if (data.ok) {
+        toast({
+          title: "Demo access granted",
+          description: "Welcome to the demo! You can explore all features.",
+        });
+        // Redirect to home page
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 500);
+      } else {
+        throw new Error(data.error || "Failed to create demo session");
+      }
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to start demo session. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsDemoLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -83,7 +115,7 @@ export default function Login() {
                 <Button 
                   type="submit" 
                   className="w-full h-11" 
-                  disabled={isLoading}
+                  disabled={isLoading || isDemoLoading}
                   data-testid="button-submit"
                 >
                   {isLoading ? (
@@ -95,6 +127,38 @@ export default function Login() {
                     <>
                       <Mail className="mr-2 h-4 w-4" />
                       Send Magic Link
+                    </>
+                  )}
+                </Button>
+                
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-background px-2 text-muted-foreground">
+                      Or continue with
+                    </span>
+                  </div>
+                </div>
+                
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full h-11"
+                  onClick={handleDemoAccess}
+                  disabled={isLoading || isDemoLoading}
+                  data-testid="button-demo"
+                >
+                  {isDemoLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Starting demo session...
+                    </>
+                  ) : (
+                    <>
+                      <PlayCircle className="mr-2 h-4 w-4" />
+                      Try Demo Access
                     </>
                   )}
                 </Button>
