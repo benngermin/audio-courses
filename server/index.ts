@@ -6,14 +6,14 @@ import { seedTestData } from "./seedData";
 
 const app = express();
 
-// IMMEDIATE ROOT HEALTH CHECK - Must be first for deployment health checks
-app.get('/', (req, res) => {
-  res.status(200).json({ status: 'ok', message: 'Server is running' });
-});
-
 // Basic health check endpoint - lightweight for deployment probes
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+// API health check endpoint
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ status: 'ok', message: 'Server is running' });
 });
 
 // SECURITY: Add security headers middleware
