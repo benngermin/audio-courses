@@ -737,54 +737,6 @@ export async function registerRoutes(app: Express, existingServer?: Server): Pro
     }
   });
 
-  // Admin endpoint to delete audio file from a chapter
-  app.delete('/api/admin/chapters/:chapterId/audio', isAuthenticated, async (req: any, res) => {
-    try {
-      const user = req.user;
-      if (!user?.isAdmin) {
-        return res.status(403).json({ message: "Admin access required" });
-      }
-
-      const chapterId = paramIdSchema.parse(req.params.chapterId);
-      
-      // Update chapter to remove audio URL
-      await storage.updateChapter(chapterId, {
-        audioUrl: null
-      });
-
-      res.json({ message: "Audio file removed successfully" });
-    } catch (error) {
-      logError('delete-chapter-audio', error);
-      res.status(500).json({ message: "Failed to remove audio file" });
-    }
-  });
-
-  // Admin endpoint to delete read-along data from a chapter
-  app.delete('/api/admin/chapters/:chapterId/read-along', isAuthenticated, async (req: any, res) => {
-    try {
-      const user = req.user;
-      if (!user?.isAdmin) {
-        return res.status(403).json({ message: "Admin access required" });
-      }
-
-      const chapterId = paramIdSchema.parse(req.params.chapterId);
-      
-      // Delete text synchronization data
-      await storage.deleteTextSynchronization(chapterId);
-      
-      // Update chapter to remove read-along status and text content
-      await storage.updateChapter(chapterId, {
-        textContent: null,
-        hasReadAlong: false
-      });
-
-      res.json({ message: "Read-along data removed successfully" });
-    } catch (error) {
-      logError('delete-read-along', error);
-      res.status(500).json({ message: "Failed to remove read-along data" });
-    }
-  });
-
   // Admin endpoint to upload read-along JSON file
   app.post('/api/admin/upload-readalong-json', isAuthenticated, uploadJson.single('readalong'), async (req: any, res) => {
     try {
