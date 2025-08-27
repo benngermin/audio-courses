@@ -87,7 +87,7 @@ const uploadJson = multer({
   },
 });
 
-export async function registerRoutes(app: Express): Promise<Server> {
+export async function registerRoutes(app: Express, existingServer?: Server): Promise<Server> {
   // Cookie parser middleware
   app.use(cookieParser());
   
@@ -1004,6 +1004,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.redirect(`/api/audio/${chapterId}.mp3`);
   });
 
-  const httpServer = createServer(app);
+  const httpServer = existingServer || createServer(app);
   return httpServer;
 }
