@@ -127,6 +127,8 @@ export function UnifiedContentManager() {
   const [jsonContent, setJsonContent] = useState<any>(null);
   const [showAudioUpload, setShowAudioUpload] = useState(false);
   const [showJsonUpload, setShowJsonUpload] = useState(false);
+  const [deletingAudio, setDeletingAudio] = useState(false);
+  const [deletingReadAlong, setDeletingReadAlong] = useState(false);
   const [selectedCourseForAssignment, setSelectedCourseForAssignment] = useState<string>("");
   const [selectedAssignmentForChapter, setSelectedAssignmentForChapter] = useState<string>("");
 
@@ -331,6 +333,67 @@ export function UnifiedContentManager() {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/all-chapters"] });
       queryClient.invalidateQueries({ queryKey: ["/api/assignments"] });
       setDeleteItem(null);
+    },
+    onError: (error) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    },
+  });
+
+  // Delete audio file mutation
+  const deleteAudioMutation = useMutation({
+    mutationFn: async (chapterId: string) => {
+      return await apiRequest("DELETE", `/api/admin/chapters/${chapterId}/audio`);
+    },
+    onSuccess: () => {
+      toast({ title: "Audio deleted", description: "The audio file has been deleted successfully." });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/all-chapters"] });
+      refetchChapters();
+      setDeletingAudio(false);
+    },
+    onError: (error) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+      setDeletingAudio(false);
+    },
+  });
+
+  // Delete read-along data mutation
+  const deleteReadAlongMutation = useMutation({
+    mutationFn: async (chapterId: string) => {
+      return await apiRequest("DELETE", `/api/admin/chapters/${chapterId}/readalong`);
+    },
+    onSuccess: () => {
+      toast({ title: "Read-along deleted", description: "The read-along data has been deleted successfully." });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/all-chapters"] });
+      refetchChapters();
+      setDeletingReadAlong(false);
+    },
+    onError: (error) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+      setDeletingReadAlong(false);
+    },
+  });
+
+  // Replace audio file mutation
+  const replaceAudioMutation = useMutation({
+    mutationFn: async ({ chapterId, file }: { chapterId: string; file: File }) => {
+      const formData = new FormData();
+      formData.append('audio', file);
+      const response = await fetch(`/api/admin/chapters/${chapterId}/replace-audio`, {
+        method: 'POST',
+        body: formData,
+        credentials: 'include',
+      });
+      if (!response.ok) {
+        throw new Error('Failed to replace audio file');
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Audio replaced", description: "The audio file has been replaced successfully." });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/all-chapters"] });
+      refetchChapters();
+      setSelectedFile(null);
+      setShowAudioUpload(false);
     },
     onError: (error) => {
       toast({ title: "Error", description: error.message, variant: "destructive" });
@@ -926,6 +989,8 @@ export function UnifiedContentManager() {
           setShowJsonContent(false);
           setShowAudioUpload(false);
           setShowJsonUpload(false);
+          setDeletingAudio(false);
+          setDeletingReadAlong(false);
         }
       }}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -1076,12 +1141,20 @@ export function UnifiedContentManager() {
                         </audio>
                         <Button
                           type="button"
-                          variant="ghost"
+                          variant="destructive"
                           size="sm"
-                          onClick={() => setShowAudioUpload(!showAudioUpload)}
-                          title="Change audio file"
+                          onClick={() => {
+                            setDeletingAudio(true);
+                            deleteAudioMutation.mutate(editingItem.id);
+                          }}
+                          disabled={deletingAudio || deleteAudioMutation.isPending}
+                          title="Delete audio file"
                         >
-                          <Pencil className="h-4 w-4" />
+                          {deletingAudio || deleteAudioMutation.isPending ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Trash2 className="h-4 w-4" />
+                          )}
                         </Button>
                       </div>
                     ) : (
@@ -1097,7 +1170,7 @@ export function UnifiedContentManager() {
                           onClick={() => setShowAudioUpload(!showAudioUpload)}
                           title="Upload audio file"
                         >
-                          <Pencil className="h-4 w-4" />
+                          <Upload className="h-4 w-4" />
                         </Button>
                       </div>
                     )}
@@ -1151,12 +1224,20 @@ export function UnifiedContentManager() {
                         </Button>
                         <Button
                           type="button"
-                          variant="ghost"
+                          variant="destructive"
                           size="sm"
-                          onClick={() => setShowJsonUpload(!showJsonUpload)}
-                          title="Change read-along data"
+                          onClick={() => {
+                            setDeletingReadAlong(true);
+                            deleteReadAlongMutation.mutate(editingItem.id);
+                          }}
+                          disabled={deletingReadAlong || deleteReadAlongMutation.isPending}
+                          title="Delete read-along data"
                         >
-                          <Pencil className="h-4 w-4" />
+                          {deletingReadAlong || deleteReadAlongMutation.isPending ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Trash2 className="h-4 w-4" />
+                          )}
                         </Button>
                       </div>
                     ) : (
@@ -1172,16 +1253,16 @@ export function UnifiedContentManager() {
                           onClick={() => setShowJsonUpload(!showJsonUpload)}
                           title="Upload read-along data"
                         >
-                          <Pencil className="h-4 w-4" />
+                          <Upload className="h-4 w-4" />
                         </Button>
                       </div>
                     )}
                   </div>
 
-                  {/* Show audio upload when edit icon clicked */}
-                  {showAudioUpload && (
+                  {/* Show audio upload when no audio exists */}
+                  {showAudioUpload && !editingItem.audioUrl && (
                     <div className="space-y-2 pt-2 border-t">
-                      <Label>Replace Audio File</Label>
+                      <Label>Upload Audio File</Label>
                       <div className="flex items-center gap-4">
                         <Input
                           type="file"
@@ -1190,24 +1271,43 @@ export function UnifiedContentManager() {
                             const file = e.target.files?.[0];
                             if (file) {
                               setSelectedFile(file);
-                              setShowAudioUpload(false);
                             }
                           }}
                         />
                         {selectedFile && (
-                          <Badge variant="secondary">
-                            <FileAudio className="h-3 w-3 mr-1" />
-                            {selectedFile.name}
-                          </Badge>
+                          <div className="flex items-center gap-2">
+                            <Badge variant="secondary">
+                              <FileAudio className="h-3 w-3 mr-1" />
+                              {selectedFile.name}
+                            </Badge>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                if (selectedFile && editingItem.id) {
+                                  replaceAudioMutation.mutate({ chapterId: editingItem.id, file: selectedFile });
+                                }
+                              }}
+                              disabled={replaceAudioMutation.isPending}
+                            >
+                              {replaceAudioMutation.isPending ? (
+                                <Loader2 className="h-4 w-4 animate-spin mr-1" />
+                              ) : (
+                                <Upload className="h-4 w-4 mr-1" />
+                              )}
+                              Upload
+                            </Button>
+                          </div>
                         )}
                       </div>
                     </div>
                   )}
                   
-                  {/* Show JSON upload when edit icon clicked */}
-                  {showJsonUpload && (
+                  {/* Show JSON upload when no read-along data exists */}
+                  {showJsonUpload && !editingItem.hasReadAlong && (
                     <div className="space-y-2 pt-2 border-t">
-                      <Label>Replace Read-Along JSON File</Label>
+                      <Label>Upload Read-Along JSON File</Label>
                       <div className="flex items-center gap-4">
                         <Input
                           type="file"
@@ -1216,7 +1316,6 @@ export function UnifiedContentManager() {
                             const file = e.target.files?.[0];
                             if (file) {
                               setSelectedJsonFile(file);
-                              setShowJsonUpload(false);
                             }
                           }}
                         />
@@ -1227,6 +1326,9 @@ export function UnifiedContentManager() {
                           </Badge>
                         )}
                       </div>
+                      <p className="text-xs text-muted-foreground">
+                        Upload a JSON file containing text content and timing segments for read-along functionality
+                      </p>
                     </div>
                   )}
                 </div>

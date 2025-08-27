@@ -532,6 +532,79 @@ export async function registerRoutes(app: Express, existingServer?: Server): Pro
     }
   });
 
+  // Delete audio file from chapter
+  app.delete('/api/admin/chapters/:chapterId/audio', isAuthenticated, async (req: any, res) => {
+    try {
+      const user = req.user;
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const chapterId = req.params.chapterId;
+      const chapter = await storage.getChapter(chapterId);
+      
+      if (!chapter) {
+        return res.status(404).json({ message: "Chapter not found" });
+      }
+
+      if (chapter.audioUrl) {
+        try {
+          // Delete from object storage if it's a local file
+          if (chapter.audioUrl.startsWith('/uploads/')) {
+            const filePath = path.join(process.cwd(), 'public', chapter.audioUrl);
+            if (fs.existsSync(filePath)) {
+              await fs.promises.unlink(filePath);
+            }
+          }
+        } catch (deleteError) {
+          logError('delete-audio-file', deleteError);
+          // Continue even if file deletion fails
+        }
+      }
+
+      // Update chapter to remove audio URL
+      await storage.updateChapter(chapterId, {
+        audioUrl: undefined,
+      });
+
+      res.json({ message: "Audio file deleted successfully" });
+    } catch (error) {
+      logError('delete-chapter-audio', error);
+      res.status(500).json({ message: "Failed to delete audio file" });
+    }
+  });
+
+  // Delete read-along data from chapter
+  app.delete('/api/admin/chapters/:chapterId/readalong', isAuthenticated, async (req: any, res) => {
+    try {
+      const user = req.user;
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const chapterId = req.params.chapterId;
+      const chapter = await storage.getChapter(chapterId);
+      
+      if (!chapter) {
+        return res.status(404).json({ message: "Chapter not found" });
+      }
+
+      // Remove text synchronization segments
+      await storage.deleteTextSynchronization(chapterId);
+
+      // Update chapter to remove text content and read-along flag
+      await storage.updateChapter(chapterId, {
+        textContent: undefined,
+        hasReadAlong: false,
+      });
+
+      res.json({ message: "Read-along data deleted successfully" });
+    } catch (error) {
+      logError('delete-chapter-readalong', error);
+      res.status(500).json({ message: "Failed to delete read-along data" });
+    }
+  });
+
   // Upload audio file temporarily (without chapter association)
   app.post('/api/admin/upload-temp-audio', isAuthenticated, uploadAudio.single('audio'), async (req: any, res) => {
     try {
@@ -572,6 +645,89 @@ export async function registerRoutes(app: Express, existingServer?: Server): Pro
         await fs.promises.unlink(req.file.path);
       }
       res.status(500).json({ message: "Failed to upload audio file" });
+    }
+  });
+
+  // Replace audio file for a specific chapter
+  app.post('/api/admin/chapters/:chapterId/replace-audio', isAuthenticated, uploadAudio.single('audio'), async (req: any, res) => {
+    try {
+      const user = req.user;
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      if (!req.file) {
+        return res.status(400).json({ message: "No audio file provided" });
+      }
+
+      const chapterId = req.params.chapterId;
+      
+      // SECURITY: Validate chapter ID format
+      if (!chapterId || typeof chapterId !== 'string' || !/^[a-zA-Z0-9\-_]{1,50}$/.test(chapterId)) {
+        // Clean up the uploaded file
+        if (fs.existsSync(req.file.path)) {
+          await fs.promises.unlink(req.file.path);
+        }
+        return res.status(400).json({ message: "Invalid chapter ID format" });
+      }
+      
+      // SECURITY: Additional file validation
+      if (!req.file.mimetype.startsWith('audio/')) {
+        await fs.promises.unlink(req.file.path).catch(() => {});
+        return res.status(400).json({ message: "Invalid file type" });
+      }
+
+      // SECURITY: Validate file size server-side
+      const stats = await fs.promises.stat(req.file.path);
+      if (stats.size > 50 * 1024 * 1024) {
+        await fs.promises.unlink(req.file.path).catch(() => {});
+        return res.status(400).json({ message: "File too large" });
+      }
+
+      // Get the chapter to update
+      const chapter = await storage.getChapter(chapterId);
+      if (!chapter) {
+        // Clean up the uploaded file
+        if (fs.existsSync(req.file.path)) {
+          await fs.promises.unlink(req.file.path);
+        }
+        return res.status(404).json({ message: "Chapter not found" });
+      }
+
+      // Delete existing audio file if it exists
+      if (chapter.audioUrl && chapter.audioUrl.startsWith('/uploads/')) {
+        try {
+          const oldFilePath = path.join(process.cwd(), 'public', chapter.audioUrl);
+          if (fs.existsSync(oldFilePath)) {
+            await fs.promises.unlink(oldFilePath);
+          }
+        } catch (deleteError) {
+          logError('delete-old-audio', deleteError);
+          // Continue with upload even if old file deletion fails
+        }
+      }
+
+      // Upload the new file to object storage with secure filename
+      const fileName = `${chapterId}-${Date.now()}-${Math.random().toString(36).substring(2)}.mp3`;
+      const audioUrl = await objectStorageService.uploadAudioFile(req.file, fileName);
+
+      // Update the chapter with the new audio URL
+      const updatedChapter = await storage.updateChapter(chapterId, {
+        audioUrl,
+      });
+
+      res.json({ 
+        message: "Audio file replaced successfully",
+        audioUrl,
+        chapter: updatedChapter
+      });
+    } catch (error) {
+      logError('replace-chapter-audio', error);
+      // Clean up the uploaded file on error
+      if (req.file && fs.existsSync(req.file.path)) {
+        await fs.promises.unlink(req.file.path);
+      }
+      res.status(500).json({ message: "Failed to replace audio file" });
     }
   });
 
@@ -619,6 +775,19 @@ export async function registerRoutes(app: Express, existingServer?: Server): Pro
           await fs.promises.unlink(req.file.path);
         }
         return res.status(404).json({ message: "Chapter not found" });
+      }
+
+      // Delete existing audio file if it exists (for replacement)
+      if (chapter.audioUrl && chapter.audioUrl.startsWith('/uploads/')) {
+        try {
+          const oldFilePath = path.join(process.cwd(), 'public', chapter.audioUrl);
+          if (fs.existsSync(oldFilePath)) {
+            await fs.promises.unlink(oldFilePath);
+          }
+        } catch (deleteError) {
+          logError('delete-old-audio', deleteError);
+          // Continue with upload even if old file deletion fails
+        }
       }
 
       // Upload the file to object storage with secure filename
