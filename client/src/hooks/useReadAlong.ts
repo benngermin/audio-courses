@@ -160,48 +160,25 @@ export function useReadAlong({ chapterId, currentTime, isPlaying, enabled = true
       return [{ type: 'text', content: text, segmentIndex: -1 }];
     }
 
-    const processed = [];
-    let lastEndIndex = 0;
-
-    segments
-      .filter(seg => seg.segmentType === 'sentence' || seg.segmentType === 'paragraph')
+    // Filter and sort segments by sentence type only, and clean up the text
+    const sentenceSegments = segments
+      .filter(seg => seg.segmentType === 'sentence')
       .sort((a, b) => a.segmentIndex - b.segmentIndex)
-      .forEach((segment, idx) => {
-        const startIndex = segment.characterStart || 0;
-        const endIndex = segment.characterEnd || text.length;
+      .map(segment => ({
+        ...segment,
+        // Clean up any leading/trailing whitespace and normalize the text
+        text: segment.text.trim()
+      }));
 
-        // Add any text before this segment
-        if (startIndex > lastEndIndex) {
-          processed.push({
-            type: 'text',
-            content: text.slice(lastEndIndex, startIndex),
-            segmentIndex: -1
-          });
-        }
-
-        // Add the segment
-        processed.push({
-          type: 'segment',
-          content: segment.text,
-          segmentIndex: segment.segmentIndex,
-          segmentType: segment.segmentType,
-          startTime: segment.startTime,
-          endTime: segment.endTime
-        });
-
-        lastEndIndex = endIndex;
-      });
-
-    // Add any remaining text
-    if (lastEndIndex < text.length) {
-      processed.push({
-        type: 'text',
-        content: text.slice(lastEndIndex),
-        segmentIndex: -1
-      });
-    }
-
-    return processed;
+    // Convert each sentence segment into its own paragraph for clean display
+    return sentenceSegments.map(segment => ({
+      type: 'segment',
+      content: segment.text,
+      segmentIndex: segment.segmentIndex,
+      segmentType: 'sentence', // Always treat as sentence for consistent formatting
+      startTime: segment.startTime,
+      endTime: segment.endTime
+    }));
   }, []);
 
   return {

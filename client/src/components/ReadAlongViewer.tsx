@@ -143,18 +143,17 @@ export function ReadAlongViewer({
             getTextSizeClass(textSize)
           )}
         >
-          <div className="space-y-4 pb-8">
+          <div className="space-y-3 pb-8">
             {processedText.map((item, index) => {
               if (item.type === 'text') {
                 return (
-                  <span key={index} style={{ color: '#333', opacity: 0.6 }}>
+                  <p key={index} className="text-gray-600 dark:text-gray-400 leading-relaxed">
                     {item.content}
-                  </span>
+                  </p>
                 );
               }
 
               const isActive = isSegmentActive(item.segmentIndex);
-              const isParagraph = 'segmentType' in item && item.segmentType === 'paragraph';
               
               // Determine if segment is past, current, or future
               const segmentStartTime = 'startTime' in item ? (item.startTime as number) : 0;
@@ -164,37 +163,27 @@ export function ReadAlongViewer({
               const isFuture = currentTime < segmentStartTime;
 
               return (
-                <span
+                <p
                   key={index}
                   data-segment-index={item.segmentIndex}
                   onClick={() => handleSegmentClick(item.segmentIndex)}
                   className={cn(
-                    "cursor-pointer",
-                    "hover:bg-gray-100 dark:hover:bg-gray-800",
-                    isParagraph && "block mb-4",
-                    isActive && "border-l"
+                    "cursor-pointer transition-all duration-300 leading-relaxed rounded-lg",
+                    "hover:bg-gray-50 dark:hover:bg-gray-800/50",
+                    "mb-3 p-3", // Add padding and margin for better spacing
+                    isActive && "border-l-4 border-orange-400 bg-orange-50 dark:bg-orange-950/20"
                   )}
                   style={{
-                    color: '#333',
-                    opacity: isPast ? 0.4 : isFuture ? 0.6 : (isCurrent || isActive) ? 1 : 0.6,
-                    transition: 'opacity 0.3s ease, background-color 0.3s ease, padding 0.3s ease',
-                    background: isActive ? 'linear-gradient(90deg, rgba(251, 146, 60, 0.1) 0%, rgba(251, 146, 60, 0.05) 100%)' : 'transparent',
-                    borderLeftWidth: isActive ? '3px' : '0',
-                    borderLeftStyle: 'solid',
-                    borderLeftColor: isActive ? '#FB923C' : 'transparent',
-                    paddingLeft: '8px',
-                    paddingRight: '8px',
-                    paddingTop: '4px',
-                    paddingBottom: '4px',
-                    marginLeft: isActive ? '-11px' : '0',
+                    color: isPast ? '#6B7280' : isFuture ? '#9CA3AF' : (isCurrent || isActive) ? '#111827' : '#6B7280',
+                    opacity: isPast ? 0.6 : isFuture ? 0.8 : 1,
                     fontWeight: isActive ? 500 : 400,
-                    borderRadius: '0'
+                    marginLeft: isActive ? '0' : '0', // Remove negative margin
+                    paddingLeft: isActive ? '16px' : '12px',
                   }}
                   title={`Click to jump to ${segmentStartTime.toFixed(1)}s`}
                 >
-                  {/* Removed play icon for cleaner look */}
                   {item.content}
-                </span>
+                </p>
               );
             })}
           </div>
