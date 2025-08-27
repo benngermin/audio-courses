@@ -188,11 +188,7 @@ export function UnifiedContentManager() {
       .filter(a => a.courseId === course.id)
       .map(assignment => {
         const assignmentChapters = allChapters.filter(c => c.assignmentId === assignment.id);
-        // Debug logging
-        if (assignment.id === '4f53a908-4427-44fa-a77e-156b5fc5b427') {
-          console.log('Assignment chapters for "The Insurance Solution":', assignmentChapters);
-          console.log('All chapters:', allChapters);
-        }
+        // Map assignment chapters
         return { ...assignment, chapters: assignmentChapters };
       });
     return { ...course, assignments: courseAssignments };

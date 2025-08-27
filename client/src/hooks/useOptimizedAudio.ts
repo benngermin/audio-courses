@@ -44,7 +44,7 @@ class AudioPool {
     audio.setAttribute('webkit-playsinline', 'true');
     audio.src = src;
     
-    console.log('AudioPool: Creating new audio element for:', src);
+    // Creating new audio element for source
     
     this.pool.set(normalized, audio);
     return audio;
@@ -275,16 +275,11 @@ export function useOptimizedAudio({
     }
 
     try {
-      console.log('Attempting to play audio:', {
-        src: audio.src,
-        readyState: audio.readyState,
-        networkState: audio.networkState,
-        paused: audio.paused
-      });
+      // Attempt to play audio with current state
       
       // If audio is not loaded, load it first
       if (audio.readyState === 0) {
-        console.log('Audio not loaded, loading now...');
+        // Audio not loaded, loading now
         audio.load();
         
         // Wait for audio to be ready with timeout
@@ -321,7 +316,6 @@ export function useOptimizedAudio({
         // Check if audio is actually playing after promise resolves
         // Browser autoplay policies may have prevented playback
         if (!audio.paused) {
-          console.log('Audio playing successfully');
           setIsPlaying(true);
           return true; // Indicate success
         } else {

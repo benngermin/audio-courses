@@ -1,13 +1,19 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 
 export default function AudioTest() {
   const [audioUrl, setAudioUrl] = useState("");
   const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   
   // Fetch chapters to get audio URLs
-  const { data: chapters = [] } = useQuery({
+  interface Chapter {
+    id: string;
+    title: string;
+    audioUrl: string;
+  }
+  const { data: chapters = [] } = useQuery<Chapter[]>({
     queryKey: ["/api/assignments", "4f53a908-4427-44fa-a77e-156b5fc5b427", "chapters"],
   });
 
@@ -45,11 +51,11 @@ export default function AudioTest() {
       });
     
     // Store reference for stopping
-    (window as any).testAudio = audio;
+    audioRef.current = audio;
   };
   
   const stopAudio = () => {
-    const audio = (window as any).testAudio;
+    const audio = audioRef.current;
     if (audio) {
       audio.pause();
       setIsPlaying(false);
@@ -80,7 +86,7 @@ export default function AudioTest() {
       <div className="mb-6">
         <h2 className="text-lg font-semibold mb-2">Available Chapters</h2>
         <div className="space-y-2">
-          {chapters.map((chapter: any) => (
+          {chapters.map((chapter) => (
             <div key={chapter.id} className="p-3 border rounded">
               <p className="font-medium">{chapter.title}</p>
               <p className="text-sm text-gray-600 mb-2">{chapter.audioUrl}</p>
