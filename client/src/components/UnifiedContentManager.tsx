@@ -440,8 +440,12 @@ export function UnifiedContentManager() {
             // Update the chapter with read-along data
             await apiRequest("POST", `/api/admin/read-along/${editingItem.id}`, jsonResult.data);
             
+            // Invalidate the cached read-along data for this chapter
+            queryClient.invalidateQueries({ queryKey: ['/api/read-along', editingItem.id] });
+            queryClient.invalidateQueries({ queryKey: ["/api/admin/all-chapters"] });
+            
             toast({
-              title: "Read-along data added",
+              title: "Read-along data updated",
               description: "The read-along JSON file has been processed successfully.",
             });
           } else {
